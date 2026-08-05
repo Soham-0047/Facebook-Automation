@@ -60,6 +60,19 @@ FB_PAGE_ACCESS_TOKEN = _get_secret("FB_PAGE_ACCESS_TOKEN")
 FB_PAGE_ID = _get_secret("FB_PAGE_ID")
 NEWS_API_KEY = _get_secret("NEWS_API_KEY")
 STABILITY_API_KEY = _get_secret("STABILITY_API_KEY")
+GROQ_API_KEY = _get_secret("GROQ_API_KEY")  # optional -- enables the smarter narrative writer
+
+# Ordered fallback list of free Groq models -- tried in order, first success wins.
+# Free-tier model rosters on Groq change without much notice (models get deprecated,
+# renamed, or rate-limited differently), so hardcoding one model is fragile. If the
+# top one 404s, is decommissioned, or gets rate-limited, we just try the next.
+# Check console.groq.com/docs/models if all of these ever start failing at once.
+GROQ_MODEL_FALLBACKS = [
+    "llama-3.3-70b-versatile",   # best quality/reasoning of the free options
+    "openai/gpt-oss-120b",       # strong general-purpose alternative
+    "qwen/qwen3-32b",            # decent quality, different rate-limit bucket
+    "llama-3.1-8b-instant",      # smallest/fastest, most generous rate limits -- last resort
+]
 
 POSTED_FILE = os.getenv("POSTED_FILE", "posted_articles.json")
 LOG_FILE = os.getenv("LOG_FILE", "news_bot.log")
@@ -275,6 +288,124 @@ class EnhancedNewsBot:
             logger.error("Could not write generated image to disk: %s", e)
         return None
 
+    # -------------------- real-fact lookup (Wikipedia, free, no key) --------------------
+    def _guess_entity(self, title):
+        """Best-effort extraction of a likely organization/product name from the
+        headline, e.g. 'Zomato', 'ISRO', 'Ola Electric'. Looks for runs of
+        capitalized words -- not perfect, but good enough to try a lookup."""
+        candidates = re.findall(r'\b([A-Z][a-zA-Z0-9&]*(?:\s+[A-Z][a-zA-Z0-9&]*){0,2})\b', title)
+        skip = {"India", "Indian", "The", "This", "New", "AI"}
+        for c in candidates:
+            if c not in skip and len(c) > 2:
+                return c
+        return None
+
+    def get_wikipedia_fact(self, entity):
+        """Pull one real, sourced sentence from Wikipedia's public summary API.
+        No API key required. Returns None on any failure -- this is a nice-to-have,
+        never something that should block a post."""
+        if not entity:
+            return None
+        try:
+            search_url = "https://en.wikipedia.org/w/api.php"
+            params = {
+                "action": "query", "list": "search", "srsearch": entity,
+                "format": "json", "srlimit": 1,
+            }
+            r = self.session.get(search_url, params=params, timeout=10)
+            r.raise_for_status()
+            results = r.json().get("query", {}).get("search", [])
+            if not results:
+                return None
+            page_title = results[0]["title"]
+
+            summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{requests.utils.quote(page_title)}"
+            r2 = self.session.get(summary_url, timeout=10)
+            if r2.status_code != 200:
+                return None
+            extract = r2.json().get("extract", "")
+            if not extract:
+                return None
+            first_sentence = extract.split(". ")[0].strip().rstrip(".") + "."
+            return first_sentence if len(first_sentence) < 220 else None
+        except (requests.exceptions.RequestException, ValueError, KeyError):
+            return None  # fine to skip -- this is a bonus, not core functionality
+
+    # -------------------- smarter narrative (Groq, optional) --------------------
+    def get_groq_narrative(self, title, description, wiki_fact=None):
+        """Ask a fast free LLM (Groq) to write one genuinely interesting,
+        non-generic take grounded ONLY in the given title/description (plus an
+        optional real Wikipedia fact for context). Explicitly instructed not to
+        invent numbers or claims that aren't in the source material.
+
+        Tries each model in GROQ_MODEL_FALLBACKS in order and returns on the
+        first success. Returns None only if GROQ_API_KEY isn't set, the key
+        itself is invalid, or every model in the list fails -- in which case
+        the caller falls back to the canned analysis pool. This must never
+        block a post from going out."""
+        if not GROQ_API_KEY:
+            return None
+
+        system_prompt = (
+            "You write one short, sharp paragraph (35-55 words) for a Facebook tech-news page. "
+            "Ground everything strictly in the headline and description given -- never invent "
+            "statistics, dates, or claims that aren't there. You may use the optional background "
+            "fact if it's relevant, and say plainly if you're connecting it speculatively. "
+            "Avoid hype words like 'revolutionary', 'game-changing', 'breakthrough'. Write like a "
+            "sharp, slightly wry human analyst, not a press release. No emojis, no hashtags, no bullet points."
+        )
+        user_prompt = f"Headline: {title}\nDescription: {description}"
+        if wiki_fact:
+            user_prompt += f"\nOptional background fact (Wikipedia, use only if genuinely relevant): {wiki_fact}"
+
+        for model in GROQ_MODEL_FALLBACKS:
+            try:
+                resp = self.session.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"},
+                    json={
+                        "model": model,
+                        "messages": [
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        "temperature": 0.8,
+                        "max_tokens": 150,
+                    },
+                    timeout=REQUEST_TIMEOUT,
+                )
+
+                if resp.status_code == 401:
+                    logger.error("Groq rejected the API key (401). Check GROQ_API_KEY. Skipping Groq entirely.")
+                    return None  # bad key won't work for any model -- no point trying the rest
+
+                if resp.status_code == 429:
+                    logger.warning("Groq rate limit hit on %s -- trying next fallback model.", model)
+                    continue
+
+                if resp.status_code == 404:
+                    logger.warning("Groq model %s not found (likely deprecated) -- trying next fallback model.", model)
+                    continue
+
+                if resp.status_code != 200:
+                    logger.warning("Groq error %s on %s: %s -- trying next fallback model.",
+                                    resp.status_code, model, resp.text[:200])
+                    continue
+
+                text = resp.json()["choices"][0]["message"]["content"].strip()
+                if text:
+                    logger.info("Groq narrative generated using %s.", model)
+                    return text
+                logger.warning("Groq returned an empty response on %s -- trying next fallback model.", model)
+
+            except requests.exceptions.Timeout:
+                logger.warning("Groq request timed out on %s -- trying next fallback model.", model)
+            except (requests.exceptions.RequestException, KeyError, IndexError, ValueError) as e:
+                logger.warning("Groq call failed on %s (%s) -- trying next fallback model.", model, e)
+
+        logger.warning("All Groq fallback models failed -- falling back to canned analysis pool.")
+        return None
+
     # -------------------- content generation --------------------
     def _emoji_for(self, text):
         text_lower = text.lower()
@@ -316,8 +447,13 @@ class EnhancedNewsBot:
 
         emoji = self._emoji_for(title)
         opener = random.choice(self.openers)
-        analysis = random.choice(self.analysis_pool)
         closer = random.choice(self.closers)
+
+        # Try for a genuinely interesting, fact-grounded take first.
+        # Falls back to the canned pool if Groq isn't configured or fails --
+        # the post always goes out either way.
+        wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
+        analysis = self.get_groq_narrative(title, description, wiki_fact) or random.choice(self.analysis_pool)
 
         parts = []
 
@@ -334,6 +470,12 @@ class EnhancedNewsBot:
 
         parts.append(analysis)
         parts.append("")
+
+        # Occasionally surface the raw Wikipedia fact as a standalone "did you know"
+        # line -- real, sourced trivia, not something the LLM guessed at.
+        if wiki_fact and random.random() < 0.5:
+            parts.append(f"📌 Background: {wiki_fact}")
+            parts.append("")
 
         if closer:
             parts.append(closer)
@@ -472,6 +614,7 @@ class EnhancedNewsBot:
 def main():
     parser = argparse.ArgumentParser(description="Facebook news bot")
     parser.add_argument("--once", action="store_true", help="Post one article and exit (for cron/GitHub Actions)")
+    parser.add_argument("--dry-run", action="store_true", help="Build a post (incl. Groq/Wikipedia calls) and print it, but never call Facebook")
     parser.add_argument("--continuous", action="store_true", help="Run forever, posting every N hours (not for serverless/CI)")
     parser.add_argument("--stats", action="store_true", help="Print how many articles have been posted today")
     parser.add_argument("--interval-hours", type=int, default=4, help="Hours between posts in --continuous mode")
@@ -486,6 +629,17 @@ def main():
 
     # If invoked with a flag (cron/CI) OR there's no interactive terminal attached,
     # default to a single non-interactive run instead of blocking on input().
+    if args.dry_run:
+        articles = bot.get_indian_tech_news()
+        if not articles:
+            print("No articles fetched -- nothing to preview.")
+            return
+        article = articles[0]
+        print(f"[DRY RUN] Would post about: {article.get('title')}\n")
+        print(bot.create_engaging_post(article))
+        print("\n[DRY RUN] No image generated, no Facebook call made.")
+        return
+
     non_interactive = args.once or args.continuous or args.stats or not sys.stdin.isatty()
 
     if args.stats or (non_interactive and not args.once and not args.continuous):

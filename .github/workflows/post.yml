@@ -35,6 +35,7 @@ jobs:
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
           STABILITY_API_KEY: ${{ secrets.STABILITY_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}  # optional -- leave the secret unset to skip this
         run: python fb_news_bot.py --once --jitter-seconds 600
 
       - name: Persist dedup history + logs back to the repo
