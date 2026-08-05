@@ -1,0 +1,6 @@
+2026-08-05 18:11:09,094 | INFO    | Jittering start by 549s so this run isn't posting at a perfectly fixed second.
+2026-08-05 18:20:18,094 | INFO    | Run started at 2026-08-05 18:20:18
+2026-08-05 18:20:18,316 | INFO    | Found 15 usable articles out of 15 returned.
+2026-08-05 18:20:18,316 | INFO    | Processing (1/15): India should prepare for that poles vault
+2026-08-05 18:20:25,655 | INFO    | AI image generated: /tmp/news_bot/img_1785954025.png
+2026-08-05 18:20:31,015 | INFO    | Posted to Facebook successfully. Post ID: 122162268704980670
