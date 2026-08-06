@@ -21,12 +21,20 @@ import random
 import signal
 import logging
 import argparse
+import urllib.robotparser
+from urllib.parse import urlparse
 from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+
+try:
+    import trafilatura  # optional -- enables full-article-text extraction
+    HAS_TRAFILATURA = True
+except ImportError:
+    HAS_TRAFILATURA = False
 
 try:
     from dotenv import load_dotenv
@@ -187,12 +195,41 @@ class EnhancedNewsBot:
             "#India", "#Trending",
         ]
 
+        if not HAS_TRAFILATURA:
+            logger.info("trafilatura not installed -- full-article scraping disabled, "
+                        "will use NewsAPI descriptions only. `pip install trafilatura` to enable it.")
+
+    # -------------------- dedup --------------------
+    @staticmethod
+    def _normalize_title(title):
+        """Lowercase, strip punctuation/whitespace so near-duplicate titles
+        (different casing, trailing '...', re-crawled with a tweaked headline)
+        still dedup correctly."""
+        return re.sub(r'[^a-z0-9]+', ' ', title.lower()).strip()
+
+    def _dedup_key(self, article):
+        """Title alone isn't a reliable dedup key -- outlets republish the same
+        story with slightly different headlines, and NewsAPI itself sometimes
+        returns the same article twice with different casing. Combine
+        normalized title + URL for a much sturdier key."""
+        norm_title = self._normalize_title(article.get('title', ''))
+        url = (article.get('url') or '').split('?')[0].rstrip('/')
+        return f"{norm_title}::{url}"
+
+    def _already_posted(self, article):
+        key = self._dedup_key(article)
+        title = article.get('title', '').strip()
+        # also check the raw title against older entries saved before this
+        # dedup scheme existed, so upgrading the script doesn't cause re-posts
+        return key in self.posted_today or title in self.posted_today
+
     # -------------------- persistence --------------------
     def load_posted_articles(self):
         if os.path.exists(POSTED_FILE):
             try:
                 with open(POSTED_FILE, "r") as f:
-                    return json.load(f)
+                    data = json.load(f)
+                    return data if isinstance(data, list) else []
             except (json.JSONDecodeError, OSError) as e:
                 logger.warning("Could not read %s (%s) -- starting fresh.", POSTED_FILE, e)
                 return []
@@ -216,7 +253,7 @@ class EnhancedNewsBot:
                 'apiKey': NEWS_API_KEY,
                 'language': 'en',
                 'sortBy': 'publishedAt',
-                'pageSize': 15,
+                'pageSize': 20,
                 'excludeDomains': 'reddit.com',
             }
             resp = self.session.get(url, params=params, timeout=REQUEST_TIMEOUT)
@@ -234,6 +271,7 @@ class EnhancedNewsBot:
                 a for a in articles
                 if a.get('title') and a.get('title') != '[Removed]'
                 and a.get('description') and len(a.get('description', '')) > 50
+                and a.get('url')
             ]
             logger.info("Found %d usable articles out of %d returned.", len(filtered), len(articles))
             return filtered
@@ -245,6 +283,50 @@ class EnhancedNewsBot:
         except (ValueError, KeyError) as e:
             logger.error("Unexpected NewsAPI response format: %s", e)
         return []
+
+    # -------------------- full article scraping (optional, best-effort) --------------------
+    def _robots_allow(self, url, user_agent="NewsBot"):
+        """Politely check robots.txt before scraping. Defaults to allowing
+        the fetch if robots.txt is unreachable or malformed -- we don't want
+        a broken robots.txt on some random news site to break the whole run."""
+        try:
+            parsed = urlparse(url)
+            robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
+            rp = urllib.robotparser.RobotFileParser()
+            rp.set_url(robots_url)
+            rp.read()
+            return rp.can_fetch(user_agent, url)
+        except Exception:
+            return True
+
+    def fetch_full_article_text(self, url):
+        """Best-effort fetch of the actual article body, so the LLM has real
+        substance to work with instead of a 200-character NewsAPI snippet.
+        Returns None on ANY failure (blocked, paywalled, timeout, parse error,
+        trafilatura not installed) -- this is a quality enhancement, never a
+        requirement for posting."""
+        if not HAS_TRAFILATURA or not url:
+            return None
+        try:
+            if not self._robots_allow(url):
+                logger.info("robots.txt disallows scraping %s -- using description only.", url)
+                return None
+
+            headers = {"User-Agent": "Mozilla/5.0 (compatible; NewsBot/1.0; +https://example.com/bot)"}
+            resp = self.session.get(url, headers=headers, timeout=15)
+            if resp.status_code != 200 or not resp.text:
+                return None
+
+            extracted = trafilatura.extract(resp.text, include_comments=False, include_tables=False)
+            if not extracted or len(extracted) < 200:
+                return None
+            return extracted[:4000]  # cap length -- plenty of context, keeps API calls cheap and fast
+
+        except requests.exceptions.RequestException:
+            return None  # many sites block scrapers (403) -- expected, not an error worth logging loudly
+        except Exception as e:
+            logger.info("Article scraping failed for %s (%s) -- using description only.", url, e)
+            return None
 
     # -------------------- image generation --------------------
     def generate_ai_image(self, topic):
@@ -273,11 +355,19 @@ class EnhancedNewsBot:
                 logger.error("Stability AI error %s: %s", resp.status_code, resp.text[:300])
                 return None
 
+            content_type = resp.headers.get("Content-Type", "")
+            if not content_type.startswith("image/"):
+                logger.error("Stability AI returned non-image content-type %r -- discarding, falling back to text-only.", content_type)
+                return None
+            if len(resp.content) < 1000:
+                logger.error("Stability AI response body is suspiciously small (%d bytes) -- treating as failure.", len(resp.content))
+                return None
+
             os.makedirs("/tmp/news_bot", exist_ok=True)
             img_path = f"/tmp/news_bot/img_{int(time.time())}.png"
             with open(img_path, "wb") as f:
                 f.write(resp.content)
-            logger.info("AI image generated: %s", img_path)
+            logger.info("AI image generated: %s (%d bytes)", img_path, len(resp.content))
             return img_path
 
         except requests.exceptions.Timeout:
@@ -332,10 +422,13 @@ class EnhancedNewsBot:
             return None  # fine to skip -- this is a bonus, not core functionality
 
     # -------------------- smarter narrative (Groq, optional) --------------------
-    def get_groq_narrative(self, title, description, wiki_fact=None):
-        """Ask a fast free LLM (Groq) to write one genuinely interesting,
-        non-generic take grounded ONLY in the given title/description (plus an
-        optional real Wikipedia fact for context). Explicitly instructed not to
+    def get_groq_narrative(self, title, description, wiki_fact=None, full_text=None):
+        """Ask a fast free LLM (Groq) to write a genuinely interesting,
+        non-generic take grounded in the real source material. When full_text
+        (scraped article body) is available, it's used as the primary source
+        and the model is asked for a longer, more substantive 2-paragraph
+        piece; otherwise it falls back to writing a shorter single paragraph
+        from just the headline/description. Explicitly instructed not to
         invent numbers or claims that aren't in the source material.
 
         Tries each model in GROQ_MODEL_FALLBACKS in order and returns on the
@@ -346,17 +439,35 @@ class EnhancedNewsBot:
         if not GROQ_API_KEY:
             return None
 
+        if full_text:
+            length_instruction = (
+                "Write two short paragraphs (roughly 100-160 words total). The first should explain "
+                "what's actually going on and why, pulling specific concrete details from the article "
+                "body below. The second should be your own analytical angle -- what most casual readers "
+                "would miss, a comparison, a tension, or an implication worth flagging."
+            )
+        else:
+            length_instruction = "Write one short, sharp paragraph (35-55 words)."
+
         system_prompt = (
-            "You write one short, sharp paragraph (35-55 words) for a Facebook tech-news page. "
-            "Ground everything strictly in the headline and description given -- never invent "
-            "statistics, dates, or claims that aren't there. You may use the optional background "
-            "fact if it's relevant, and say plainly if you're connecting it speculatively. "
-            "Avoid hype words like 'revolutionary', 'game-changing', 'breakthrough'. Write like a "
-            "sharp, slightly wry human analyst, not a press release. No emojis, no hashtags, no bullet points."
+            f"You write grounded, factual commentary for a Facebook tech-news page. {length_instruction} "
+            "Ground everything strictly in the source material given -- never invent statistics, dates, "
+            "quotes, or claims that aren't in it. If the source material is thin, say less rather than "
+            "padding with generic claims. You may use the optional background fact if it's relevant, and "
+            "say plainly if you're connecting it speculatively. Avoid hype words like 'revolutionary', "
+            "'game-changing', 'breakthrough'. Write like a sharp, slightly wry human analyst, not a press "
+            "release. No emojis, no hashtags, no bullet points, no markdown formatting."
         )
-        user_prompt = f"Headline: {title}\nDescription: {description}"
+
+        user_prompt = f"Headline: {title}\n"
+        if full_text:
+            user_prompt += f"Full article text:\n{full_text}\n"
+        else:
+            user_prompt += f"Description (only source available): {description}\n"
         if wiki_fact:
             user_prompt += f"\nOptional background fact (Wikipedia, use only if genuinely relevant): {wiki_fact}"
+
+        max_tokens = 320 if full_text else 150
 
         for model in GROQ_MODEL_FALLBACKS:
             try:
@@ -370,7 +481,7 @@ class EnhancedNewsBot:
                             {"role": "user", "content": user_prompt},
                         ],
                         "temperature": 0.8,
-                        "max_tokens": 150,
+                        "max_tokens": max_tokens,
                     },
                     timeout=REQUEST_TIMEOUT,
                 )
@@ -394,7 +505,8 @@ class EnhancedNewsBot:
 
                 text = resp.json()["choices"][0]["message"]["content"].strip()
                 if text:
-                    logger.info("Groq narrative generated using %s.", model)
+                    logger.info("Groq narrative generated using %s (%d chars, full_text=%s).",
+                                model, len(text), bool(full_text))
                     return text
                 logger.warning("Groq returned an empty response on %s -- trying next fallback model.", model)
 
@@ -452,8 +564,9 @@ class EnhancedNewsBot:
         # Try for a genuinely interesting, fact-grounded take first.
         # Falls back to the canned pool if Groq isn't configured or fails --
         # the post always goes out either way.
+        full_text = self.fetch_full_article_text(article.get('url'))
         wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
-        analysis = self.get_groq_narrative(title, description, wiki_fact) or random.choice(self.analysis_pool)
+        analysis = self.get_groq_narrative(title, description, wiki_fact, full_text) or random.choice(self.analysis_pool)
 
         parts = []
 
@@ -482,6 +595,8 @@ class EnhancedNewsBot:
             parts.append("")
 
         parts.append(f"({source}, {formatted_date})")
+        if article.get('url'):
+            parts.append(f"🔗 Full story: {article['url']}")
         parts.append("")
         parts.append(self._pick_hashtags(title))
 
@@ -549,11 +664,14 @@ class EnhancedNewsBot:
             return 0
 
         posted_count = 0
+        consecutive_fb_failures = 0
+        MAX_CONSECUTIVE_FAILURES = 2  # if FB rejects 2 in a row, it's the token/config, not the articles
+
         for i, article in enumerate(articles, 1):
-            title = article.get('title', '').strip()
-            if title in self.posted_today:
+            if self._already_posted(article):
                 continue
 
+            title = article.get('title', '').strip()
             logger.info("Processing (%d/%d): %s", i, len(articles), title[:70])
 
             image_path = self.generate_ai_image(title)
@@ -563,12 +681,22 @@ class EnhancedNewsBot:
             post_content = self.create_engaging_post(article)
 
             if self.post_to_facebook(post_content, image_path):
-                self.posted_today.append(title)
+                self.posted_today.append(self._dedup_key(article))
                 self.save_posted_articles()
                 posted_count += 1
+                consecutive_fb_failures = 0
                 break  # one article per run, same as before
             else:
-                logger.warning("Skipping to next article after failed post.")
+                consecutive_fb_failures += 1
+                logger.warning("Failed to post (%d consecutive failure(s)).", consecutive_fb_failures)
+                if consecutive_fb_failures >= MAX_CONSECUTIVE_FAILURES:
+                    logger.error(
+                        "Facebook posting failed %d times in a row -- this is almost certainly a token/config "
+                        "problem, not bad luck with articles. Stopping this run instead of burning through "
+                        "the rest of the article list. Check FB_PAGE_ACCESS_TOKEN.",
+                        consecutive_fb_failures,
+                    )
+                    break
 
         if posted_count == 0:
             logger.info("No new posts created this run.")
