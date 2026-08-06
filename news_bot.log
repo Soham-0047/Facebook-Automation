@@ -18,3 +18,10 @@
 2026-08-06 09:27:56,184 | INFO    | AI image generated: /tmp/news_bot/img_1786008476.png
 2026-08-06 09:27:56,583 | INFO    | Groq narrative generated using llama-3.3-70b-versatile.
 2026-08-06 09:28:04,770 | INFO    | Posted to Facebook successfully. Post ID: 122162327852980670
+2026-08-06 12:26:50,444 | INFO    | Jittering start by 461s so this run isn't posting at a perfectly fixed second.
+2026-08-06 12:34:31,444 | INFO    | Run started at 2026-08-06 12:34:31
+2026-08-06 12:34:31,541 | INFO    | Found 14 usable articles out of 15 returned.
+2026-08-06 12:34:31,541 | INFO    | Processing (1/14): CREDAI, NAREDCO hail RBI policy, stable home loan interest rate to hel
+2026-08-06 12:34:38,390 | INFO    | AI image generated: /tmp/news_bot/img_1786019678.png
+2026-08-06 12:34:38,718 | INFO    | Groq narrative generated using llama-3.3-70b-versatile.
+2026-08-06 12:34:42,727 | INFO    | Posted to Facebook successfully. Post ID: 122162346482980670
