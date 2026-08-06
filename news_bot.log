@@ -4,3 +4,24 @@
 2026-08-05 18:20:18,316 | INFO    | Processing (1/15): India should prepare for that poles vault
 2026-08-05 18:20:25,655 | INFO    | AI image generated: /tmp/news_bot/img_1785954025.png
 2026-08-05 18:20:31,015 | INFO    | Posted to Facebook successfully. Post ID: 122162268704980670
+2026-08-06 05:29:45,638 | INFO    | Jittering start by 144s so this run isn't posting at a perfectly fixed second.
+2026-08-06 05:32:09,639 | INFO    | Run started at 2026-08-06 05:32:09
+2026-08-06 05:32:09,800 | INFO    | Found 14 usable articles out of 14 returned.
+2026-08-06 05:32:09,801 | INFO    | Processing (1/14): RBI MPC Meeting 2026: Crude oil volatility remains key inflation risk
+2026-08-06 05:32:17,866 | INFO    | AI image generated: /tmp/news_bot/img_1785994337.png
+2026-08-06 05:32:18,415 | INFO    | Groq narrative generated using llama-3.3-70b-versatile.
+2026-08-06 05:32:23,581 | INFO    | Posted to Facebook successfully. Post ID: 122162310242980670
+2026-08-06 09:19:37,885 | INFO    | Jittering start by 492s so this run isn't posting at a perfectly fixed second.
+2026-08-06 09:27:49,885 | INFO    | Run started at 2026-08-06 09:27:49
+2026-08-06 09:27:50,195 | INFO    | Found 15 usable articles out of 15 returned.
+2026-08-06 09:27:50,195 | INFO    | Processing (1/15): Quote of the day by India's bard Rabindranath Tagore: 'You cannot cros
+2026-08-06 09:27:56,184 | INFO    | AI image generated: /tmp/news_bot/img_1786008476.png
+2026-08-06 09:27:56,583 | INFO    | Groq narrative generated using llama-3.3-70b-versatile.
+2026-08-06 09:28:04,770 | INFO    | Posted to Facebook successfully. Post ID: 122162327852980670
+2026-08-06 12:26:50,444 | INFO    | Jittering start by 461s so this run isn't posting at a perfectly fixed second.
+2026-08-06 12:34:31,444 | INFO    | Run started at 2026-08-06 12:34:31
+2026-08-06 12:34:31,541 | INFO    | Found 14 usable articles out of 15 returned.
+2026-08-06 12:34:31,541 | INFO    | Processing (1/14): CREDAI, NAREDCO hail RBI policy, stable home loan interest rate to hel
+2026-08-06 12:34:38,390 | INFO    | AI image generated: /tmp/news_bot/img_1786019678.png
+2026-08-06 12:34:38,718 | INFO    | Groq narrative generated using llama-3.3-70b-versatile.
+2026-08-06 12:34:42,727 | INFO    | Posted to Facebook successfully. Post ID: 122162346482980670
