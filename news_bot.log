@@ -33,3 +33,12 @@
 2026-08-07 04:36:54,200 | WARNING | Falling back to a text-only post for this article.
 2026-08-07 04:36:55,217 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1270 chars, full_text=True).
 2026-08-07 04:36:58,177 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162421134980670
+2026-08-07 07:50:17,676 | INFO    | Jittering start by 234s so this run isn't posting at a perfectly fixed second.
+2026-08-07 07:54:11,676 | INFO    | Run started at 2026-08-07 07:54:11
+2026-08-07 07:54:11,874 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-07 07:54:11,874 | INFO    | Processing (1/20): Rubber Track for Defense and Security Market to Reach USD 277.29 Milli
+2026-08-07 07:54:13,726 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"c37fb08a33031f2d919ec43081066f43","name":"payment_required"}
+2026-08-07 07:54:13,726 | WARNING | Falling back to a text-only post for this article.
+2026-08-07 07:54:13,802 | INFO    | robots.txt disallows scraping https://www.prnewswire.com/news-releases/rubber-track-for-defense-and-security-market-to-reach-usd-277-29-million-by-2036-as-armored-vehicle-modernization-accelerates-global-defense-mobility-demand-302844765.html -- using description only.
+2026-08-07 07:54:14,481 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (184 chars, full_text=False).
+2026-08-07 07:54:19,312 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162446172980670
