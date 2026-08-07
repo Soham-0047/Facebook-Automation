@@ -50,3 +50,11 @@
 2026-08-07 11:24:02,478 | WARNING | Falling back to a text-only post for this article.
 2026-08-07 11:24:05,301 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1042 chars, full_text=True).
 2026-08-07 11:24:10,498 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162463902980670
+2026-08-07 15:27:02,303 | INFO    | Jittering start by 129s so this run isn't posting at a perfectly fixed second.
+2026-08-07 15:29:11,303 | INFO    | Run started at 2026-08-07 15:29:11
+2026-08-07 15:29:11,477 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-07 15:29:11,478 | INFO    | Processing (1/19): Corporate bond mobilisation falls 8.4% in FY26, first decline in four 
+2026-08-07 15:29:13,902 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"3612df1d6d3b3e78292955bc10ea0bcc","name":"payment_required"}
+2026-08-07 15:29:13,902 | WARNING | Falling back to a text-only post for this article.
+2026-08-07 15:29:15,458 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1028 chars, full_text=True).
+2026-08-07 15:29:21,808 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162483666980670
