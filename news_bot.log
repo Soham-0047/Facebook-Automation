@@ -25,3 +25,11 @@
 2026-08-06 12:34:38,390 | INFO    | AI image generated: /tmp/news_bot/img_1786019678.png
 2026-08-06 12:34:38,718 | INFO    | Groq narrative generated using llama-3.3-70b-versatile.
 2026-08-06 12:34:42,727 | INFO    | Posted to Facebook successfully. Post ID: 122162346482980670
+2026-08-07 04:35:03,499 | INFO    | Jittering start by 108s so this run isn't posting at a perfectly fixed second.
+2026-08-07 04:36:51,499 | INFO    | Run started at 2026-08-07 04:36:51
+2026-08-07 04:36:51,606 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-07 04:36:51,606 | INFO    | Processing (1/19): Do you need probate to inherit property in India? Here's how probate w
+2026-08-07 04:36:54,200 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"4625eb6b041efbc2fcfb6eacc99f267c","name":"payment_required"}
+2026-08-07 04:36:54,200 | WARNING | Falling back to a text-only post for this article.
+2026-08-07 04:36:55,217 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1270 chars, full_text=True).
+2026-08-07 04:36:58,177 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162421134980670
