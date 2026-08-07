@@ -42,3 +42,11 @@
 2026-08-07 07:54:13,802 | INFO    | robots.txt disallows scraping https://www.prnewswire.com/news-releases/rubber-track-for-defense-and-security-market-to-reach-usd-277-29-million-by-2036-as-armored-vehicle-modernization-accelerates-global-defense-mobility-demand-302844765.html -- using description only.
 2026-08-07 07:54:14,481 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (184 chars, full_text=False).
 2026-08-07 07:54:19,312 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162446172980670
+2026-08-07 11:23:36,371 | INFO    | Jittering start by 24s so this run isn't posting at a perfectly fixed second.
+2026-08-07 11:24:00,372 | INFO    | Run started at 2026-08-07 11:24:00
+2026-08-07 11:24:00,628 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-07 11:24:00,628 | INFO    | Processing (1/20): Redmi Note 17 launched in India with 8000mAh battery and Snapdragon 4 
+2026-08-07 11:24:02,478 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"bcec6ef30f5e55b996e6f870c386ad75","name":"payment_required"}
+2026-08-07 11:24:02,478 | WARNING | Falling back to a text-only post for this article.
+2026-08-07 11:24:05,301 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1042 chars, full_text=True).
+2026-08-07 11:24:10,498 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162463902980670
