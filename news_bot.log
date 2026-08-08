@@ -67,3 +67,12 @@
 2026-08-08 03:53:41,097 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/news/india-to-chair-brics-education-ministers-meeting-in-bhubaneswar-today/article71316177.ece -- using description only.
 2026-08-08 03:53:41,427 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (181 chars, full_text=False).
 2026-08-08 03:53:44,492 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162530484980670
+2026-08-08 07:27:41,739 | INFO    | Jittering start by 416s so this run isn't posting at a perfectly fixed second.
+2026-08-08 07:34:37,740 | INFO    | Run started at 2026-08-08 07:34:37
+2026-08-08 07:34:38,169 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-08 07:34:38,169 | INFO    | Processing (1/20): India plans polysilicon incentives to reduce reliance on China
+2026-08-08 07:34:39,990 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"015aaae562e7ec93ca4925e65830a28e","name":"payment_required"}
+2026-08-08 07:34:39,990 | WARNING | Falling back to a text-only post for this article.
+2026-08-08 07:34:40,091 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/news/india-plans-polysilicon-incentives-to-reduce-reliance-on-china/article71316550.ece -- using description only.
+2026-08-08 07:34:40,533 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (147 chars, full_text=False).
+2026-08-08 07:34:44,097 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162546630980670
