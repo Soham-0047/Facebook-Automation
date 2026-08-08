@@ -84,3 +84,11 @@
 2026-08-08 11:08:49,667 | WARNING | Falling back to a text-only post for this article.
 2026-08-08 11:08:51,501 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1279 chars, full_text=True).
 2026-08-08 11:08:56,732 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162562698980670
+2026-08-08 14:59:17,146 | INFO    | Jittering start by 52s so this run isn't posting at a perfectly fixed second.
+2026-08-08 15:00:09,147 | INFO    | Run started at 2026-08-08 15:00:09
+2026-08-08 15:00:09,490 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-08 15:00:09,491 | INFO    | Processing (1/20): Male Contraceptive Doc ‘Give It a Shot’ From ‘Ask the Sexpert’ Directo
+2026-08-08 15:00:11,895 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"2234b4a0b01175ec63333821c760ee0f","name":"payment_required"}
+2026-08-08 15:00:11,895 | WARNING | Falling back to a text-only post for this article.
+2026-08-08 15:00:13,547 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1115 chars, full_text=True).
+2026-08-08 15:00:16,100 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162584448980670
