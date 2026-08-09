@@ -92,3 +92,12 @@
 2026-08-08 15:00:11,895 | WARNING | Falling back to a text-only post for this article.
 2026-08-08 15:00:13,547 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1115 chars, full_text=True).
 2026-08-08 15:00:16,100 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162584448980670
+2026-08-09 03:56:09,366 | INFO    | Jittering start by 295s so this run isn't posting at a perfectly fixed second.
+2026-08-09 04:01:04,366 | INFO    | Run started at 2026-08-09 04:01:04
+2026-08-09 04:01:04,685 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-09 04:01:04,685 | INFO    | Processing (1/20): Happy Infinity Day! And the Official Big Book of Infinity Cover Reveal
+2026-08-09 04:01:07,404 | ERROR   | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"496d1767834ed86eda034b574e91cbf4","name":"payment_required"}
+2026-08-09 04:01:07,404 | WARNING | Falling back to a text-only post for this article.
+2026-08-09 04:01:07,831 | INFO    | robots.txt disallows scraping https://afuse8production.slj.com/2026/08/08/happy-infinity-day-and-the-official-big-book-of-infinity-cover-reveal-and-qa/ -- using description only.
+2026-08-09 04:01:08,333 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (193 chars, full_text=False).
+2026-08-09 04:01:11,349 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162635544980670
