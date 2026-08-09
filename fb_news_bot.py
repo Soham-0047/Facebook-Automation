@@ -69,6 +69,7 @@ FB_PAGE_ID = _get_secret("FB_PAGE_ID")
 NEWS_API_KEY = _get_secret("NEWS_API_KEY")
 STABILITY_API_KEY = _get_secret("STABILITY_API_KEY")
 GROQ_API_KEY = _get_secret("GROQ_API_KEY")  # optional -- enables the smarter narrative writer
+GEMINI_API_KEY = _get_secret("GEMINI_API_KEY")  # optional -- second free provider, also does free image gen
 
 # Ordered fallback list of free Groq models -- tried in order, first success wins.
 # Free-tier model rosters on Groq change without much notice (models get deprecated,
@@ -82,6 +83,14 @@ GROQ_MODEL_FALLBACKS = [
     "llama-3.1-8b-instant",      # smallest/fastest, most generous rate limits -- last resort
 ]
 
+# Gemini free tier, tried after Groq is exhausted -- a different provider entirely,
+# so an outage/quota exhaustion on Groq's side doesn't take the whole feature down.
+GEMINI_TEXT_MODEL_FALLBACKS = [
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+]
+GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image"  # free image gen, ~500/day, no billing required
+
 POSTED_FILE = os.getenv("POSTED_FILE", "posted_articles.json")
 LOG_FILE = os.getenv("LOG_FILE", "news_bot.log")
 REQUEST_TIMEOUT = 30  # seconds, applied to every outbound call
@@ -90,8 +99,11 @@ REQUIRED_VARS = {
     "FB_PAGE_ACCESS_TOKEN": FB_PAGE_ACCESS_TOKEN,
     "FB_PAGE_ID": FB_PAGE_ID,
     "NEWS_API_KEY": NEWS_API_KEY,
-    "STABILITY_API_KEY": STABILITY_API_KEY,
 }
+# STABILITY_API_KEY is intentionally NOT required -- image generation now
+# falls back to Gemini (if GEMINI_API_KEY is set) and then to Pollinations.ai,
+# which needs no key at all. Posting still works with zero image providers
+# configured; it just goes out as a text-only post.
 
 
 # ========================================
@@ -145,11 +157,32 @@ class EnhancedNewsBot:
         self.posted_today = self.load_posted_articles()
         self._stop = False
 
-        # --- Content variety pools -------------------------------------
-        # Instead of one rigid 7-section skeleton every time, we keep several
-        # independent pools and mix-and-match so consecutive posts don't
-        # read like they came off an assembly line.
+        # --- Persona voices for LLM-generated content -------------------
+        # Randomly picking a persona per post is what actually kills the
+        # "sounds like AI" sameness -- one fixed system prompt produces one
+        # fixed cadence no matter how creative the instructions sound.
+        self.personas = [
+            "a sharp, slightly skeptical industry analyst who's seen a hundred of these announcements and calls out hype when the substance doesn't match it",
+            "a curious explainer who gets genuinely excited about how things work and wants the reader to understand the mechanics, not just the headline",
+            "a dry, understated observer who prefers a clean concrete detail over an adjective, and lets irony do the work instead of exclamation points",
+            "a builder/engineer type who cares about implementation reality -- what's actually hard here, what could break, what's genuinely new engineering-wise",
+            "a market-watcher who instinctively connects this to money, competition, and who wins or loses from it",
+            "a plainspoken local reporter who explains why this actually matters to an ordinary reader in India, not to investors",
+        ]
 
+        # Phrases and patterns that are dead giveaways of generic LLM output.
+        # Naming them explicitly and telling the model to avoid them works
+        # far better than vague instructions like "be creative."
+        self.banned_patterns = [
+            "In today's fast-paced world", "In the ever-evolving landscape",
+            "Moreover", "Furthermore", "It's worth noting that", "In conclusion",
+            "Let's dive in", "unpack", "game-changer", "revolutionize", "revolutionary",
+            "not only... but also", "In an exciting development", "as we navigate",
+            "This begs the question", "at the end of the day", "when it comes to",
+        ]
+
+        # --- Fallback pools (used only if BOTH Groq and Gemini fail/aren't
+        # configured) -- last line of defense so a post still goes out. ---
         self.openers = [
             "Here's something worth your attention today.",
             "Quick one for the tech-watchers in the room:",
@@ -329,12 +362,22 @@ class EnhancedNewsBot:
             return None
 
     # -------------------- image generation --------------------
-    def generate_ai_image(self, topic):
+    def _save_image_bytes(self, content, source_label):
+        """Shared validation + save logic for any image provider's response."""
+        os.makedirs("/tmp/news_bot", exist_ok=True)
+        if len(content) < 1000:
+            logger.error("%s image response is suspiciously small (%d bytes) -- treating as failure.", source_label, len(content))
+            return None
+        img_path = f"/tmp/news_bot/img_{int(time.time())}.png"
+        with open(img_path, "wb") as f:
+            f.write(content)
+        logger.info("%s image saved: %s (%d bytes)", source_label, img_path, len(content))
+        return img_path
+
+    def _stability_image(self, prompt):
+        if not STABILITY_API_KEY:
+            return None
         try:
-            prompt = (
-                f"{topic}, ultra-realistic, professional photography, cinematic lighting, "
-                f"8k, high detail, Indian context, modern technology, vibrant colors"
-            )
             url = "https://api.stability.ai/v2beta/stable-image/generate/core"
             headers = {"Authorization": f"Bearer {STABILITY_API_KEY}", "Accept": "image/*"}
             files = {
@@ -342,41 +385,106 @@ class EnhancedNewsBot:
                 "output_format": (None, "png"),
                 "aspect_ratio": (None, "16:9"),
             }
-
             resp = self.session.post(url, headers=headers, files=files, timeout=REQUEST_TIMEOUT)
 
             if resp.status_code == 401:
                 logger.error("Stability AI rejected the API key (401). Check STABILITY_API_KEY.")
                 return None
             if resp.status_code == 429:
-                logger.warning("Stability AI rate limit hit -- will fall back to a text-only post.")
+                logger.warning("Stability AI rate limit/credits hit -- trying next image provider.")
                 return None
             if resp.status_code != 200:
-                logger.error("Stability AI error %s: %s", resp.status_code, resp.text[:300])
+                logger.warning("Stability AI error %s: %s -- trying next image provider.", resp.status_code, resp.text[:300])
+                return None
+            if not resp.headers.get("Content-Type", "").startswith("image/"):
+                logger.warning("Stability AI returned non-image content-type -- trying next image provider.")
                 return None
 
-            content_type = resp.headers.get("Content-Type", "")
-            if not content_type.startswith("image/"):
-                logger.error("Stability AI returned non-image content-type %r -- discarding, falling back to text-only.", content_type)
-                return None
-            if len(resp.content) < 1000:
-                logger.error("Stability AI response body is suspiciously small (%d bytes) -- treating as failure.", len(resp.content))
-                return None
-
-            os.makedirs("/tmp/news_bot", exist_ok=True)
-            img_path = f"/tmp/news_bot/img_{int(time.time())}.png"
-            with open(img_path, "wb") as f:
-                f.write(resp.content)
-            logger.info("AI image generated: %s (%d bytes)", img_path, len(resp.content))
-            return img_path
-
+            return self._save_image_bytes(resp.content, "Stability AI")
         except requests.exceptions.Timeout:
-            logger.error("Stability AI request timed out.")
+            logger.warning("Stability AI request timed out -- trying next image provider.")
         except requests.exceptions.RequestException as e:
-            logger.error("Stability AI request failed: %s", e)
-        except OSError as e:
-            logger.error("Could not write generated image to disk: %s", e)
+            logger.warning("Stability AI request failed (%s) -- trying next image provider.", e)
         return None
+
+    def _gemini_image(self, prompt):
+        """Free image gen via Gemini's Nano Banana model -- roughly 500/day
+        free, no billing required. Response comes back as inline base64."""
+        if not GEMINI_API_KEY:
+            return None
+        try:
+            import base64
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_IMAGE_MODEL}:generateContent"
+            resp = self.session.post(
+                url,
+                headers={"x-goog-api-key": GEMINI_API_KEY, "Content-Type": "application/json"},
+                json={"contents": [{"role": "user", "parts": [{"text": prompt}]}]},
+                timeout=REQUEST_TIMEOUT,
+            )
+            if resp.status_code in (401, 403):
+                logger.error("Gemini rejected the API key (%s) for image gen. Check GEMINI_API_KEY.", resp.status_code)
+                return None
+            if resp.status_code == 429:
+                logger.warning("Gemini image quota hit -- trying next image provider.")
+                return None
+            if resp.status_code != 200:
+                logger.warning("Gemini image error %s: %s -- trying next image provider.", resp.status_code, resp.text[:200])
+                return None
+
+            parts = resp.json()["candidates"][0]["content"]["parts"]
+            for part in parts:
+                inline = part.get("inlineData") or part.get("inline_data")
+                if inline and inline.get("data"):
+                    image_bytes = base64.b64decode(inline["data"])
+                    return self._save_image_bytes(image_bytes, "Gemini")
+            logger.warning("Gemini response had no image data -- trying next image provider.")
+        except requests.exceptions.Timeout:
+            logger.warning("Gemini image request timed out -- trying next image provider.")
+        except (requests.exceptions.RequestException, KeyError, IndexError, ValueError) as e:
+            logger.warning("Gemini image call failed (%s) -- trying next image provider.", e)
+        return None
+
+    def _pollinations_image(self, prompt):
+        """Completely free, keyless image generation -- no signup at all.
+        Last-resort provider: lower control over quality/consistency than
+        Stability or Gemini, but it means the bot can still ship an image
+        even if you've configured zero paid/keyed image providers."""
+        try:
+            import urllib.parse as _urlparse
+            encoded = _urlparse.quote(prompt)
+            url = f"https://image.pollinations.ai/prompt/{encoded}"
+            params = {"width": 1280, "height": 720, "nologo": "true"}
+            resp = self.session.get(url, params=params, timeout=45)  # this provider can be slow under load
+
+            if resp.status_code != 200:
+                logger.warning("Pollinations error %s -- no image provider succeeded, falling back to text-only.", resp.status_code)
+                return None
+            if not resp.headers.get("Content-Type", "").startswith("image/"):
+                logger.warning("Pollinations returned non-image content -- falling back to text-only.")
+                return None
+
+            return self._save_image_bytes(resp.content, "Pollinations")
+        except requests.exceptions.Timeout:
+            logger.warning("Pollinations request timed out -- falling back to text-only.")
+        except requests.exceptions.RequestException as e:
+            logger.warning("Pollinations request failed (%s) -- falling back to text-only.", e)
+        return None
+
+    def generate_ai_image(self, topic):
+        """Tries three independent free/free-tier image providers in order:
+        Stability AI (best quality, needs credits) -> Gemini Nano Banana
+        (free, ~500/day) -> Pollinations (fully free, no key at all). Returns
+        None only if all three fail or aren't configured, in which case the
+        caller posts text-only instead of skipping the article."""
+        prompt = (
+            f"{topic}, ultra-realistic, professional photography, cinematic lighting, "
+            f"8k, high detail, Indian context, modern technology, vibrant colors"
+        )
+        return (
+            self._stability_image(prompt)
+            or self._gemini_image(prompt)
+            or self._pollinations_image(prompt)
+        )
 
     # -------------------- real-fact lookup (Wikipedia, free, no key) --------------------
     def _guess_entity(self, title):
@@ -422,41 +530,35 @@ class EnhancedNewsBot:
             return None  # fine to skip -- this is a bonus, not core functionality
 
     # -------------------- smarter narrative (Groq, optional) --------------------
-    def get_groq_narrative(self, title, description, wiki_fact=None, full_text=None):
-        """Ask a fast free LLM (Groq) to write a genuinely interesting,
-        non-generic take grounded in the real source material. When full_text
-        (scraped article body) is available, it's used as the primary source
-        and the model is asked for a longer, more substantive 2-paragraph
-        piece; otherwise it falls back to writing a shorter single paragraph
-        from just the headline/description. Explicitly instructed not to
-        invent numbers or claims that aren't in the source material.
-
-        Tries each model in GROQ_MODEL_FALLBACKS in order and returns on the
-        first success. Returns None only if GROQ_API_KEY isn't set, the key
-        itself is invalid, or every model in the list fails -- in which case
-        the caller falls back to the canned analysis pool. This must never
-        block a post from going out."""
-        if not GROQ_API_KEY:
-            return None
+    def _build_narrative_prompts(self, title, description, wiki_fact=None, full_text=None):
+        """Shared prompt-building for whichever LLM provider ends up handling
+        the request. A randomly picked persona + an explicit list of banned
+        AI-cliche phrases does more for "doesn't sound like AI" than any
+        amount of generic 'be creative' instruction."""
+        persona = random.choice(self.personas)
+        banned = ", ".join(f'"{p}"' for p in random.sample(self.banned_patterns, k=6))
 
         if full_text:
             length_instruction = (
-                "Write two short paragraphs (roughly 100-160 words total). The first should explain "
-                "what's actually going on and why, pulling specific concrete details from the article "
-                "body below. The second should be your own analytical angle -- what most casual readers "
-                "would miss, a comparison, a tension, or an implication worth flagging."
+                "Write two short paragraphs (roughly 100-170 words total). The first should explain "
+                "what's actually going on, pulling specific concrete details from the article body "
+                "below -- names, numbers, quotes if present. The second should be your own angle: "
+                "what a casual reader would miss, a tension, a comparison, an implication."
             )
         else:
-            length_instruction = "Write one short, sharp paragraph (35-55 words)."
+            length_instruction = "Write one sharp paragraph (40-65 words)."
 
         system_prompt = (
-            f"You write grounded, factual commentary for a Facebook tech-news page. {length_instruction} "
+            f"You are {persona}, writing for a Facebook tech-news page. {length_instruction} "
             "Ground everything strictly in the source material given -- never invent statistics, dates, "
             "quotes, or claims that aren't in it. If the source material is thin, say less rather than "
-            "padding with generic claims. You may use the optional background fact if it's relevant, and "
-            "say plainly if you're connecting it speculatively. Avoid hype words like 'revolutionary', "
-            "'game-changing', 'breakthrough'. Write like a sharp, slightly wry human analyst, not a press "
-            "release. No emojis, no hashtags, no bullet points, no markdown formatting."
+            "pad with generic claims. You may use the optional background fact if it's relevant, and say "
+            "plainly if you're connecting it speculatively.\n\n"
+            f"Do not use these phrases or anything that reads like them: {banned}. "
+            "Also avoid: starting more than one sentence with 'This', overusing em-dashes, rhetorical "
+            "questions used as filler, and neat rule-of-three lists. Vary your sentence length -- mix "
+            "one short punchy sentence with a longer one. Use contractions. Sound like a specific person "
+            "with an opinion, not a summary engine. No emojis, no hashtags, no bullet points, no markdown."
         )
 
         user_prompt = f"Headline: {title}\n"
@@ -467,7 +569,15 @@ class EnhancedNewsBot:
         if wiki_fact:
             user_prompt += f"\nOptional background fact (Wikipedia, use only if genuinely relevant): {wiki_fact}"
 
-        max_tokens = 320 if full_text else 150
+        max_tokens = 340 if full_text else 160
+        return system_prompt, user_prompt, max_tokens
+
+    def get_groq_narrative(self, system_prompt, user_prompt, max_tokens):
+        """Tries each model in GROQ_MODEL_FALLBACKS in order, returns on first
+        success. Returns None if GROQ_API_KEY isn't set, the key is invalid,
+        or every model fails -- caller moves on to the next provider."""
+        if not GROQ_API_KEY:
+            return None
 
         for model in GROQ_MODEL_FALLBACKS:
             try:
@@ -480,7 +590,7 @@ class EnhancedNewsBot:
                             {"role": "system", "content": system_prompt},
                             {"role": "user", "content": user_prompt},
                         ],
-                        "temperature": 0.8,
+                        "temperature": 0.95,
                         "max_tokens": max_tokens,
                     },
                     timeout=REQUEST_TIMEOUT,
@@ -505,8 +615,7 @@ class EnhancedNewsBot:
 
                 text = resp.json()["choices"][0]["message"]["content"].strip()
                 if text:
-                    logger.info("Groq narrative generated using %s (%d chars, full_text=%s).",
-                                model, len(text), bool(full_text))
+                    logger.info("Groq narrative generated using %s (%d chars).", model, len(text))
                     return text
                 logger.warning("Groq returned an empty response on %s -- trying next fallback model.", model)
 
@@ -515,8 +624,71 @@ class EnhancedNewsBot:
             except (requests.exceptions.RequestException, KeyError, IndexError, ValueError) as e:
                 logger.warning("Groq call failed on %s (%s) -- trying next fallback model.", model, e)
 
-        logger.warning("All Groq fallback models failed -- falling back to canned analysis pool.")
+        logger.warning("All Groq fallback models failed.")
         return None
+
+    def get_gemini_narrative(self, system_prompt, user_prompt, max_tokens):
+        """Second free provider, tried only if Groq isn't configured or fails
+        entirely. Different company, different outage/quota surface -- this is
+        what actually makes the 'AI service' layer resilient rather than just
+        having four models from one vendor."""
+        if not GEMINI_API_KEY:
+            return None
+
+        for model in GEMINI_TEXT_MODEL_FALLBACKS:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+                resp = self.session.post(
+                    url,
+                    headers={"x-goog-api-key": GEMINI_API_KEY, "Content-Type": "application/json"},
+                    json={
+                        "system_instruction": {"parts": [{"text": system_prompt}]},
+                        "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+                        "generationConfig": {"temperature": 0.95, "maxOutputTokens": max_tokens},
+                    },
+                    timeout=REQUEST_TIMEOUT,
+                )
+
+                if resp.status_code in (401, 403):
+                    logger.error("Gemini rejected the API key (%s). Check GEMINI_API_KEY. Skipping Gemini entirely.", resp.status_code)
+                    return None
+
+                if resp.status_code == 429:
+                    logger.warning("Gemini rate limit hit on %s -- trying next fallback model.", model)
+                    continue
+
+                if resp.status_code != 200:
+                    logger.warning("Gemini error %s on %s: %s -- trying next fallback model.",
+                                    resp.status_code, model, resp.text[:200])
+                    continue
+
+                data = resp.json()
+                text = data["candidates"][0]["content"]["parts"][0]["text"].strip()
+                if text:
+                    logger.info("Gemini narrative generated using %s (%d chars).", model, len(text))
+                    return text
+                logger.warning("Gemini returned an empty response on %s -- trying next fallback model.", model)
+
+            except requests.exceptions.Timeout:
+                logger.warning("Gemini request timed out on %s -- trying next fallback model.", model)
+            except (requests.exceptions.RequestException, KeyError, IndexError, ValueError) as e:
+                logger.warning("Gemini call failed on %s (%s) -- trying next fallback model.", model, e)
+
+        logger.warning("All Gemini fallback models failed.")
+        return None
+
+    def get_ai_narrative(self, title, description, wiki_fact=None, full_text=None):
+        """Top-level narrative generator: Groq first (usually fastest + best
+        free rate limits), then Gemini as a fully independent second provider,
+        then None so the caller drops to the canned pool. A post always goes
+        out no matter how many of these are unavailable."""
+        system_prompt, user_prompt, max_tokens = self._build_narrative_prompts(
+            title, description, wiki_fact, full_text
+        )
+        return (
+            self.get_groq_narrative(system_prompt, user_prompt, max_tokens)
+            or self.get_gemini_narrative(system_prompt, user_prompt, max_tokens)
+        )
 
     # -------------------- content generation --------------------
     def _emoji_for(self, text):
@@ -566,7 +738,7 @@ class EnhancedNewsBot:
         # the post always goes out either way.
         full_text = self.fetch_full_article_text(article.get('url'))
         wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
-        analysis = self.get_groq_narrative(title, description, wiki_fact, full_text) or random.choice(self.analysis_pool)
+        analysis = self.get_ai_narrative(title, description, wiki_fact, full_text) or random.choice(self.analysis_pool)
 
         parts = []
 
