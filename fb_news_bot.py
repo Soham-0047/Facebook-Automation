@@ -132,14 +132,23 @@ def validate_config():
 
 
 def make_session(total_retries=3, backoff_factor=1.5):
-    """A requests session that automatically retries on transient failures
-    (connection errors, 429, and 5xx) with exponential backoff."""
+    """A requests session that automatically retries GET requests on transient
+    failures (connection errors, 429, and 5xx) with exponential backoff.
+
+    POST is deliberately NOT auto-retried (this matches urllib3's own default
+    -- POST isn't idempotent). Retrying a POST blindly is dangerous for the
+    Facebook publish call specifically: if the response times out AFTER
+    Facebook has already created the post server-side, an automatic retry
+    would publish the same content twice. For the AI/image-generation POSTs,
+    we already have multi-model/multi-provider fallback chains that handle
+    failures more intelligently than a blind retry-the-same-request would
+    anyway, so nothing is lost by excluding POST here."""
     session = requests.Session()
     retry = Retry(
         total=total_retries,
         backoff_factor=backoff_factor,
         status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["GET", "POST"],
+        allowed_methods=["GET"],  # POST intentionally excluded -- see docstring
         raise_on_status=False,
     )
     adapter = HTTPAdapter(max_retries=retry)
@@ -318,7 +327,9 @@ class EnhancedNewsBot:
         return []
 
     # -------------------- full article scraping (optional, best-effort) --------------------
-    def _robots_allow(self, url, user_agent="NewsBot"):
+    SCRAPER_USER_AGENT = "Mozilla/5.0 (compatible; NewsBot/1.0; +https://example.com/bot)"
+
+    def _robots_allow(self, url):
         """Politely check robots.txt before scraping. Defaults to allowing
         the fetch if robots.txt is unreachable or malformed -- we don't want
         a broken robots.txt on some random news site to break the whole run."""
@@ -328,7 +339,7 @@ class EnhancedNewsBot:
             rp = urllib.robotparser.RobotFileParser()
             rp.set_url(robots_url)
             rp.read()
-            return rp.can_fetch(user_agent, url)
+            return rp.can_fetch(self.SCRAPER_USER_AGENT, url)
         except Exception:
             return True
 
@@ -336,8 +347,8 @@ class EnhancedNewsBot:
         """Best-effort fetch of the actual article body, so the LLM has real
         substance to work with instead of a 200-character NewsAPI snippet.
         Returns None on ANY failure (blocked, paywalled, timeout, parse error,
-        trafilatura not installed) -- this is a quality enhancement, never a
-        requirement for posting."""
+        non-HTML content, trafilatura not installed) -- this is a quality
+        enhancement, never a requirement for posting."""
         if not HAS_TRAFILATURA or not url:
             return None
         try:
@@ -345,12 +356,26 @@ class EnhancedNewsBot:
                 logger.info("robots.txt disallows scraping %s -- using description only.", url)
                 return None
 
-            headers = {"User-Agent": "Mozilla/5.0 (compatible; NewsBot/1.0; +https://example.com/bot)"}
-            resp = self.session.get(url, headers=headers, timeout=15)
-            if resp.status_code != 200 or not resp.text:
+            headers = {"User-Agent": self.SCRAPER_USER_AGENT}
+            resp = self.session.get(url, headers=headers, timeout=15, stream=True)
+            if resp.status_code != 200:
                 return None
 
-            extracted = trafilatura.extract(resp.text, include_comments=False, include_tables=False)
+            content_type = resp.headers.get("Content-Type", "")
+            if "html" not in content_type.lower():
+                logger.info("Non-HTML content-type %r at %s -- skipping scrape.", content_type, url)
+                return None
+
+            # Cap how much we read -- some pages are enormous, and we only need
+            # the article body, not megabytes of surrounding page weight.
+            MAX_BYTES = 3_000_000
+            raw = resp.raw.read(MAX_BYTES + 1, decode_content=True)
+            if len(raw) > MAX_BYTES:
+                logger.info("Page at %s exceeds size cap -- skipping scrape.", url)
+                return None
+            html = raw.decode(resp.encoding or "utf-8", errors="ignore")
+
+            extracted = trafilatura.extract(html, include_comments=False, include_tables=False)
             if not extracted or len(extracted) < 200:
                 return None
             return extracted[:4000]  # cap length -- plenty of context, keeps API calls cheap and fast
@@ -693,10 +718,10 @@ class EnhancedNewsBot:
     # -------------------- content generation --------------------
     def _emoji_for(self, text):
         text_lower = text.lower()
-        for keyword, emoji in self.topic_emojis.items():
-            if keyword in text_lower:
-                return emoji
-        return "🔥"
+        matches = [emoji for keyword, emoji in self.topic_emojis.items() if keyword in text_lower]
+        if matches:
+            return random.choice(list(dict.fromkeys(matches)))  # dedupe while preserving variety
+        return random.choice(["🔥", "📰", "⚡"])  # vary the default too instead of always 🔥
 
     def _clean_description(self, description):
         clean = re.sub(r'\[.*?\]', '', description)
@@ -705,14 +730,16 @@ class EnhancedNewsBot:
 
     def _pick_hashtags(self, title):
         title_lower = title.lower()
-        tags = set(random.sample(self.hashtag_pool, k=4))
+        tags = set(random.sample(self.hashtag_pool, k=random.randint(3, 5)))
         if 'ai' in title_lower or 'artificial intelligence' in title_lower:
             tags.update(["#ArtificialIntelligence", "#MachineLearning"])
         if 'startup' in title_lower:
             tags.add("#Entrepreneurship")
         if 'mobile' in title_lower or 'app' in title_lower:
             tags.add("#MobileApp")
-        return " ".join(sorted(tags))
+        tags = list(tags)
+        random.shuffle(tags)  # sorted order is a dead giveaway of programmatic generation
+        return " ".join(tags)
 
     def create_engaging_post(self, article):
         """Build a post that reads like a person wrote it, not a template.
@@ -734,11 +761,19 @@ class EnhancedNewsBot:
         closer = random.choice(self.closers)
 
         # Try for a genuinely interesting, fact-grounded take first.
-        # Falls back to the canned pool if Groq isn't configured or fails --
+        # Falls back to the canned pool if Groq/Gemini aren't configured or fail --
         # the post always goes out either way.
         full_text = self.fetch_full_article_text(article.get('url'))
         wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
-        analysis = self.get_ai_narrative(title, description, wiki_fact, full_text) or random.choice(self.analysis_pool)
+        ai_narrative = self.get_ai_narrative(title, description, wiki_fact, full_text)
+        analysis = ai_narrative or random.choice(self.analysis_pool)
+
+        # When full_text was available AND the AI actually used it, the narrative's
+        # first paragraph already explains what's going on in more depth than the
+        # 200-char NewsAPI snippet -- showing both means saying the same thing twice.
+        # Only show the raw snippet when the AI narrative is the short single-paragraph
+        # version (no full_text) or the canned fallback, where it's genuinely additive.
+        used_long_form_narrative = bool(ai_narrative) and bool(full_text)
 
         parts = []
 
@@ -749,7 +784,7 @@ class EnhancedNewsBot:
         parts.append(f"{emoji} {title}")
         parts.append("")
 
-        if description:
+        if description and not used_long_form_narrative:
             parts.append(description if description.endswith('.') else description + '.')
             parts.append("")
 
@@ -934,16 +969,13 @@ def main():
         if not articles:
             print("No articles fetched -- nothing to preview.")
             return
-        article = articles[0]
+        article = next((a for a in articles if not bot._already_posted(a)), articles[0])
         print(f"[DRY RUN] Would post about: {article.get('title')}\n")
         print(bot.create_engaging_post(article))
         print("\n[DRY RUN] No image generated, no Facebook call made.")
         return
 
     non_interactive = args.once or args.continuous or args.stats or not sys.stdin.isatty()
-
-    if args.stats or (non_interactive and not args.once and not args.continuous):
-        pass  # fall through to the default single-run behavior below unless --stats was explicit
 
     if args.continuous:
         bot.run_continuous(interval_hours=args.interval_hours)
