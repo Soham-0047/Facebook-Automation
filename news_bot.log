@@ -155,3 +155,12 @@
 2026-08-10 11:31:25,255 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786361485.png (50965 bytes)
 2026-08-10 11:31:26,814 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (927 chars).
 2026-08-10 11:31:31,053 | INFO    | Posted to Facebook successfully. Post ID: 122162780348980670
+2026-08-10 15:31:26,659 | INFO    | Jittering start by 550s so this run isn't posting at a perfectly fixed second.
+2026-08-10 15:40:36,659 | INFO    | Run started at 2026-08-10 15:40:36
+2026-08-10 15:40:36,887 | INFO    | Found 18 usable articles out of 20 returned.
+2026-08-10 15:40:36,887 | INFO    | Processing (1/18): ED director Rahul Navin gets 1-year extension
+2026-08-10 15:40:39,308 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"2aef14186748a6f77e9ef1bf59147e62","name":"payment_required"} -- trying next image provider.
+2026-08-10 15:40:39,461 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 15:40:40,699 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786376440.png (40529 bytes)
+2026-08-10 15:40:42,660 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1184 chars).
+2026-08-10 15:40:53,909 | INFO    | Posted to Facebook successfully. Post ID: 122162800184980670
