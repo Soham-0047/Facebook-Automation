@@ -127,3 +127,13 @@
 2026-08-09 15:04:15,783 | INFO    | robots.txt disallows scraping https://spacedaily.com/t-chandrayaan3-75-million-moon-landing/ -- using description only.
 2026-08-09 15:04:16,352 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (182 chars, full_text=False).
 2026-08-09 15:04:20,907 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162685932980670
+2026-08-10 04:10:43,850 | INFO    | Jittering start by 128s so this run isn't posting at a perfectly fixed second.
+2026-08-10 04:12:51,851 | INFO    | Run started at 2026-08-10 04:12:51
+2026-08-10 04:12:52,181 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-10 04:12:52,181 | INFO    | Processing (1/20): India's 2036 Olympic bid receives ECB support: Chief Executive Richard
+2026-08-10 04:12:54,555 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"740ccb600a61d56e98b4592194ccbcdb","name":"payment_required"} -- trying next image provider.
+2026-08-10 04:12:54,696 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 04:12:55,952 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786335175.png (85483 bytes)
+2026-08-10 04:12:56,091 | INFO    | robots.txt disallows scraping https://www.cricketnews.com/en/cricket/news/india-2036-olympic-bid-receives-ecb-support-2030-cwg-ahmedabad/e4b91e9b20bc8cf9a9a6c927 -- using description only.
+2026-08-10 04:12:56,680 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (253 chars).
+2026-08-10 04:12:59,915 | INFO    | Posted to Facebook successfully. Post ID: 122162745440980670
