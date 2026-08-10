@@ -146,3 +146,12 @@
 2026-08-10 08:13:05,937 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786349585.png (49599 bytes)
 2026-08-10 08:13:07,332 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1054 chars).
 2026-08-10 08:13:11,357 | INFO    | Posted to Facebook successfully. Post ID: 122162762756980670
+2026-08-10 11:31:05,605 | INFO    | Jittering start by 15s so this run isn't posting at a perfectly fixed second.
+2026-08-10 11:31:20,606 | INFO    | Run started at 2026-08-10 11:31:20
+2026-08-10 11:31:20,731 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-10 11:31:20,731 | INFO    | Processing (1/19): India’s Unified Payments Interface is public infrastructure and not ju
+2026-08-10 11:31:23,024 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"288f640a9603e12f288d865e9147f8cb","name":"payment_required"} -- trying next image provider.
+2026-08-10 11:31:23,160 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 11:31:25,255 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786361485.png (50965 bytes)
+2026-08-10 11:31:26,814 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (927 chars).
+2026-08-10 11:31:31,053 | INFO    | Posted to Facebook successfully. Post ID: 122162780348980670
