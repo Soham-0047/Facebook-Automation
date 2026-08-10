@@ -137,3 +137,12 @@
 2026-08-10 04:12:56,091 | INFO    | robots.txt disallows scraping https://www.cricketnews.com/en/cricket/news/india-2036-olympic-bid-receives-ecb-support-2030-cwg-ahmedabad/e4b91e9b20bc8cf9a9a6c927 -- using description only.
 2026-08-10 04:12:56,680 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (253 chars).
 2026-08-10 04:12:59,915 | INFO    | Posted to Facebook successfully. Post ID: 122162745440980670
+2026-08-10 08:12:25,125 | INFO    | Jittering start by 36s so this run isn't posting at a perfectly fixed second.
+2026-08-10 08:13:01,126 | INFO    | Run started at 2026-08-10 08:13:01
+2026-08-10 08:13:01,325 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-10 08:13:01,325 | INFO    | Processing (1/20): Oil India chief Ranjit Rath among applicants for top job at ONGC
+2026-08-10 08:13:02,814 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"81275cb10a6c14527c6469e8c88eb1e3","name":"payment_required"} -- trying next image provider.
+2026-08-10 08:13:02,946 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 08:13:05,937 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786349585.png (49599 bytes)
+2026-08-10 08:13:07,332 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1054 chars).
+2026-08-10 08:13:11,357 | INFO    | Posted to Facebook successfully. Post ID: 122162762756980670
