@@ -183,3 +183,13 @@
 2026-08-11 07:48:19,146 | INFO    | robots.txt disallows scraping https://www.business-standard.com/politics/4-bills-introduced-in-ls-amid-oppn-uproar-both-houses-adjourned-till-2-pm-126081000647_1.html -- using description only.
 2026-08-11 07:48:19,651 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (207 chars).
 2026-08-11 07:48:22,443 | INFO    | Posted to Facebook successfully. Post ID: 122162873234980670
+2026-08-11 11:21:27,732 | INFO    | Jittering start by 271s so this run isn't posting at a perfectly fixed second.
+2026-08-11 11:25:58,732 | INFO    | Run started at 2026-08-11 11:25:58
+2026-08-11 11:25:58,951 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 11:25:58,952 | INFO    | Processing (1/20): Govt mulls curbing use of cane for ethanol to tame record-high sugar m
+2026-08-11 11:26:00,850 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"70ec5c61d613e2b0b2f3dbaf8385fc79","name":"payment_required"} -- trying next image provider.
+2026-08-11 11:26:01,038 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 11:26:02,313 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786447562.png (49916 bytes)
+2026-08-11 11:26:02,416 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/economy/agri-business/govt-mulls-curbing-use-of-cane-for-ethanol-to-tame-record-high-sugar-market/article71328040.ece -- using description only.
+2026-08-11 11:26:03,171 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (285 chars).
+2026-08-11 11:26:09,811 | INFO    | Posted to Facebook successfully. Post ID: 122162891966980670
