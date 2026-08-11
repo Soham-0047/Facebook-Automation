@@ -193,3 +193,12 @@
 2026-08-11 11:26:02,416 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/economy/agri-business/govt-mulls-curbing-use-of-cane-for-ethanol-to-tame-record-high-sugar-market/article71328040.ece -- using description only.
 2026-08-11 11:26:03,171 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (285 chars).
 2026-08-11 11:26:09,811 | INFO    | Posted to Facebook successfully. Post ID: 122162891966980670
+2026-08-11 15:30:25,526 | INFO    | Jittering start by 207s so this run isn't posting at a perfectly fixed second.
+2026-08-11 15:33:52,526 | INFO    | Run started at 2026-08-11 15:33:52
+2026-08-11 15:33:54,734 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 15:33:54,735 | INFO    | Processing (1/20): Porter in no hurry to go public, says CEO Uttam Digga
+2026-08-11 15:33:57,519 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"abcc05312615995a27c05cc54df6dd43","name":"payment_required"} -- trying next image provider.
+2026-08-11 15:33:57,660 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 15:33:59,153 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786462439.png (39137 bytes)
+2026-08-11 15:34:00,637 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1051 chars).
+2026-08-11 15:34:04,454 | INFO    | Posted to Facebook successfully. Post ID: 122162911976980670
