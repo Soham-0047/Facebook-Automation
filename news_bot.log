@@ -164,3 +164,12 @@
 2026-08-10 15:40:40,699 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786376440.png (40529 bytes)
 2026-08-10 15:40:42,660 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1184 chars).
 2026-08-10 15:40:53,909 | INFO    | Posted to Facebook successfully. Post ID: 122162800184980670
+2026-08-11 03:57:58,653 | INFO    | Jittering start by 100s so this run isn't posting at a perfectly fixed second.
+2026-08-11 03:59:38,653 | INFO    | Run started at 2026-08-11 03:59:38
+2026-08-11 03:59:39,124 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 03:59:39,124 | INFO    | Processing (1/20): SBI shares rise nearly 2% after Q1 beat. Here's what Nomura, Morgan St
+2026-08-11 03:59:42,247 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"d4b1b024323de88e29deef0ca9fb2892","name":"payment_required"} -- trying next image provider.
+2026-08-11 03:59:42,407 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 03:59:43,806 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786420783.png (29807 bytes)
+2026-08-11 03:59:45,352 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (680 chars).
+2026-08-11 03:59:56,958 | INFO    | Posted to Facebook successfully. Post ID: 122162856440980670
