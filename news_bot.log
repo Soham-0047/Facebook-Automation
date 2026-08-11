@@ -173,3 +173,13 @@
 2026-08-11 03:59:43,806 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786420783.png (29807 bytes)
 2026-08-11 03:59:45,352 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (680 chars).
 2026-08-11 03:59:56,958 | INFO    | Posted to Facebook successfully. Post ID: 122162856440980670
+2026-08-11 07:44:26,246 | INFO    | Jittering start by 228s so this run isn't posting at a perfectly fixed second.
+2026-08-11 07:48:14,247 | INFO    | Run started at 2026-08-11 07:48:14
+2026-08-11 07:48:14,407 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 07:48:14,407 | INFO    | Processing (1/20): 4 bills introduced in LS amid Oppn uproar, both Houses adjourned till 
+2026-08-11 07:48:17,031 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"4897464b6d40026692e649cbc76a0cce","name":"payment_required"} -- trying next image provider.
+2026-08-11 07:48:17,229 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 07:48:18,854 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786434498.png (57002 bytes)
+2026-08-11 07:48:19,146 | INFO    | robots.txt disallows scraping https://www.business-standard.com/politics/4-bills-introduced-in-ls-amid-oppn-uproar-both-houses-adjourned-till-2-pm-126081000647_1.html -- using description only.
+2026-08-11 07:48:19,651 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (207 chars).
+2026-08-11 07:48:22,443 | INFO    | Posted to Facebook successfully. Post ID: 122162873234980670
