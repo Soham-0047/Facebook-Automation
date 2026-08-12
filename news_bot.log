@@ -222,3 +222,13 @@
 2026-08-12 08:01:00,836 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/brandhub/pr-release/piramal-realty-delivers-the-royal-polo-pavilion-a-30-000-sq-ft-polo-inspired-clubhouse-at-piramal-mahalaxmi/article71331561.ece -- using description only.
 2026-08-12 08:01:01,380 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (218 chars).
 2026-08-12 08:01:05,738 | INFO    | Posted to Facebook successfully. Post ID: 122163002204980670
+2026-08-12 11:23:18,631 | INFO    | Jittering start by 412s so this run isn't posting at a perfectly fixed second.
+2026-08-12 11:30:10,631 | INFO    | Run started at 2026-08-12 11:30:10
+2026-08-12 11:30:10,846 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-12 11:30:10,846 | INFO    | Processing (1/19): Eltek Sets Earnings Release Date and Conference Call to Report Second 
+2026-08-12 11:30:12,538 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"05ce8b12a63596bd0f10b1415a0f4efd","name":"payment_required"} -- trying next image provider.
+2026-08-12 11:30:12,676 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 11:30:14,250 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786534214.png (38775 bytes)
+2026-08-12 11:30:14,385 | INFO    | robots.txt disallows scraping https://www.prnewswire.com/news-releases/eltek-sets-earnings-release-date-and-conference-call-to-report-second-quarter-2026-results-on-august-18-2026-302848243.html -- using description only.
+2026-08-12 11:30:15,114 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (253 chars).
+2026-08-12 11:30:20,100 | INFO    | Posted to Facebook successfully. Post ID: 122163018968980670
