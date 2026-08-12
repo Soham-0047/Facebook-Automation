@@ -232,3 +232,13 @@
 2026-08-12 11:30:14,385 | INFO    | robots.txt disallows scraping https://www.prnewswire.com/news-releases/eltek-sets-earnings-release-date-and-conference-call-to-report-second-quarter-2026-results-on-august-18-2026-302848243.html -- using description only.
 2026-08-12 11:30:15,114 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (253 chars).
 2026-08-12 11:30:20,100 | INFO    | Posted to Facebook successfully. Post ID: 122163018968980670
+2026-08-12 15:30:09,238 | INFO    | Jittering start by 234s so this run isn't posting at a perfectly fixed second.
+2026-08-12 15:34:03,238 | INFO    | Run started at 2026-08-12 15:34:03
+2026-08-12 15:34:03,448 | INFO    | Found 18 usable articles out of 20 returned.
+2026-08-12 15:34:03,449 | INFO    | Processing (1/18): I looked into buying a house in Singapore as an investment. Here’s why
+2026-08-12 15:34:07,985 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"6cbee4e90f4e806e2dba5d0bc5b48ad7","name":"payment_required"} -- trying next image provider.
+2026-08-12 15:34:08,155 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 15:34:09,499 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786548849.png (44257 bytes)
+2026-08-12 15:34:09,704 | INFO    | robots.txt disallows scraping https://www.marketwatch.com/story/i-looked-into-buying-a-house-in-singapore-as-an-investment-heres-why-i-didnt-despite-the-2-mortgage-rate-50c79bcf -- using description only.
+2026-08-12 15:34:10,334 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (305 chars).
+2026-08-12 15:34:15,832 | INFO    | Posted to Facebook successfully. Post ID: 122163037676980670
