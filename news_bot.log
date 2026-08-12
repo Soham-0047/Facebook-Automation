@@ -212,3 +212,13 @@
 2026-08-12 04:21:18,357 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/bank-of-baroda-falls-2-1-126081100339_1.html -- using description only.
 2026-08-12 04:21:18,871 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (237 chars).
 2026-08-12 04:21:24,414 | INFO    | Posted to Facebook successfully. Post ID: 122162986364980670
+2026-08-12 07:58:14,898 | INFO    | Jittering start by 162s so this run isn't posting at a perfectly fixed second.
+2026-08-12 08:00:56,898 | INFO    | Run started at 2026-08-12 08:00:56
+2026-08-12 08:00:57,060 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-12 08:00:57,060 | INFO    | Processing (1/20): Piramal Realty Delivers The Royal Polo Pavilion, a 30,000 sq. ft. Polo
+2026-08-12 08:00:59,384 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"5a64228f54b07633d7c7ebdc05a2ba19","name":"payment_required"} -- trying next image provider.
+2026-08-12 08:00:59,534 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 08:01:00,756 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786521660.png (57576 bytes)
+2026-08-12 08:01:00,836 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/brandhub/pr-release/piramal-realty-delivers-the-royal-polo-pavilion-a-30-000-sq-ft-polo-inspired-clubhouse-at-piramal-mahalaxmi/article71331561.ece -- using description only.
+2026-08-12 08:01:01,380 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (218 chars).
+2026-08-12 08:01:05,738 | INFO    | Posted to Facebook successfully. Post ID: 122163002204980670
