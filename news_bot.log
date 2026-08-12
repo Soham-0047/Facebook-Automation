@@ -202,3 +202,13 @@
 2026-08-11 15:33:59,153 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786462439.png (39137 bytes)
 2026-08-11 15:34:00,637 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1051 chars).
 2026-08-11 15:34:04,454 | INFO    | Posted to Facebook successfully. Post ID: 122162911976980670
+2026-08-12 04:20:35,650 | INFO    | Jittering start by 39s so this run isn't posting at a perfectly fixed second.
+2026-08-12 04:21:14,650 | INFO    | Run started at 2026-08-12 04:21:14
+2026-08-12 04:21:14,778 | INFO    | Found 16 usable articles out of 20 returned.
+2026-08-12 04:21:14,778 | INFO    | Processing (1/16): Bank of Baroda Falls 2.1%
+2026-08-12 04:21:16,990 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"3ed483ec4719803e2ca058a9f4dcdc8e","name":"payment_required"} -- trying next image provider.
+2026-08-12 04:21:17,182 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 04:21:18,180 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786508478.png (47077 bytes)
+2026-08-12 04:21:18,357 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/bank-of-baroda-falls-2-1-126081100339_1.html -- using description only.
+2026-08-12 04:21:18,871 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (237 chars).
+2026-08-12 04:21:24,414 | INFO    | Posted to Facebook successfully. Post ID: 122162986364980670
