@@ -251,3 +251,12 @@
 2026-08-13 04:30:28,949 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786595428.png (48347 bytes)
 2026-08-13 04:30:30,440 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (859 chars).
 2026-08-13 04:30:36,185 | INFO    | Posted to Facebook successfully. Post ID: 122163120746980670
+2026-08-13 07:59:32,905 | INFO    | Jittering start by 334s so this run isn't posting at a perfectly fixed second.
+2026-08-13 08:05:06,905 | INFO    | Run started at 2026-08-13 08:05:06
+2026-08-13 08:05:07,115 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-13 08:05:07,116 | INFO    | Processing (1/19): N Chandrasekaran resigns as Tata Sons chairman: What triggered his exi
+2026-08-13 08:05:09,274 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"72fa970624c48f56305dd5ffe3b58ddf","name":"payment_required"} -- trying next image provider.
+2026-08-13 08:05:09,425 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 08:05:10,393 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786608310.png (38061 bytes)
+2026-08-13 08:05:12,107 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1239 chars).
+2026-08-13 08:05:19,093 | INFO    | Posted to Facebook successfully. Post ID: 122163144146980670
