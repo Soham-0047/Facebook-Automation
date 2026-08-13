@@ -269,3 +269,12 @@
 2026-08-13 11:23:49,500 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786620229.png (32219 bytes)
 2026-08-13 11:23:51,536 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (144 chars).
 2026-08-13 11:23:58,520 | INFO    | Posted to Facebook successfully. Post ID: 122163163496980670
+2026-08-13 15:30:53,891 | INFO    | Jittering start by 178s so this run isn't posting at a perfectly fixed second.
+2026-08-13 15:33:51,891 | INFO    | Run started at 2026-08-13 15:33:51
+2026-08-13 15:33:52,244 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-13 15:33:52,244 | INFO    | Processing (1/20): Gulf oil spill fast becoming worst in years, agencies warn
+2026-08-13 15:33:55,576 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"9dc62b667f64ad4e37989f4f4853c522","name":"payment_required"} -- trying next image provider.
+2026-08-13 15:33:55,705 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 15:33:57,030 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786635237.png (70888 bytes)
+2026-08-13 15:33:58,938 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (968 chars).
+2026-08-13 15:34:02,363 | INFO    | Posted to Facebook successfully. Post ID: 122163191120980670
