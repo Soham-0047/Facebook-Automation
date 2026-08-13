@@ -242,3 +242,12 @@
 2026-08-12 15:34:09,704 | INFO    | robots.txt disallows scraping https://www.marketwatch.com/story/i-looked-into-buying-a-house-in-singapore-as-an-investment-heres-why-i-didnt-despite-the-2-mortgage-rate-50c79bcf -- using description only.
 2026-08-12 15:34:10,334 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (305 chars).
 2026-08-12 15:34:15,832 | INFO    | Posted to Facebook successfully. Post ID: 122163037676980670
+2026-08-13 04:23:15,680 | INFO    | Jittering start by 429s so this run isn't posting at a perfectly fixed second.
+2026-08-13 04:30:24,680 | INFO    | Run started at 2026-08-13 04:30:24
+2026-08-13 04:30:24,982 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-13 04:30:24,982 | INFO    | Processing (1/20): Crunchyroll Acquires Global Rights (Excluding Asia) to Makoto Shinkai'
+2026-08-13 04:30:27,561 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"a017140b94855ba3d1c7a16f0e0bb9ee","name":"payment_required"} -- trying next image provider.
+2026-08-13 04:30:27,725 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 04:30:28,949 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786595428.png (48347 bytes)
+2026-08-13 04:30:30,440 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (859 chars).
+2026-08-13 04:30:36,185 | INFO    | Posted to Facebook successfully. Post ID: 122163120746980670
