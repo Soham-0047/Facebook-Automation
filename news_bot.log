@@ -260,3 +260,12 @@
 2026-08-13 08:05:10,393 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786608310.png (38061 bytes)
 2026-08-13 08:05:12,107 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1239 chars).
 2026-08-13 08:05:19,093 | INFO    | Posted to Facebook successfully. Post ID: 122163144146980670
+2026-08-13 11:22:09,298 | INFO    | Jittering start by 96s so this run isn't posting at a perfectly fixed second.
+2026-08-13 11:23:45,299 | INFO    | Run started at 2026-08-13 11:23:45
+2026-08-13 11:23:45,765 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-13 11:23:45,765 | INFO    | Processing (1/19): Microsoft admits it “leverages” Windows to push Edge, Bing, Copilot; p
+2026-08-13 11:23:47,796 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"2209018f9c98d11789faaed3502c162f","name":"payment_required"} -- trying next image provider.
+2026-08-13 11:23:47,996 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 11:23:49,500 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786620229.png (32219 bytes)
+2026-08-13 11:23:51,536 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (144 chars).
+2026-08-13 11:23:58,520 | INFO    | Posted to Facebook successfully. Post ID: 122163163496980670
