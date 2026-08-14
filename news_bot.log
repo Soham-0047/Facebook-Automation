@@ -306,3 +306,12 @@
 2026-08-14 11:23:39,110 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786706619.png (42394 bytes)
 2026-08-14 11:23:40,497 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (947 chars).
 2026-08-14 11:23:47,499 | INFO    | Posted to Facebook successfully. Post ID: 122163286100980670
+2026-08-14 15:22:42,815 | INFO    | Jittering start by 354s so this run isn't posting at a perfectly fixed second.
+2026-08-14 15:28:36,816 | INFO    | Run started at 2026-08-14 15:28:36
+2026-08-14 15:28:36,994 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-14 15:28:36,994 | INFO    | Processing (1/20): Nine Indian fishermen arrested by Sri Lankan Navy; TN CM urges Jaishan
+2026-08-14 15:28:39,022 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"88b7a0e951e9448e975e2d441d1407cf","name":"payment_required"} -- trying next image provider.
+2026-08-14 15:28:39,173 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 15:28:42,112 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786721322.png (43314 bytes)
+2026-08-14 15:28:45,339 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1323 chars).
+2026-08-14 15:28:49,788 | INFO    | Posted to Facebook successfully. Post ID: 122163306062980670
