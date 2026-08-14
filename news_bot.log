@@ -288,3 +288,12 @@
 2026-08-14 04:21:10,345 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/goodyear-india-slips-after-pat-falls-nearly-54-yoy-as-rising-input-costs-impact-margins-126081300501_1.html -- using description only.
 2026-08-14 04:21:10,834 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (226 chars).
 2026-08-14 04:21:15,008 | INFO    | Posted to Facebook successfully. Post ID: 122163254720980670
+2026-08-14 07:56:15,003 | INFO    | Jittering start by 291s so this run isn't posting at a perfectly fixed second.
+2026-08-14 08:01:06,003 | INFO    | Run started at 2026-08-14 08:01:06
+2026-08-14 08:01:06,238 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-14 08:01:06,238 | INFO    | Processing (1/20): ChatGPT Independence Day photo editing prompts 2026: Best AI prompts t
+2026-08-14 08:01:08,121 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"f0240aebd82352cfc484df3fb4bd4962","name":"payment_required"} -- trying next image provider.
+2026-08-14 08:01:08,282 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 08:01:11,077 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786694471.png (51169 bytes)
+2026-08-14 08:01:12,569 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (949 chars).
+2026-08-14 08:01:16,000 | INFO    | Posted to Facebook successfully. Post ID: 122163270704980670
