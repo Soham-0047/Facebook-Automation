@@ -278,3 +278,13 @@
 2026-08-13 15:33:57,030 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786635237.png (70888 bytes)
 2026-08-13 15:33:58,938 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (968 chars).
 2026-08-13 15:34:02,363 | INFO    | Posted to Facebook successfully. Post ID: 122163191120980670
+2026-08-14 04:20:46,077 | INFO    | Jittering start by 20s so this run isn't posting at a perfectly fixed second.
+2026-08-14 04:21:06,077 | INFO    | Run started at 2026-08-14 04:21:06
+2026-08-14 04:21:06,398 | INFO    | Found 15 usable articles out of 19 returned.
+2026-08-14 04:21:06,398 | INFO    | Processing (1/15): Goodyear India slips after PAT falls nearly 54% YoY as rising input co
+2026-08-14 04:21:09,036 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"ad5724d042831ec45ecffd9aeb3b43cc","name":"payment_required"} -- trying next image provider.
+2026-08-14 04:21:09,205 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 04:21:10,263 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786681270.png (39293 bytes)
+2026-08-14 04:21:10,345 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/goodyear-india-slips-after-pat-falls-nearly-54-yoy-as-rising-input-costs-impact-margins-126081300501_1.html -- using description only.
+2026-08-14 04:21:10,834 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (226 chars).
+2026-08-14 04:21:15,008 | INFO    | Posted to Facebook successfully. Post ID: 122163254720980670
