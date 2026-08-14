@@ -17,6 +17,8 @@ import re
 import sys
 import json
 import time
+import glob
+import uuid
 import random
 import signal
 import logging
@@ -29,6 +31,8 @@ from logging.handlers import RotatingFileHandler
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from PIL import Image, ImageDraw, ImageFont
+import textwrap
 
 try:
     import trafilatura  # optional -- enables full-article-text extraction
@@ -91,7 +95,81 @@ GEMINI_TEXT_MODEL_FALLBACKS = [
 ]
 GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image"  # free image gen, ~500/day, no billing required
 
+# ========================================
+# NEWS CARD GRAPHICS (primary image method)
+# ========================================
+# Locally-rendered headline cards via Pillow -- free, instant, unlimited, and
+# structurally incapable of the mangled-face/garbled-text problems that make
+# photorealistic AI image generation look "ugly" so often. Fonts are Google's
+# open-license Poppins family, fetched once and cached; falls back to
+# whatever DejaVu font the OS has if the download ever fails (no network
+# dependency at that point).
+FONT_CACHE_DIR = os.path.join("/tmp/news_bot", "fonts")
+FONT_URLS = {
+    "bold": "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf",
+    "semibold": "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-SemiBold.ttf",
+    "medium": "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Medium.ttf",
+}
+SYSTEM_FONT_FALLBACK_PATTERNS = {
+    "bold": ["DejaVuSans-Bold.ttf"],
+    "semibold": ["DejaVuSans-Bold.ttf"],
+    "medium": ["DejaVuSans.ttf"],
+}
+
+# (keywords to match in the title, kicker label shown on the card, top gradient
+# color, bottom gradient color) -- first match wins, checked in this order.
+CATEGORY_THEMES = [
+    (["ai", "artificial intelligence", "machine learning", "chatgpt", "llm", "openai"],
+     "ARTIFICIAL INTELLIGENCE", (76, 29, 149), (124, 58, 237)),
+    (["startup", "funding", "raises", "valuation", "venture capital", "seed round"],
+     "STARTUP & FUNDING", (154, 52, 18), (234, 88, 12)),
+    (["fintech", "payment", "upi", "banking", "paytm", "credit"],
+     "FINTECH", (6, 78, 59), (16, 185, 129)),
+    (["ecommerce", "e-commerce", "retail", "shopping", "flipkart", "amazon", "myntra"],
+     "E-COMMERCE", (131, 24, 67), (219, 39, 119)),
+    (["electric vehicle", "ev", "battery", "ola electric", "auto", "car"],
+     "ELECTRIC & AUTO", (12, 74, 110), (14, 165, 233)),
+    (["space", "isro", "satellite", "rocket", "spacex"],
+     "SPACE", (30, 27, 75), (79, 70, 229)),
+    (["mobile", "smartphone", "app", "gadget", "iphone", "android"],
+     "MOBILE & GADGETS", (17, 94, 89), (20, 184, 166)),
+    (["healthcare", "medical", "health"],
+     "HEALTHCARE", (127, 29, 29), (220, 38, 38)),
+]
+DEFAULT_THEME = ("TECH NEWS", (30, 58, 138), (59, 130, 246))
+
+# ========================================
+# TOPIC ENGAGEMENT SCORING
+# ========================================
+# Weighted keywords used to rank same-day candidate articles by how likely
+# they are to actually get engagement -- recognizable names, funding/launch
+# events, and numbers in the headline consistently outperform generic
+# coverage. Used to pick WHICH of the ~20 fetched articles to post, not to
+# fabricate anything about it.
+ENGAGEMENT_KEYWORDS = {
+    "openai": 3, "chatgpt": 3, "gemini": 2, "google": 2, "meta": 2, "apple": 2,
+    "microsoft": 2, "amazon": 2, "tesla": 2, "nvidia": 2, "spacex": 2,
+    "reliance": 2, "tata": 2, "adani": 2, "flipkart": 2, "zomato": 2,
+    "swiggy": 2, "paytm": 2, "ola": 2, "infosys": 1, "tcs": 1, "wipro": 1,
+    "isro": 3, "funding": 2, "raises": 3, "valuation": 2, "ipo": 3,
+    "acquires": 2, "acquisition": 2, "unveils": 1, "launches": 1,
+    "record": 2, "billion": 2, "crore": 1, "layoffs": 2, "ban": 2,
+    "hack": 2, "breach": 2, "ai": 2, "artificial intelligence": 2,
+    "robot": 1, "self-driving": 2,
+}
+
 POSTED_FILE = os.getenv("POSTED_FILE", "posted_articles.json")
+
+
+def _kw_match(text_lower, keyword):
+    """Word-boundary keyword match -- plain substring checks are dangerous
+    with short keywords: 'ai' matches inside 'raises', 'said', 'maintain';
+    'ban' matches inside 'banking', 'urban'; 'app' matches inside 'Apple',
+    'happy'. Requires the keyword not be immediately preceded/followed by
+    another alphanumeric character, which correctly handles multi-word
+    keywords and keywords with internal hyphens too."""
+    pattern = re.compile(r'(?<![a-z0-9])' + re.escape(keyword.strip()) + r'(?![a-z0-9])')
+    return bool(pattern.search(text_lower))
 LOG_FILE = os.getenv("LOG_FILE", "news_bot.log")
 REQUEST_TIMEOUT = 30  # seconds, applied to every outbound call
 
@@ -165,6 +243,8 @@ class EnhancedNewsBot:
         self.session = make_session()
         self.posted_today = self.load_posted_articles()
         self._stop = False
+        self._font_paths = None   # resolved lazily on first card render
+        self._font_cache = {}     # (weight, size) -> ImageFont instance
 
         # --- Persona voices for LLM-generated content -------------------
         # Randomly picking a persona per post is what actually kills the
@@ -264,6 +344,20 @@ class EnhancedNewsBot:
         # also check the raw title against older entries saved before this
         # dedup scheme existed, so upgrading the script doesn't cause re-posts
         return key in self.posted_today or title in self.posted_today
+
+    def _engagement_score(self, article):
+        """Rank candidate articles by how likely they are to actually catch
+        attention -- recognizable names, funding/launch/record-type events,
+        and numbers in the headline consistently outperform generic coverage.
+        This decides WHICH already-fetched, already-recent article to post,
+        not anything about the content itself."""
+        title_lower = article.get('title', '').lower()
+        score = sum(weight for kw, weight in ENGAGEMENT_KEYWORDS.items() if _kw_match(title_lower, kw))
+        if any(ch.isdigit() for ch in title_lower):
+            score += 1  # "raises $200M", "40 cities" -- concrete numbers read as more credible/catchy
+        if len(article.get('title', '')) < 70:
+            score += 1  # short punchy headlines work better as a card title
+        return score
 
     # -------------------- persistence --------------------
     def load_posted_articles(self):
@@ -393,7 +487,7 @@ class EnhancedNewsBot:
         if len(content) < 1000:
             logger.error("%s image response is suspiciously small (%d bytes) -- treating as failure.", source_label, len(content))
             return None
-        img_path = f"/tmp/news_bot/img_{int(time.time())}.png"
+        img_path = f"/tmp/news_bot/img_{int(time.time())}_{uuid.uuid4().hex[:8]}.png"
         with open(img_path, "wb") as f:
             f.write(content)
         logger.info("%s image saved: %s (%d bytes)", source_label, img_path, len(content))
@@ -495,15 +589,170 @@ class EnhancedNewsBot:
             logger.warning("Pollinations request failed (%s) -- falling back to text-only.", e)
         return None
 
-    def generate_ai_image(self, topic):
-        """Tries three independent free/free-tier image providers in order:
-        Stability AI (best quality, needs credits) -> Gemini Nano Banana
-        (free, ~500/day) -> Pollinations (fully free, no key at all). Returns
-        None only if all three fail or aren't configured, in which case the
-        caller posts text-only instead of skipping the article."""
+    # -------------------- news card graphics (primary image method) --------------------
+    def _resolve_fonts(self):
+        """Download and cache the Poppins font files once per process. Any
+        font that fails to download gets a None entry, so _font() knows to
+        search for a system fallback instead of crashing."""
+        if self._font_paths is not None:
+            return self._font_paths
+        paths = {}
+        try:
+            os.makedirs(FONT_CACHE_DIR, exist_ok=True)
+        except OSError:
+            pass
+        for weight, url in FONT_URLS.items():
+            local_path = os.path.join(FONT_CACHE_DIR, os.path.basename(url))
+            try:
+                if not os.path.exists(local_path):
+                    resp = self.session.get(url, timeout=10)
+                    resp.raise_for_status()
+                    with open(local_path, "wb") as f:
+                        f.write(resp.content)
+                paths[weight] = local_path
+            except Exception as e:
+                logger.info("Could not fetch %s font (%s) -- will use a system font instead.", weight, e)
+                paths[weight] = None
+        self._font_paths = paths
+        return paths
+
+    def _find_system_font(self, patterns):
+        for base_dir in ("/usr/share/fonts", "/usr/local/share/fonts", "/usr/local/lib"):
+            for pattern in patterns:
+                matches = glob.glob(os.path.join(base_dir, "**", pattern), recursive=True)
+                if matches:
+                    return matches[0]
+        return None
+
+    def _font(self, weight, size):
+        key = (weight, size)
+        if key in self._font_cache:
+            return self._font_cache[key]
+        path = self._resolve_fonts().get(weight)
+        if not path:
+            path = self._find_system_font(SYSTEM_FONT_FALLBACK_PATTERNS.get(weight, ["DejaVuSans-Bold.ttf"]))
+        try:
+            font = ImageFont.truetype(path, size) if path else ImageFont.load_default()
+        except Exception:
+            font = ImageFont.load_default()
+        self._font_cache[key] = font
+        return font
+
+    @staticmethod
+    def _gradient_image(w, h, top_rgb, bottom_rgb):
+        img = Image.new("RGB", (w, h), top_rgb)
+        draw = ImageDraw.Draw(img)
+        for y in range(h):
+            t = y / h
+            r = int(top_rgb[0] + (bottom_rgb[0] - top_rgb[0]) * t)
+            g = int(top_rgb[1] + (bottom_rgb[1] - top_rgb[1]) * t)
+            b = int(top_rgb[2] + (bottom_rgb[2] - top_rgb[2]) * t)
+            draw.line([(0, y), (w, y)], fill=(r, g, b))
+        return img
+
+    def _category_theme(self, title):
+        text_lower = title.lower()
+        for keywords, label, top_rgb, bottom_rgb in CATEGORY_THEMES:
+            if any(_kw_match(text_lower, kw) for kw in keywords):
+                return label, top_rgb, bottom_rgb
+        return DEFAULT_THEME
+
+    def _fit_headline(self, draw, text, max_width, max_lines, start_size=78, min_size=38):
+        """Shrinks the font until the headline wraps within max_lines, so a
+        short punchy title renders big and a long one still fits cleanly
+        instead of overflowing the card."""
+        size = start_size
+        while size >= min_size:
+            font = self._font("bold", size)
+            avg_char_w = draw.textlength("Xg", font=font) / 2 or 1
+            wrap_width = max(10, int(max_width / avg_char_w))
+            wrapped = textwrap.wrap(text, width=wrap_width)
+            if len(wrapped) <= max_lines:
+                return font, wrapped
+            size -= 4
+        font = self._font("bold", min_size)
+        avg_char_w = draw.textlength("Xg", font=font) / 2 or 1
+        wrap_width = max(10, int(max_width / avg_char_w))
+        wrapped = textwrap.wrap(text, width=wrap_width)[:max_lines]
+        if wrapped:
+            wrapped[-1] = wrapped[-1].rstrip() + "…"
+        return font, wrapped
+
+    def generate_news_card(self, article):
+        """Render a clean 1200x630 headline card locally: gradient background
+        themed to the story's category, a kicker pill, the (auto-fitted)
+        headline, and a source/date footer. No network dependency beyond a
+        one-time font download, no rate limits, no risk of the garbled-text/
+        mangled-face problems photorealistic AI generators are prone to."""
+        try:
+            title = article.get('title', '').strip()
+            if not title:
+                return None
+            source = article.get('source', {}).get('name', 'Tech News')
+            try:
+                date_obj = datetime.fromisoformat(article.get('publishedAt', '').replace('Z', '+00:00'))
+                date_str = date_obj.strftime('%b %d, %Y')
+            except ValueError:
+                date_str = datetime.now().strftime('%b %d, %Y')
+
+            kicker, top_rgb, bottom_rgb = self._category_theme(title)
+
+            W, H = 1200, 630
+            img = self._gradient_image(W, H, top_rgb, bottom_rgb)
+            overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            odraw = ImageDraw.Draw(overlay)
+            odraw.ellipse([W - 350, -150, W + 250, 350], fill=(255, 255, 255, 18))
+            odraw.ellipse([-200, H - 300, 250, H + 200], fill=(255, 255, 255, 14))
+            img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
+            draw = ImageDraw.Draw(img)
+
+            pill_font = self._font("semibold", 26)
+            bbox = draw.textbbox((0, 0), kicker, font=pill_font)
+            pill_w = bbox[2] - bbox[0] + 56
+            draw.rounded_rectangle([70, 70, 70 + pill_w, 126], radius=28, fill=(255, 255, 255, 255))
+            draw.text((98, 84), kicker, font=pill_font, fill=top_rgb)
+
+            font, wrapped = self._fit_headline(draw, title, max_width=W - 144, max_lines=4)
+            line_h = int(font.size * 1.18)
+            area_top, area_bottom = 160, H - 140
+            total_h = line_h * len(wrapped)
+            y = max(area_top, area_top + ((area_bottom - area_top) - total_h) // 2)
+            for line in wrapped:
+                draw.text((72, y), line, font=font, fill=(255, 255, 255))
+                y += line_h
+
+            medium = self._font("medium", 26)
+            draw.line([(72, H - 110), (W - 72, H - 110)], fill=(255, 255, 255, 80), width=2)
+            draw.text((72, H - 85), f"{source}  •  {date_str}", font=medium, fill=(235, 230, 255))
+
+            os.makedirs("/tmp/news_bot", exist_ok=True)
+            path = f"/tmp/news_bot/card_{int(time.time())}_{uuid.uuid4().hex[:8]}.png"
+            img.save(path)
+            if os.path.getsize(path) < 1000:
+                return None
+            logger.info("News card generated: %s (theme=%s)", path, kicker)
+            return path
+
+        except Exception as e:
+            logger.warning("News card generation failed (%s) -- falling back to AI photo providers.", e)
+            return None
+
+    def generate_ai_image(self, article):
+        """Primary path: a locally-rendered news card (generate_news_card) --
+        free, instant, unlimited, no risk of AI-photo artifacts. Only if that
+        somehow fails does this fall through to AI photo providers: Stability
+        AI (needs credits) -> Gemini Nano Banana (free, ~500/day) ->
+        Pollinations (fully free, no key). Returns None only if literally
+        everything fails, in which case the caller posts text-only."""
+        card_path = self.generate_news_card(article)
+        if card_path:
+            return card_path
+
+        title = article.get('title', '').strip() if isinstance(article, dict) else str(article)
         prompt = (
-            f"{topic}, ultra-realistic, professional photography, cinematic lighting, "
-            f"8k, high detail, Indian context, modern technology, vibrant colors"
+            f"{title}, ultra-realistic, professional photography, cinematic lighting, "
+            f"8k, high detail, Indian context, modern technology, vibrant colors, "
+            f"no text, no watermark, no logos, single clear subject, natural hands and faces"
         )
         return (
             self._stability_image(prompt)
@@ -718,7 +967,7 @@ class EnhancedNewsBot:
     # -------------------- content generation --------------------
     def _emoji_for(self, text):
         text_lower = text.lower()
-        matches = [emoji for keyword, emoji in self.topic_emojis.items() if keyword in text_lower]
+        matches = [emoji for keyword, emoji in self.topic_emojis.items() if _kw_match(text_lower, keyword)]
         if matches:
             return random.choice(list(dict.fromkeys(matches)))  # dedupe while preserving variety
         return random.choice(["🔥", "📰", "⚡"])  # vary the default too instead of always 🔥
@@ -731,11 +980,11 @@ class EnhancedNewsBot:
     def _pick_hashtags(self, title):
         title_lower = title.lower()
         tags = set(random.sample(self.hashtag_pool, k=random.randint(3, 5)))
-        if 'ai' in title_lower or 'artificial intelligence' in title_lower:
+        if _kw_match(title_lower, 'ai') or _kw_match(title_lower, 'artificial intelligence'):
             tags.update(["#ArtificialIntelligence", "#MachineLearning"])
         if 'startup' in title_lower:
             tags.add("#Entrepreneurship")
-        if 'mobile' in title_lower or 'app' in title_lower:
+        if 'mobile' in title_lower or _kw_match(title_lower, 'app'):
             tags.add("#MobileApp")
         tags = list(tags)
         random.shuffle(tags)  # sorted order is a dead giveaway of programmatic generation
@@ -870,18 +1119,27 @@ class EnhancedNewsBot:
             logger.info("No articles available this run.")
             return 0
 
+        candidates = [a for a in articles if not self._already_posted(a)]
+        if not candidates:
+            logger.info("No new articles to post -- everything fetched was already posted.")
+            return 0
+
+        # Post the most attention-grabbing unposted story, not just the newest one.
+        candidates.sort(key=self._engagement_score, reverse=True)
+        logger.info(
+            "Ranked %d candidate(s) by engagement score. Top pick (score=%d): %s",
+            len(candidates), self._engagement_score(candidates[0]), candidates[0].get('title', '')[:70],
+        )
+
         posted_count = 0
         consecutive_fb_failures = 0
         MAX_CONSECUTIVE_FAILURES = 2  # if FB rejects 2 in a row, it's the token/config, not the articles
 
-        for i, article in enumerate(articles, 1):
-            if self._already_posted(article):
-                continue
-
+        for i, article in enumerate(candidates, 1):
             title = article.get('title', '').strip()
-            logger.info("Processing (%d/%d): %s", i, len(articles), title[:70])
+            logger.info("Processing (%d/%d, score=%d): %s", i, len(candidates), self._engagement_score(article), title[:70])
 
-            image_path = self.generate_ai_image(title)
+            image_path = self.generate_ai_image(article)
             if not image_path:
                 logger.warning("Falling back to a text-only post for this article.")
 
@@ -969,10 +1227,15 @@ def main():
         if not articles:
             print("No articles fetched -- nothing to preview.")
             return
-        article = next((a for a in articles if not bot._already_posted(a)), articles[0])
-        print(f"[DRY RUN] Would post about: {article.get('title')}\n")
+        candidates = [a for a in articles if not bot._already_posted(a)] or articles
+        candidates.sort(key=bot._engagement_score, reverse=True)
+        article = candidates[0]
+        print(f"[DRY RUN] Would post about (engagement score={bot._engagement_score(article)}): {article.get('title')}\n")
         print(bot.create_engaging_post(article))
-        print("\n[DRY RUN] No image generated, no Facebook call made.")
+        card_path = bot.generate_news_card(article)
+        if card_path:
+            print(f"\n[DRY RUN] Preview card image saved locally at: {card_path}")
+        print("\n[DRY RUN] No Facebook call made.")
         return
 
     non_interactive = args.once or args.continuous or args.stats or not sys.stdin.isatty()
