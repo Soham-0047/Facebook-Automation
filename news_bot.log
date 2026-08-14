@@ -127,3 +127,191 @@
 2026-08-09 15:04:15,783 | INFO    | robots.txt disallows scraping https://spacedaily.com/t-chandrayaan3-75-million-moon-landing/ -- using description only.
 2026-08-09 15:04:16,352 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (182 chars, full_text=False).
 2026-08-09 15:04:20,907 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122162685932980670
+2026-08-10 04:10:43,850 | INFO    | Jittering start by 128s so this run isn't posting at a perfectly fixed second.
+2026-08-10 04:12:51,851 | INFO    | Run started at 2026-08-10 04:12:51
+2026-08-10 04:12:52,181 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-10 04:12:52,181 | INFO    | Processing (1/20): India's 2036 Olympic bid receives ECB support: Chief Executive Richard
+2026-08-10 04:12:54,555 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"740ccb600a61d56e98b4592194ccbcdb","name":"payment_required"} -- trying next image provider.
+2026-08-10 04:12:54,696 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 04:12:55,952 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786335175.png (85483 bytes)
+2026-08-10 04:12:56,091 | INFO    | robots.txt disallows scraping https://www.cricketnews.com/en/cricket/news/india-2036-olympic-bid-receives-ecb-support-2030-cwg-ahmedabad/e4b91e9b20bc8cf9a9a6c927 -- using description only.
+2026-08-10 04:12:56,680 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (253 chars).
+2026-08-10 04:12:59,915 | INFO    | Posted to Facebook successfully. Post ID: 122162745440980670
+2026-08-10 08:12:25,125 | INFO    | Jittering start by 36s so this run isn't posting at a perfectly fixed second.
+2026-08-10 08:13:01,126 | INFO    | Run started at 2026-08-10 08:13:01
+2026-08-10 08:13:01,325 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-10 08:13:01,325 | INFO    | Processing (1/20): Oil India chief Ranjit Rath among applicants for top job at ONGC
+2026-08-10 08:13:02,814 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"81275cb10a6c14527c6469e8c88eb1e3","name":"payment_required"} -- trying next image provider.
+2026-08-10 08:13:02,946 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 08:13:05,937 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786349585.png (49599 bytes)
+2026-08-10 08:13:07,332 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1054 chars).
+2026-08-10 08:13:11,357 | INFO    | Posted to Facebook successfully. Post ID: 122162762756980670
+2026-08-10 11:31:05,605 | INFO    | Jittering start by 15s so this run isn't posting at a perfectly fixed second.
+2026-08-10 11:31:20,606 | INFO    | Run started at 2026-08-10 11:31:20
+2026-08-10 11:31:20,731 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-10 11:31:20,731 | INFO    | Processing (1/19): India’s Unified Payments Interface is public infrastructure and not ju
+2026-08-10 11:31:23,024 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"288f640a9603e12f288d865e9147f8cb","name":"payment_required"} -- trying next image provider.
+2026-08-10 11:31:23,160 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 11:31:25,255 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786361485.png (50965 bytes)
+2026-08-10 11:31:26,814 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (927 chars).
+2026-08-10 11:31:31,053 | INFO    | Posted to Facebook successfully. Post ID: 122162780348980670
+2026-08-10 15:31:26,659 | INFO    | Jittering start by 550s so this run isn't posting at a perfectly fixed second.
+2026-08-10 15:40:36,659 | INFO    | Run started at 2026-08-10 15:40:36
+2026-08-10 15:40:36,887 | INFO    | Found 18 usable articles out of 20 returned.
+2026-08-10 15:40:36,887 | INFO    | Processing (1/18): ED director Rahul Navin gets 1-year extension
+2026-08-10 15:40:39,308 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"2aef14186748a6f77e9ef1bf59147e62","name":"payment_required"} -- trying next image provider.
+2026-08-10 15:40:39,461 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-10 15:40:40,699 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786376440.png (40529 bytes)
+2026-08-10 15:40:42,660 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1184 chars).
+2026-08-10 15:40:53,909 | INFO    | Posted to Facebook successfully. Post ID: 122162800184980670
+2026-08-11 03:57:58,653 | INFO    | Jittering start by 100s so this run isn't posting at a perfectly fixed second.
+2026-08-11 03:59:38,653 | INFO    | Run started at 2026-08-11 03:59:38
+2026-08-11 03:59:39,124 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 03:59:39,124 | INFO    | Processing (1/20): SBI shares rise nearly 2% after Q1 beat. Here's what Nomura, Morgan St
+2026-08-11 03:59:42,247 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"d4b1b024323de88e29deef0ca9fb2892","name":"payment_required"} -- trying next image provider.
+2026-08-11 03:59:42,407 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 03:59:43,806 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786420783.png (29807 bytes)
+2026-08-11 03:59:45,352 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (680 chars).
+2026-08-11 03:59:56,958 | INFO    | Posted to Facebook successfully. Post ID: 122162856440980670
+2026-08-11 07:44:26,246 | INFO    | Jittering start by 228s so this run isn't posting at a perfectly fixed second.
+2026-08-11 07:48:14,247 | INFO    | Run started at 2026-08-11 07:48:14
+2026-08-11 07:48:14,407 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 07:48:14,407 | INFO    | Processing (1/20): 4 bills introduced in LS amid Oppn uproar, both Houses adjourned till 
+2026-08-11 07:48:17,031 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"4897464b6d40026692e649cbc76a0cce","name":"payment_required"} -- trying next image provider.
+2026-08-11 07:48:17,229 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 07:48:18,854 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786434498.png (57002 bytes)
+2026-08-11 07:48:19,146 | INFO    | robots.txt disallows scraping https://www.business-standard.com/politics/4-bills-introduced-in-ls-amid-oppn-uproar-both-houses-adjourned-till-2-pm-126081000647_1.html -- using description only.
+2026-08-11 07:48:19,651 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (207 chars).
+2026-08-11 07:48:22,443 | INFO    | Posted to Facebook successfully. Post ID: 122162873234980670
+2026-08-11 11:21:27,732 | INFO    | Jittering start by 271s so this run isn't posting at a perfectly fixed second.
+2026-08-11 11:25:58,732 | INFO    | Run started at 2026-08-11 11:25:58
+2026-08-11 11:25:58,951 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 11:25:58,952 | INFO    | Processing (1/20): Govt mulls curbing use of cane for ethanol to tame record-high sugar m
+2026-08-11 11:26:00,850 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"70ec5c61d613e2b0b2f3dbaf8385fc79","name":"payment_required"} -- trying next image provider.
+2026-08-11 11:26:01,038 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 11:26:02,313 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786447562.png (49916 bytes)
+2026-08-11 11:26:02,416 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/economy/agri-business/govt-mulls-curbing-use-of-cane-for-ethanol-to-tame-record-high-sugar-market/article71328040.ece -- using description only.
+2026-08-11 11:26:03,171 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (285 chars).
+2026-08-11 11:26:09,811 | INFO    | Posted to Facebook successfully. Post ID: 122162891966980670
+2026-08-11 15:30:25,526 | INFO    | Jittering start by 207s so this run isn't posting at a perfectly fixed second.
+2026-08-11 15:33:52,526 | INFO    | Run started at 2026-08-11 15:33:52
+2026-08-11 15:33:54,734 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-11 15:33:54,735 | INFO    | Processing (1/20): Porter in no hurry to go public, says CEO Uttam Digga
+2026-08-11 15:33:57,519 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"abcc05312615995a27c05cc54df6dd43","name":"payment_required"} -- trying next image provider.
+2026-08-11 15:33:57,660 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-11 15:33:59,153 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786462439.png (39137 bytes)
+2026-08-11 15:34:00,637 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1051 chars).
+2026-08-11 15:34:04,454 | INFO    | Posted to Facebook successfully. Post ID: 122162911976980670
+2026-08-12 04:20:35,650 | INFO    | Jittering start by 39s so this run isn't posting at a perfectly fixed second.
+2026-08-12 04:21:14,650 | INFO    | Run started at 2026-08-12 04:21:14
+2026-08-12 04:21:14,778 | INFO    | Found 16 usable articles out of 20 returned.
+2026-08-12 04:21:14,778 | INFO    | Processing (1/16): Bank of Baroda Falls 2.1%
+2026-08-12 04:21:16,990 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"3ed483ec4719803e2ca058a9f4dcdc8e","name":"payment_required"} -- trying next image provider.
+2026-08-12 04:21:17,182 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 04:21:18,180 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786508478.png (47077 bytes)
+2026-08-12 04:21:18,357 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/bank-of-baroda-falls-2-1-126081100339_1.html -- using description only.
+2026-08-12 04:21:18,871 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (237 chars).
+2026-08-12 04:21:24,414 | INFO    | Posted to Facebook successfully. Post ID: 122162986364980670
+2026-08-12 07:58:14,898 | INFO    | Jittering start by 162s so this run isn't posting at a perfectly fixed second.
+2026-08-12 08:00:56,898 | INFO    | Run started at 2026-08-12 08:00:56
+2026-08-12 08:00:57,060 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-12 08:00:57,060 | INFO    | Processing (1/20): Piramal Realty Delivers The Royal Polo Pavilion, a 30,000 sq. ft. Polo
+2026-08-12 08:00:59,384 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"5a64228f54b07633d7c7ebdc05a2ba19","name":"payment_required"} -- trying next image provider.
+2026-08-12 08:00:59,534 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 08:01:00,756 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786521660.png (57576 bytes)
+2026-08-12 08:01:00,836 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/brandhub/pr-release/piramal-realty-delivers-the-royal-polo-pavilion-a-30-000-sq-ft-polo-inspired-clubhouse-at-piramal-mahalaxmi/article71331561.ece -- using description only.
+2026-08-12 08:01:01,380 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (218 chars).
+2026-08-12 08:01:05,738 | INFO    | Posted to Facebook successfully. Post ID: 122163002204980670
+2026-08-12 11:23:18,631 | INFO    | Jittering start by 412s so this run isn't posting at a perfectly fixed second.
+2026-08-12 11:30:10,631 | INFO    | Run started at 2026-08-12 11:30:10
+2026-08-12 11:30:10,846 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-12 11:30:10,846 | INFO    | Processing (1/19): Eltek Sets Earnings Release Date and Conference Call to Report Second 
+2026-08-12 11:30:12,538 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"05ce8b12a63596bd0f10b1415a0f4efd","name":"payment_required"} -- trying next image provider.
+2026-08-12 11:30:12,676 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 11:30:14,250 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786534214.png (38775 bytes)
+2026-08-12 11:30:14,385 | INFO    | robots.txt disallows scraping https://www.prnewswire.com/news-releases/eltek-sets-earnings-release-date-and-conference-call-to-report-second-quarter-2026-results-on-august-18-2026-302848243.html -- using description only.
+2026-08-12 11:30:15,114 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (253 chars).
+2026-08-12 11:30:20,100 | INFO    | Posted to Facebook successfully. Post ID: 122163018968980670
+2026-08-12 15:30:09,238 | INFO    | Jittering start by 234s so this run isn't posting at a perfectly fixed second.
+2026-08-12 15:34:03,238 | INFO    | Run started at 2026-08-12 15:34:03
+2026-08-12 15:34:03,448 | INFO    | Found 18 usable articles out of 20 returned.
+2026-08-12 15:34:03,449 | INFO    | Processing (1/18): I looked into buying a house in Singapore as an investment. Here’s why
+2026-08-12 15:34:07,985 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"6cbee4e90f4e806e2dba5d0bc5b48ad7","name":"payment_required"} -- trying next image provider.
+2026-08-12 15:34:08,155 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-12 15:34:09,499 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786548849.png (44257 bytes)
+2026-08-12 15:34:09,704 | INFO    | robots.txt disallows scraping https://www.marketwatch.com/story/i-looked-into-buying-a-house-in-singapore-as-an-investment-heres-why-i-didnt-despite-the-2-mortgage-rate-50c79bcf -- using description only.
+2026-08-12 15:34:10,334 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (305 chars).
+2026-08-12 15:34:15,832 | INFO    | Posted to Facebook successfully. Post ID: 122163037676980670
+2026-08-13 04:23:15,680 | INFO    | Jittering start by 429s so this run isn't posting at a perfectly fixed second.
+2026-08-13 04:30:24,680 | INFO    | Run started at 2026-08-13 04:30:24
+2026-08-13 04:30:24,982 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-13 04:30:24,982 | INFO    | Processing (1/20): Crunchyroll Acquires Global Rights (Excluding Asia) to Makoto Shinkai'
+2026-08-13 04:30:27,561 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"a017140b94855ba3d1c7a16f0e0bb9ee","name":"payment_required"} -- trying next image provider.
+2026-08-13 04:30:27,725 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 04:30:28,949 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786595428.png (48347 bytes)
+2026-08-13 04:30:30,440 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (859 chars).
+2026-08-13 04:30:36,185 | INFO    | Posted to Facebook successfully. Post ID: 122163120746980670
+2026-08-13 07:59:32,905 | INFO    | Jittering start by 334s so this run isn't posting at a perfectly fixed second.
+2026-08-13 08:05:06,905 | INFO    | Run started at 2026-08-13 08:05:06
+2026-08-13 08:05:07,115 | INFO    | Found 19 usable articles out of 20 returned.
+2026-08-13 08:05:07,116 | INFO    | Processing (1/19): N Chandrasekaran resigns as Tata Sons chairman: What triggered his exi
+2026-08-13 08:05:09,274 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"72fa970624c48f56305dd5ffe3b58ddf","name":"payment_required"} -- trying next image provider.
+2026-08-13 08:05:09,425 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 08:05:10,393 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786608310.png (38061 bytes)
+2026-08-13 08:05:12,107 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1239 chars).
+2026-08-13 08:05:19,093 | INFO    | Posted to Facebook successfully. Post ID: 122163144146980670
+2026-08-13 11:22:09,298 | INFO    | Jittering start by 96s so this run isn't posting at a perfectly fixed second.
+2026-08-13 11:23:45,299 | INFO    | Run started at 2026-08-13 11:23:45
+2026-08-13 11:23:45,765 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-13 11:23:45,765 | INFO    | Processing (1/19): Microsoft admits it “leverages” Windows to push Edge, Bing, Copilot; p
+2026-08-13 11:23:47,796 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"2209018f9c98d11789faaed3502c162f","name":"payment_required"} -- trying next image provider.
+2026-08-13 11:23:47,996 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 11:23:49,500 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786620229.png (32219 bytes)
+2026-08-13 11:23:51,536 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (144 chars).
+2026-08-13 11:23:58,520 | INFO    | Posted to Facebook successfully. Post ID: 122163163496980670
+2026-08-13 15:30:53,891 | INFO    | Jittering start by 178s so this run isn't posting at a perfectly fixed second.
+2026-08-13 15:33:51,891 | INFO    | Run started at 2026-08-13 15:33:51
+2026-08-13 15:33:52,244 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-13 15:33:52,244 | INFO    | Processing (1/20): Gulf oil spill fast becoming worst in years, agencies warn
+2026-08-13 15:33:55,576 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"9dc62b667f64ad4e37989f4f4853c522","name":"payment_required"} -- trying next image provider.
+2026-08-13 15:33:55,705 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-13 15:33:57,030 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786635237.png (70888 bytes)
+2026-08-13 15:33:58,938 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (968 chars).
+2026-08-13 15:34:02,363 | INFO    | Posted to Facebook successfully. Post ID: 122163191120980670
+2026-08-14 04:20:46,077 | INFO    | Jittering start by 20s so this run isn't posting at a perfectly fixed second.
+2026-08-14 04:21:06,077 | INFO    | Run started at 2026-08-14 04:21:06
+2026-08-14 04:21:06,398 | INFO    | Found 15 usable articles out of 19 returned.
+2026-08-14 04:21:06,398 | INFO    | Processing (1/15): Goodyear India slips after PAT falls nearly 54% YoY as rising input co
+2026-08-14 04:21:09,036 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"ad5724d042831ec45ecffd9aeb3b43cc","name":"payment_required"} -- trying next image provider.
+2026-08-14 04:21:09,205 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 04:21:10,263 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786681270.png (39293 bytes)
+2026-08-14 04:21:10,345 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/goodyear-india-slips-after-pat-falls-nearly-54-yoy-as-rising-input-costs-impact-margins-126081300501_1.html -- using description only.
+2026-08-14 04:21:10,834 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (226 chars).
+2026-08-14 04:21:15,008 | INFO    | Posted to Facebook successfully. Post ID: 122163254720980670
+2026-08-14 07:56:15,003 | INFO    | Jittering start by 291s so this run isn't posting at a perfectly fixed second.
+2026-08-14 08:01:06,003 | INFO    | Run started at 2026-08-14 08:01:06
+2026-08-14 08:01:06,238 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-14 08:01:06,238 | INFO    | Processing (1/20): ChatGPT Independence Day photo editing prompts 2026: Best AI prompts t
+2026-08-14 08:01:08,121 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"f0240aebd82352cfc484df3fb4bd4962","name":"payment_required"} -- trying next image provider.
+2026-08-14 08:01:08,282 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 08:01:11,077 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786694471.png (51169 bytes)
+2026-08-14 08:01:12,569 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (949 chars).
+2026-08-14 08:01:16,000 | INFO    | Posted to Facebook successfully. Post ID: 122163270704980670
+2026-08-14 11:20:15,807 | INFO    | Jittering start by 199s so this run isn't posting at a perfectly fixed second.
+2026-08-14 11:23:34,807 | INFO    | Run started at 2026-08-14 11:23:34
+2026-08-14 11:23:35,112 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-14 11:23:35,112 | INFO    | Processing (1/20): India in 'regular contact' with US on trade deal, says Commerce Secret
+2026-08-14 11:23:37,023 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"889e5126ba914c27f3a736f4b215515e","name":"payment_required"} -- trying next image provider.
+2026-08-14 11:23:37,237 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 11:23:39,110 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786706619.png (42394 bytes)
+2026-08-14 11:23:40,497 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (947 chars).
+2026-08-14 11:23:47,499 | INFO    | Posted to Facebook successfully. Post ID: 122163286100980670
+2026-08-14 15:22:42,815 | INFO    | Jittering start by 354s so this run isn't posting at a perfectly fixed second.
+2026-08-14 15:28:36,816 | INFO    | Run started at 2026-08-14 15:28:36
+2026-08-14 15:28:36,994 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-14 15:28:36,994 | INFO    | Processing (1/20): Nine Indian fishermen arrested by Sri Lankan Navy; TN CM urges Jaishan
+2026-08-14 15:28:39,022 | WARNING | Stability AI error 402: {"errors":["You lack sufficient credits to make this request.  Please purchase more credits at https://platform.stability.ai/account/credits and try again."],"id":"88b7a0e951e9448e975e2d441d1407cf","name":"payment_required"} -- trying next image provider.
+2026-08-14 15:28:39,173 | WARNING | Gemini image quota hit -- trying next image provider.
+2026-08-14 15:28:42,112 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786721322.png (43314 bytes)
+2026-08-14 15:28:45,339 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1323 chars).
+2026-08-14 15:28:49,788 | INFO    | Posted to Facebook successfully. Post ID: 122163306062980670
