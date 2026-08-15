@@ -324,3 +324,11 @@
 2026-08-14 18:27:26,313 | INFO    | robots.txt disallows scraping https://www.business-standard.com/finance/news/state-bank-of-india-raises-500-mn-through-bonds-from-overseas-investors-126081302060_1.html -- using description only.
 2026-08-14 18:27:27,058 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (245 chars).
 2026-08-14 18:27:30,817 | INFO    | Posted to Facebook successfully. Post ID: 122163320540980670
+2026-08-15 03:09:19,508 | INFO    | Jittering start by 78s so this run isn't posting at a perfectly fixed second.
+2026-08-15 03:10:37,508 | INFO    | Run started at 2026-08-15 03:10:37
+2026-08-15 03:10:37,751 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-15 03:10:37,756 | INFO    | Ranked 19 candidate(s) by engagement score. Top pick (score=4): Shiprocket IPO Day 3: GMP signals 38% listing premium, subscribed 3.16
+2026-08-15 03:10:37,756 | INFO    | Processing (1/19, score=4): Shiprocket IPO Day 3: GMP signals 38% listing premium, subscribed 3.16
+2026-08-15 03:10:37,992 | INFO    | News card generated: /tmp/news_bot/card_1786763437_e975cc71.png (theme=TECH NEWS)
+2026-08-15 03:10:39,851 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1037 chars).
+2026-08-15 03:10:45,808 | INFO    | Posted to Facebook successfully. Post ID: 122163361256980670
