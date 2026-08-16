@@ -373,3 +373,12 @@
 2026-08-16 07:12:49,726 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/markets/avtar-steel-files-ipo-papers-with-sebi-aims-to-raise-585-crore/article71348739.ece -- using description only.
 2026-08-16 07:12:50,157 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (219 chars).
 2026-08-16 07:12:54,590 | INFO    | Posted to Facebook successfully. Post ID: 122163495098980670
+2026-08-16 10:50:01,651 | INFO    | Jittering start by 552s so this run isn't posting at a perfectly fixed second.
+2026-08-16 10:59:13,652 | INFO    | Run started at 2026-08-16 10:59:13
+2026-08-16 10:59:14,003 | INFO    | Found 14 usable articles out of 20 returned.
+2026-08-16 10:59:14,007 | INFO    | Ranked 14 candidate(s) by engagement score. Top pick (score=3): India’s chemicals industry targets up to $81 billion in exports by 203
+2026-08-16 10:59:14,007 | INFO    | Processing (1/14, score=3): India’s chemicals industry targets up to $81 billion in exports by 203
+2026-08-16 10:59:14,451 | INFO    | News card generated: /tmp/news_bot/card_1786877954_a3bdd342.png (theme=TECH NEWS)
+2026-08-16 10:59:14,581 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/economy/indias-chemicals-industry-targets-up-to-81-billion-in-exports-by-2030-niti-aayog/article71349294.ece -- using description only.
+2026-08-16 10:59:15,271 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (211 chars).
+2026-08-16 10:59:21,667 | INFO    | Posted to Facebook successfully. Post ID: 122163515738980670
