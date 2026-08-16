@@ -382,3 +382,12 @@
 2026-08-16 10:59:14,581 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/economy/indias-chemicals-industry-targets-up-to-81-billion-in-exports-by-2030-niti-aayog/article71349294.ece -- using description only.
 2026-08-16 10:59:15,271 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (211 chars).
 2026-08-16 10:59:21,667 | INFO    | Posted to Facebook successfully. Post ID: 122163515738980670
+2026-08-16 14:50:31,241 | INFO    | Jittering start by 452s so this run isn't posting at a perfectly fixed second.
+2026-08-16 14:58:03,241 | INFO    | Run started at 2026-08-16 14:58:03
+2026-08-16 14:58:03,504 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-16 14:58:03,509 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): PhonePe widens lead as UPI transactions climb to 23.66 billion in July
+2026-08-16 14:58:03,509 | INFO    | Processing (1/20, score=3): PhonePe widens lead as UPI transactions climb to 23.66 billion in July
+2026-08-16 14:58:03,611 | INFO    | News card generated: /tmp/news_bot/card_1786892283_2f015295.png (theme=FINTECH)
+2026-08-16 14:58:03,730 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/money-and-banking/phonepe-widens-lead-as-upi-transactions-climb-to-2366-billion-in-july/article71350076.ece -- using description only.
+2026-08-16 14:58:04,020 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (162 chars).
+2026-08-16 14:58:09,085 | INFO    | Posted to Facebook successfully. Post ID: 122163536330980670
