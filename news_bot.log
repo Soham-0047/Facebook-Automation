@@ -399,3 +399,12 @@
 2026-08-17 03:31:21,192 | INFO    | News card generated: /tmp/news_bot/card_1786937481_f36be81a.png (theme=STARTUP & FUNDING)
 2026-08-17 03:31:23,043 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (926 chars).
 2026-08-17 03:31:26,933 | INFO    | Posted to Facebook successfully. Post ID: 122163594668980670
+2026-08-17 07:29:54,828 | INFO    | Jittering start by 406s so this run isn't posting at a perfectly fixed second.
+2026-08-17 07:36:40,829 | INFO    | Run started at 2026-08-17 07:36:40
+2026-08-17 07:36:40,929 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-17 07:36:40,934 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=2): NTA releases provisional answer keys for 84 subjects of UGC-NET 2026
+2026-08-17 07:36:40,935 | INFO    | Processing (1/20, score=2): NTA releases provisional answer keys for 84 subjects of UGC-NET 2026
+2026-08-17 07:36:41,092 | INFO    | News card generated: /tmp/news_bot/card_1786952201_cb5b3dd4.png (theme=TECH NEWS)
+2026-08-17 07:36:41,218 | INFO    | robots.txt disallows scraping https://www.business-standard.com/india-news/nta-releases-provisional-answer-keys-for-84-subjects-of-ugc-net-2026-126081600202_1.html -- using description only.
+2026-08-17 07:36:41,652 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (121 chars).
+2026-08-17 07:36:46,304 | INFO    | Posted to Facebook successfully. Post ID: 122163627098980670
