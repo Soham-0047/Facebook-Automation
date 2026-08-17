@@ -430,3 +430,26 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-17 11:07:15,724 | WARNING | All Gemini fallback models failed.
 2026-08-17 11:07:21,782 | INFO    | Posted to Facebook successfully. Post ID: 122163645716980670
+2026-08-17 14:55:13,616 | INFO    | Jittering start by 410s so this run isn't posting at a perfectly fixed second.
+2026-08-17 15:02:03,616 | INFO    | Run started at 2026-08-17 15:02:03
+2026-08-17 15:02:03,817 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-17 15:02:03,822 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=5): IIM Bangalore incubator tops $7 billion in startup value as it turns t
+2026-08-17 15:02:03,822 | INFO    | Processing (1/20, score=5): IIM Bangalore incubator tops $7 billion in startup value as it turns t
+2026-08-17 15:02:36,579 | INFO    | Could not fetch bold font (429 Client Error: Too Many Requests for url: https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf) -- will use a system font instead.
+2026-08-17 15:02:58,643 | INFO    | News card generated: /tmp/news_bot/card_1786978978_787c031c.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-17 15:02:58,776 | INFO    | robots.txt disallows scraping https://www.business-standard.com/companies/start-ups/iim-bangalore-incubator-tops-7-billion-in-startup-value-as-it-turns-to-ai-126081600587_1.html -- using description only.
+2026-08-17 15:02:59,172 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-17 15:02:59,618 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-17 15:02:59,686 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-17 15:02:59,751 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-17 15:02:59,752 | WARNING | All Groq fallback models failed.
+2026-08-17 15:02:59,877 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-17 15:02:59,984 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-17 15:02:59,984 | WARNING | All Gemini fallback models failed.
+2026-08-17 15:03:06,305 | INFO    | Posted to Facebook successfully. Post ID: 122163666626980670
