@@ -408,3 +408,25 @@
 2026-08-17 07:36:41,218 | INFO    | robots.txt disallows scraping https://www.business-standard.com/india-news/nta-releases-provisional-answer-keys-for-84-subjects-of-ugc-net-2026-126081600202_1.html -- using description only.
 2026-08-17 07:36:41,652 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (121 chars).
 2026-08-17 07:36:46,304 | INFO    | Posted to Facebook successfully. Post ID: 122163627098980670
+2026-08-17 10:58:21,103 | INFO    | Jittering start by 533s so this run isn't posting at a perfectly fixed second.
+2026-08-17 11:07:14,104 | INFO    | Run started at 2026-08-17 11:07:14
+2026-08-17 11:07:14,389 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-17 11:07:14,393 | INFO    | Ranked 19 candidate(s) by engagement score. Top pick (score=2): Links 8/16/2026
+2026-08-17 11:07:14,394 | INFO    | Processing (1/19, score=2): Links 8/16/2026
+2026-08-17 11:07:14,637 | INFO    | News card generated: /tmp/news_bot/card_1786964834_853f0754.png (theme=TECH NEWS)
+2026-08-17 11:07:14,718 | INFO    | robots.txt disallows scraping https://www.nakedcapitalism.com/2026/08/links-8-16-2026.html -- using description only.
+2026-08-17 11:07:14,833 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-17 11:07:15,375 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-17 11:07:15,415 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-17 11:07:15,490 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-17 11:07:15,491 | WARNING | All Groq fallback models failed.
+2026-08-17 11:07:15,605 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-17 11:07:15,724 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-17 11:07:15,724 | WARNING | All Gemini fallback models failed.
+2026-08-17 11:07:21,782 | INFO    | Posted to Facebook successfully. Post ID: 122163645716980670
