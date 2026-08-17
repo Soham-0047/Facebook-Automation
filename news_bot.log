@@ -391,3 +391,11 @@
 2026-08-16 14:58:03,730 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/money-and-banking/phonepe-widens-lead-as-upi-transactions-climb-to-2366-billion-in-july/article71350076.ece -- using description only.
 2026-08-16 14:58:04,020 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (162 chars).
 2026-08-16 14:58:09,085 | INFO    | Posted to Facebook successfully. Post ID: 122163536330980670
+2026-08-17 03:24:57,835 | INFO    | Jittering start by 383s so this run isn't posting at a perfectly fixed second.
+2026-08-17 03:31:20,836 | INFO    | Run started at 2026-08-17 03:31:20
+2026-08-17 03:31:20,994 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-17 03:31:20,999 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Is Netanyahu headed for setback in Israel election? No Trump endorseme
+2026-08-17 03:31:20,999 | INFO    | Processing (1/20, score=3): Is Netanyahu headed for setback in Israel election? No Trump endorseme
+2026-08-17 03:31:21,192 | INFO    | News card generated: /tmp/news_bot/card_1786937481_f36be81a.png (theme=STARTUP & FUNDING)
+2026-08-17 03:31:23,043 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (926 chars).
+2026-08-17 03:31:26,933 | INFO    | Posted to Facebook successfully. Post ID: 122163594668980670
