@@ -474,3 +474,25 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-18 03:14:48,456 | WARNING | All Gemini fallback models failed.
 2026-08-18 03:14:53,928 | INFO    | Posted to Facebook successfully. Post ID: 122163723116980670
+2026-08-18 07:12:40,710 | INFO    | Jittering start by 534s so this run isn't posting at a perfectly fixed second.
+2026-08-18 07:21:34,711 | INFO    | Run started at 2026-08-18 07:21:34
+2026-08-18 07:21:34,896 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-18 07:21:34,900 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Ola Electric unveils full-stack energy storage portfolio from home to 
+2026-08-18 07:21:34,900 | INFO    | Processing (1/20, score=3): Ola Electric unveils full-stack energy storage portfolio from home to 
+2026-08-18 07:21:35,266 | INFO    | News card generated: /tmp/news_bot/card_1787037695_a48d1535.png (theme=ELECTRIC & AUTO)
+2026-08-18 07:21:35,457 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/companies/ola-electric-unveils-full-stack-energy-storage-portfolio-from-home-to-grid/article71355078.ece -- using description only.
+2026-08-18 07:21:35,657 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-18 07:21:36,154 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-18 07:21:36,193 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-18 07:21:36,233 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-18 07:21:36,233 | WARNING | All Groq fallback models failed.
+2026-08-18 07:21:36,378 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-18 07:21:36,448 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-18 07:21:36,448 | WARNING | All Gemini fallback models failed.
+2026-08-18 07:21:40,746 | INFO    | Posted to Facebook successfully. Post ID: 122163738776980670
