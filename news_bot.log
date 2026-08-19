@@ -538,3 +538,24 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-18 15:08:54,962 | WARNING | All Gemini fallback models failed.
 2026-08-18 15:09:04,030 | INFO    | Posted to Facebook successfully. Post ID: 122163776444980670
+2026-08-19 03:15:45,947 | INFO    | Jittering start by 477s so this run isn't posting at a perfectly fixed second.
+2026-08-19 03:23:42,948 | INFO    | Run started at 2026-08-19 03:23:42
+2026-08-19 03:23:43,215 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-19 03:23:43,220 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=4): Lalithaa Jewellery Mart IPO Day 2: Issue subscribed 69% so far; GMP si
+2026-08-19 03:23:43,220 | INFO    | Processing (1/20, score=4): Lalithaa Jewellery Mart IPO Day 2: Issue subscribed 69% so far; GMP si
+2026-08-19 03:23:43,866 | INFO    | News card generated: /tmp/news_bot/card_1787109823_33091950.png (theme=TECH NEWS)
+2026-08-19 03:23:44,370 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 03:23:45,253 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-19 03:23:45,296 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-19 03:23:45,341 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-19 03:23:45,341 | WARNING | All Groq fallback models failed.
+2026-08-19 03:23:45,518 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-19 03:23:45,624 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-19 03:23:45,624 | WARNING | All Gemini fallback models failed.
+2026-08-19 03:23:52,453 | INFO    | Posted to Facebook successfully. Post ID: 122163832700980670
