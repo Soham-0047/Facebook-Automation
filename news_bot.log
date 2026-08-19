@@ -315,3 +315,286 @@
 2026-08-14 15:28:42,112 | INFO    | Pollinations image saved: /tmp/news_bot/img_1786721322.png (43314 bytes)
 2026-08-14 15:28:45,339 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1323 chars).
 2026-08-14 15:28:49,788 | INFO    | Posted to Facebook successfully. Post ID: 122163306062980670
+2026-08-14 18:21:22,777 | INFO    | Jittering start by 363s so this run isn't posting at a perfectly fixed second.
+2026-08-14 18:27:25,778 | INFO    | Run started at 2026-08-14 18:27:25
+2026-08-14 18:27:26,064 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-14 18:27:26,068 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=4): State Bank of India raises ₹500 mn through bonds from overseas investo
+2026-08-14 18:27:26,068 | INFO    | Processing (1/20, score=4): State Bank of India raises ₹500 mn through bonds from overseas investo
+2026-08-14 18:27:26,219 | INFO    | News card generated: /tmp/news_bot/card_1786732046_08a43323.png (theme=STARTUP & FUNDING)
+2026-08-14 18:27:26,313 | INFO    | robots.txt disallows scraping https://www.business-standard.com/finance/news/state-bank-of-india-raises-500-mn-through-bonds-from-overseas-investors-126081302060_1.html -- using description only.
+2026-08-14 18:27:27,058 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (245 chars).
+2026-08-14 18:27:30,817 | INFO    | Posted to Facebook successfully. Post ID: 122163320540980670
+2026-08-15 03:09:19,508 | INFO    | Jittering start by 78s so this run isn't posting at a perfectly fixed second.
+2026-08-15 03:10:37,508 | INFO    | Run started at 2026-08-15 03:10:37
+2026-08-15 03:10:37,751 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-15 03:10:37,756 | INFO    | Ranked 19 candidate(s) by engagement score. Top pick (score=4): Shiprocket IPO Day 3: GMP signals 38% listing premium, subscribed 3.16
+2026-08-15 03:10:37,756 | INFO    | Processing (1/19, score=4): Shiprocket IPO Day 3: GMP signals 38% listing premium, subscribed 3.16
+2026-08-15 03:10:37,992 | INFO    | News card generated: /tmp/news_bot/card_1786763437_e975cc71.png (theme=TECH NEWS)
+2026-08-15 03:10:39,851 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (1037 chars).
+2026-08-15 03:10:45,808 | INFO    | Posted to Facebook successfully. Post ID: 122163361256980670
+2026-08-15 07:05:24,939 | INFO    | Jittering start by 453s so this run isn't posting at a perfectly fixed second.
+2026-08-15 07:12:57,939 | INFO    | Run started at 2026-08-15 07:12:57
+2026-08-15 07:12:58,108 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-15 07:12:58,113 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Ex-judge loses Rs 2.5 crore in ‘digital arrest’ cyber scam in Jaipur
+2026-08-15 07:12:58,113 | INFO    | Processing (1/20, score=3): Ex-judge loses Rs 2.5 crore in ‘digital arrest’ cyber scam in Jaipur
+2026-08-15 07:12:58,371 | INFO    | News card generated: /tmp/news_bot/card_1786777978_1360116f.png (theme=TECH NEWS)
+2026-08-15 07:13:00,673 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (938 chars).
+2026-08-15 07:13:05,340 | INFO    | Posted to Facebook successfully. Post ID: 122163379064980670
+2026-08-15 10:49:05,660 | INFO    | Jittering start by 151s so this run isn't posting at a perfectly fixed second.
+2026-08-15 10:51:36,660 | INFO    | Run started at 2026-08-15 10:51:36
+2026-08-15 10:51:36,990 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-15 10:51:36,994 | INFO    | Ranked 19 candidate(s) by engagement score. Top pick (score=3): Adani Energy Solution shares end 2% higher after acquiring Vizag Power
+2026-08-15 10:51:36,995 | INFO    | Processing (1/19, score=3): Adani Energy Solution shares end 2% higher after acquiring Vizag Power
+2026-08-15 10:51:37,681 | INFO    | News card generated: /tmp/news_bot/card_1786791097_b3a9e2e9.png (theme=TECH NEWS)
+2026-08-15 10:51:39,194 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (920 chars).
+2026-08-15 10:51:44,514 | INFO    | Posted to Facebook successfully. Post ID: 122163399152980670
+2026-08-15 14:50:33,609 | INFO    | Jittering start by 46s so this run isn't posting at a perfectly fixed second.
+2026-08-15 14:51:19,610 | INFO    | Run started at 2026-08-15 14:51:19
+2026-08-15 14:51:19,792 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-15 14:51:19,797 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=4): Over 500 homes flooded in JSR as rivers breach danger marks
+2026-08-15 14:51:19,797 | INFO    | Processing (1/20, score=4): Over 500 homes flooded in JSR as rivers breach danger marks
+2026-08-15 14:51:20,163 | INFO    | News card generated: /tmp/news_bot/card_1786805480_b30dfa05.png (theme=TECH NEWS)
+2026-08-15 14:51:22,455 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (899 chars).
+2026-08-15 14:51:28,703 | INFO    | Posted to Facebook successfully. Post ID: 122163426836980670
+2026-08-16 03:24:14,505 | INFO    | Jittering start by 374s so this run isn't posting at a perfectly fixed second.
+2026-08-16 03:30:28,505 | INFO    | Run started at 2026-08-16 03:30:28
+2026-08-16 03:30:28,804 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-16 03:30:28,809 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): India vs Sri Lanka Test Series 2026: Galle 1st test live streaming, sq
+2026-08-16 03:30:28,810 | INFO    | Processing (1/20, score=3): India vs Sri Lanka Test Series 2026: Galle 1st test live streaming, sq
+2026-08-16 03:30:28,974 | INFO    | News card generated: /tmp/news_bot/card_1786851028_771f4171.png (theme=TECH NEWS)
+2026-08-16 03:30:30,672 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (878 chars).
+2026-08-16 03:30:34,424 | INFO    | Posted to Facebook successfully. Post ID: 122163480272980670
+2026-08-16 07:07:50,959 | INFO    | Jittering start by 298s so this run isn't posting at a perfectly fixed second.
+2026-08-16 07:12:48,960 | INFO    | Run started at 2026-08-16 07:12:48
+2026-08-16 07:12:49,270 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-16 07:12:49,275 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=6): Avtar Steel files IPO papers with SEBI; aims to raise ₹585 crore
+2026-08-16 07:12:49,276 | INFO    | Processing (1/20, score=6): Avtar Steel files IPO papers with SEBI; aims to raise ₹585 crore
+2026-08-16 07:12:49,661 | INFO    | News card generated: /tmp/news_bot/card_1786864369_85bccf78.png (theme=TECH NEWS)
+2026-08-16 07:12:49,726 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/markets/avtar-steel-files-ipo-papers-with-sebi-aims-to-raise-585-crore/article71348739.ece -- using description only.
+2026-08-16 07:12:50,157 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (219 chars).
+2026-08-16 07:12:54,590 | INFO    | Posted to Facebook successfully. Post ID: 122163495098980670
+2026-08-16 10:50:01,651 | INFO    | Jittering start by 552s so this run isn't posting at a perfectly fixed second.
+2026-08-16 10:59:13,652 | INFO    | Run started at 2026-08-16 10:59:13
+2026-08-16 10:59:14,003 | INFO    | Found 14 usable articles out of 20 returned.
+2026-08-16 10:59:14,007 | INFO    | Ranked 14 candidate(s) by engagement score. Top pick (score=3): India’s chemicals industry targets up to $81 billion in exports by 203
+2026-08-16 10:59:14,007 | INFO    | Processing (1/14, score=3): India’s chemicals industry targets up to $81 billion in exports by 203
+2026-08-16 10:59:14,451 | INFO    | News card generated: /tmp/news_bot/card_1786877954_a3bdd342.png (theme=TECH NEWS)
+2026-08-16 10:59:14,581 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/economy/indias-chemicals-industry-targets-up-to-81-billion-in-exports-by-2030-niti-aayog/article71349294.ece -- using description only.
+2026-08-16 10:59:15,271 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (211 chars).
+2026-08-16 10:59:21,667 | INFO    | Posted to Facebook successfully. Post ID: 122163515738980670
+2026-08-16 14:50:31,241 | INFO    | Jittering start by 452s so this run isn't posting at a perfectly fixed second.
+2026-08-16 14:58:03,241 | INFO    | Run started at 2026-08-16 14:58:03
+2026-08-16 14:58:03,504 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-16 14:58:03,509 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): PhonePe widens lead as UPI transactions climb to 23.66 billion in July
+2026-08-16 14:58:03,509 | INFO    | Processing (1/20, score=3): PhonePe widens lead as UPI transactions climb to 23.66 billion in July
+2026-08-16 14:58:03,611 | INFO    | News card generated: /tmp/news_bot/card_1786892283_2f015295.png (theme=FINTECH)
+2026-08-16 14:58:03,730 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/money-and-banking/phonepe-widens-lead-as-upi-transactions-climb-to-2366-billion-in-july/article71350076.ece -- using description only.
+2026-08-16 14:58:04,020 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (162 chars).
+2026-08-16 14:58:09,085 | INFO    | Posted to Facebook successfully. Post ID: 122163536330980670
+2026-08-17 03:24:57,835 | INFO    | Jittering start by 383s so this run isn't posting at a perfectly fixed second.
+2026-08-17 03:31:20,836 | INFO    | Run started at 2026-08-17 03:31:20
+2026-08-17 03:31:20,994 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-17 03:31:20,999 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Is Netanyahu headed for setback in Israel election? No Trump endorseme
+2026-08-17 03:31:20,999 | INFO    | Processing (1/20, score=3): Is Netanyahu headed for setback in Israel election? No Trump endorseme
+2026-08-17 03:31:21,192 | INFO    | News card generated: /tmp/news_bot/card_1786937481_f36be81a.png (theme=STARTUP & FUNDING)
+2026-08-17 03:31:23,043 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (926 chars).
+2026-08-17 03:31:26,933 | INFO    | Posted to Facebook successfully. Post ID: 122163594668980670
+2026-08-17 07:29:54,828 | INFO    | Jittering start by 406s so this run isn't posting at a perfectly fixed second.
+2026-08-17 07:36:40,829 | INFO    | Run started at 2026-08-17 07:36:40
+2026-08-17 07:36:40,929 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-17 07:36:40,934 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=2): NTA releases provisional answer keys for 84 subjects of UGC-NET 2026
+2026-08-17 07:36:40,935 | INFO    | Processing (1/20, score=2): NTA releases provisional answer keys for 84 subjects of UGC-NET 2026
+2026-08-17 07:36:41,092 | INFO    | News card generated: /tmp/news_bot/card_1786952201_cb5b3dd4.png (theme=TECH NEWS)
+2026-08-17 07:36:41,218 | INFO    | robots.txt disallows scraping https://www.business-standard.com/india-news/nta-releases-provisional-answer-keys-for-84-subjects-of-ugc-net-2026-126081600202_1.html -- using description only.
+2026-08-17 07:36:41,652 | INFO    | Groq narrative generated using llama-3.3-70b-versatile (121 chars).
+2026-08-17 07:36:46,304 | INFO    | Posted to Facebook successfully. Post ID: 122163627098980670
+2026-08-17 10:58:21,103 | INFO    | Jittering start by 533s so this run isn't posting at a perfectly fixed second.
+2026-08-17 11:07:14,104 | INFO    | Run started at 2026-08-17 11:07:14
+2026-08-17 11:07:14,389 | INFO    | Found 19 usable articles out of 19 returned.
+2026-08-17 11:07:14,393 | INFO    | Ranked 19 candidate(s) by engagement score. Top pick (score=2): Links 8/16/2026
+2026-08-17 11:07:14,394 | INFO    | Processing (1/19, score=2): Links 8/16/2026
+2026-08-17 11:07:14,637 | INFO    | News card generated: /tmp/news_bot/card_1786964834_853f0754.png (theme=TECH NEWS)
+2026-08-17 11:07:14,718 | INFO    | robots.txt disallows scraping https://www.nakedcapitalism.com/2026/08/links-8-16-2026.html -- using description only.
+2026-08-17 11:07:14,833 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-17 11:07:15,375 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-17 11:07:15,415 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-17 11:07:15,490 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-17 11:07:15,491 | WARNING | All Groq fallback models failed.
+2026-08-17 11:07:15,605 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-17 11:07:15,724 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-17 11:07:15,724 | WARNING | All Gemini fallback models failed.
+2026-08-17 11:07:21,782 | INFO    | Posted to Facebook successfully. Post ID: 122163645716980670
+2026-08-17 14:55:13,616 | INFO    | Jittering start by 410s so this run isn't posting at a perfectly fixed second.
+2026-08-17 15:02:03,616 | INFO    | Run started at 2026-08-17 15:02:03
+2026-08-17 15:02:03,817 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-17 15:02:03,822 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=5): IIM Bangalore incubator tops $7 billion in startup value as it turns t
+2026-08-17 15:02:03,822 | INFO    | Processing (1/20, score=5): IIM Bangalore incubator tops $7 billion in startup value as it turns t
+2026-08-17 15:02:36,579 | INFO    | Could not fetch bold font (429 Client Error: Too Many Requests for url: https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf) -- will use a system font instead.
+2026-08-17 15:02:58,643 | INFO    | News card generated: /tmp/news_bot/card_1786978978_787c031c.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-17 15:02:58,776 | INFO    | robots.txt disallows scraping https://www.business-standard.com/companies/start-ups/iim-bangalore-incubator-tops-7-billion-in-startup-value-as-it-turns-to-ai-126081600587_1.html -- using description only.
+2026-08-17 15:02:59,172 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-17 15:02:59,618 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-17 15:02:59,686 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-17 15:02:59,751 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-17 15:02:59,752 | WARNING | All Groq fallback models failed.
+2026-08-17 15:02:59,877 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-17 15:02:59,984 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-17 15:02:59,984 | WARNING | All Gemini fallback models failed.
+2026-08-17 15:03:06,305 | INFO    | Posted to Facebook successfully. Post ID: 122163666626980670
+2026-08-18 03:13:14,860 | INFO    | Jittering start by 90s so this run isn't posting at a perfectly fixed second.
+2026-08-18 03:14:44,861 | INFO    | Run started at 2026-08-18 03:14:44
+2026-08-18 03:14:45,142 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-18 03:14:45,146 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=4): Now, Ola Electric unveils energy storage products
+2026-08-18 03:14:45,147 | INFO    | Processing (1/20, score=4): Now, Ola Electric unveils energy storage products
+2026-08-18 03:14:45,528 | INFO    | News card generated: /tmp/news_bot/card_1787022885_1c10938e.png (theme=ELECTRIC & AUTO)
+2026-08-18 03:14:46,959 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-18 03:14:48,092 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-18 03:14:48,131 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-18 03:14:48,170 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-18 03:14:48,170 | WARNING | All Groq fallback models failed.
+2026-08-18 03:14:48,379 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-18 03:14:48,456 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-18 03:14:48,456 | WARNING | All Gemini fallback models failed.
+2026-08-18 03:14:53,928 | INFO    | Posted to Facebook successfully. Post ID: 122163723116980670
+2026-08-18 07:12:40,710 | INFO    | Jittering start by 534s so this run isn't posting at a perfectly fixed second.
+2026-08-18 07:21:34,711 | INFO    | Run started at 2026-08-18 07:21:34
+2026-08-18 07:21:34,896 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-18 07:21:34,900 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Ola Electric unveils full-stack energy storage portfolio from home to 
+2026-08-18 07:21:34,900 | INFO    | Processing (1/20, score=3): Ola Electric unveils full-stack energy storage portfolio from home to 
+2026-08-18 07:21:35,266 | INFO    | News card generated: /tmp/news_bot/card_1787037695_a48d1535.png (theme=ELECTRIC & AUTO)
+2026-08-18 07:21:35,457 | INFO    | robots.txt disallows scraping https://www.thehindubusinessline.com/companies/ola-electric-unveils-full-stack-energy-storage-portfolio-from-home-to-grid/article71355078.ece -- using description only.
+2026-08-18 07:21:35,657 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-18 07:21:36,154 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-18 07:21:36,193 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-18 07:21:36,233 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-18 07:21:36,233 | WARNING | All Groq fallback models failed.
+2026-08-18 07:21:36,378 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-18 07:21:36,448 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-18 07:21:36,448 | WARNING | All Gemini fallback models failed.
+2026-08-18 07:21:40,746 | INFO    | Posted to Facebook successfully. Post ID: 122163738776980670
+2026-08-18 10:57:01,923 | INFO    | Jittering start by 324s so this run isn't posting at a perfectly fixed second.
+2026-08-18 11:02:25,924 | INFO    | Run started at 2026-08-18 11:02:25
+2026-08-18 11:02:26,153 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-18 11:02:26,158 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=5): Tempsens Instruments' Rs 650 crore IPO opens on August 20, price band 
+2026-08-18 11:02:26,158 | INFO    | Processing (1/20, score=5): Tempsens Instruments' Rs 650 crore IPO opens on August 20, price band 
+2026-08-18 11:02:26,622 | INFO    | News card generated: /tmp/news_bot/card_1787050946_eba345ad.png (theme=TECH NEWS)
+2026-08-18 11:02:27,558 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-18 11:02:28,529 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-18 11:02:28,620 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-18 11:02:28,725 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-18 11:02:28,725 | WARNING | All Groq fallback models failed.
+2026-08-18 11:02:28,910 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-18 11:02:29,007 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-18 11:02:29,007 | WARNING | All Gemini fallback models failed.
+2026-08-18 11:02:34,713 | INFO    | Posted to Facebook successfully. Post ID: 122163756422980670
+2026-08-18 15:02:53,266 | INFO    | Jittering start by 359s so this run isn't posting at a perfectly fixed second.
+2026-08-18 15:08:52,266 | INFO    | Run started at 2026-08-18 15:08:52
+2026-08-18 15:08:52,578 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-18 15:08:52,582 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=6): DeHaat carves out Honest Farms, raises Rs 35 crore
+2026-08-18 15:08:52,583 | INFO    | Processing (1/20, score=6): DeHaat carves out Honest Farms, raises Rs 35 crore
+2026-08-18 15:08:52,973 | INFO    | News card generated: /tmp/news_bot/card_1787065732_ac442d87.png (theme=STARTUP & FUNDING)
+2026-08-18 15:08:53,728 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-18 15:08:54,596 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-18 15:08:54,621 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-18 15:08:54,643 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-18 15:08:54,643 | WARNING | All Groq fallback models failed.
+2026-08-18 15:08:54,823 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-18 15:08:54,962 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-18 15:08:54,962 | WARNING | All Gemini fallback models failed.
+2026-08-18 15:09:04,030 | INFO    | Posted to Facebook successfully. Post ID: 122163776444980670
+2026-08-19 03:15:45,947 | INFO    | Jittering start by 477s so this run isn't posting at a perfectly fixed second.
+2026-08-19 03:23:42,948 | INFO    | Run started at 2026-08-19 03:23:42
+2026-08-19 03:23:43,215 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-19 03:23:43,220 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=4): Lalithaa Jewellery Mart IPO Day 2: Issue subscribed 69% so far; GMP si
+2026-08-19 03:23:43,220 | INFO    | Processing (1/20, score=4): Lalithaa Jewellery Mart IPO Day 2: Issue subscribed 69% so far; GMP si
+2026-08-19 03:23:43,866 | INFO    | News card generated: /tmp/news_bot/card_1787109823_33091950.png (theme=TECH NEWS)
+2026-08-19 03:23:44,370 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 03:23:45,253 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-19 03:23:45,296 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-19 03:23:45,341 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-19 03:23:45,341 | WARNING | All Groq fallback models failed.
+2026-08-19 03:23:45,518 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-19 03:23:45,624 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-19 03:23:45,624 | WARNING | All Gemini fallback models failed.
+2026-08-19 03:23:52,453 | INFO    | Posted to Facebook successfully. Post ID: 122163832700980670
+2026-08-19 07:13:29,132 | INFO    | Jittering start by 209s so this run isn't posting at a perfectly fixed second.
+2026-08-19 07:16:58,132 | INFO    | Run started at 2026-08-19 07:16:58
+2026-08-19 07:16:58,487 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-19 07:16:58,491 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=5): Geospatial Intelligence startup NeoGeo raises $20 million in Series A
+2026-08-19 07:16:58,491 | INFO    | Processing (1/20, score=5): Geospatial Intelligence startup NeoGeo raises $20 million in Series A
+2026-08-19 07:16:59,155 | INFO    | News card generated: /tmp/news_bot/card_1787123819_d90d8161.png (theme=STARTUP & FUNDING)
+2026-08-19 07:16:59,706 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 07:17:00,654 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-19 07:17:00,720 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-19 07:17:00,780 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-19 07:17:00,780 | WARNING | All Groq fallback models failed.
+2026-08-19 07:17:00,908 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-19 07:17:00,982 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-19 07:17:00,982 | WARNING | All Gemini fallback models failed.
+2026-08-19 07:17:04,366 | INFO    | Posted to Facebook successfully. Post ID: 122163851096980670
+2026-08-19 10:56:02,195 | INFO    | Jittering start by 129s so this run isn't posting at a perfectly fixed second.
+2026-08-19 10:58:11,195 | INFO    | Run started at 2026-08-19 10:58:11
+2026-08-19 10:58:11,566 | INFO    | Found 18 usable articles out of 18 returned.
+2026-08-19 10:58:11,570 | INFO    | Ranked 18 candidate(s) by engagement score. Top pick (score=4): Jefferies raises Belrise Industries target price, sees 18% upside on s
+2026-08-19 10:58:11,570 | INFO    | Processing (1/18, score=4): Jefferies raises Belrise Industries target price, sees 18% upside on s
+2026-08-19 10:58:12,241 | INFO    | News card generated: /tmp/news_bot/card_1787137092_56e23dc8.png (theme=STARTUP & FUNDING)
+2026-08-19 10:58:13,630 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 10:58:14,563 | INFO    | Groq narrative generated using openai/gpt-oss-120b (21 chars).
+2026-08-19 10:58:21,028 | INFO    | Posted to Facebook successfully. Post ID: 122163870512980670
+2026-08-19 15:03:16,872 | INFO    | Jittering start by 452s so this run isn't posting at a perfectly fixed second.
+2026-08-19 15:10:48,872 | INFO    | Run started at 2026-08-19 15:10:48
+2026-08-19 15:10:49,036 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-19 15:10:49,041 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Swiggy investors approve foreign ownership cap
+2026-08-19 15:10:49,041 | INFO    | Processing (1/20, score=3): Swiggy investors approve foreign ownership cap
+2026-08-19 15:10:49,473 | INFO    | News card generated: /tmp/news_bot/card_1787152249_ca0d660e.png (theme=TECH NEWS)
+2026-08-19 15:10:50,131 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 15:10:55,099 | INFO    | Groq narrative generated using openai/gpt-oss-120b (2 chars).
+2026-08-19 15:11:01,993 | INFO    | Posted to Facebook successfully. Post ID: 122163897062980670
