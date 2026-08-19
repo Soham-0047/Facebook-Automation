@@ -598,3 +598,27 @@
 2026-08-19 15:10:50,131 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
 2026-08-19 15:10:55,099 | INFO    | Groq narrative generated using openai/gpt-oss-120b (2 chars).
 2026-08-19 15:11:01,993 | INFO    | Posted to Facebook successfully. Post ID: 122163897062980670
+2026-08-19 18:31:16,820 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-19 18:31:16,821 | INFO    | Jittering start by 20s so this run isn't posting at a perfectly fixed second.
+2026-08-19 18:31:36,821 | INFO    | Run started at 2026-08-19 18:31:36
+2026-08-19 18:31:37,911 | INFO    | Found 47 usable article(s) after merging 7 bucket queries and filtering (raw merged=55).
+2026-08-19 18:31:37,928 | INFO    | Weighted pick from top 3 candidate(s) (scores=[9, 5, 5]): OpenAI launches ChatGPT for teens with added safety, parental controls
+2026-08-19 18:31:37,928 | INFO    | Processing (1/47, score=9): OpenAI launches ChatGPT for teens with added safety, parental controls
+2026-08-19 18:31:38,632 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787164298_b23cf027.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-19 18:31:38,633 | INFO    | Post shape selected: hot_take
+2026-08-19 18:31:38,831 | INFO    | robots.txt disallows scraping https://www.business-standard.com/technology/tech-news/openai-launches-chatgpt-for-teens-with-added-safety-parental-controls-126081801412_1.html -- using description only.
+2026-08-19 18:31:39,280 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 18:31:39,974 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-19 18:31:40,067 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-19 18:31:40,174 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-19 18:31:40,175 | WARNING | All Groq fallback models failed.
+2026-08-19 18:31:40,375 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-19 18:31:40,448 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-19 18:31:40,448 | WARNING | All Gemini fallback models failed.
+2026-08-19 18:31:46,850 | INFO    | Posted to Facebook successfully. Post ID: 122163917606980670
