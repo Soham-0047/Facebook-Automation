@@ -8,7 +8,18 @@ Hardened version:
 - Retries with backoff + timeouts on every network call
 - Real logging (console + rotating file) instead of print()
 - Graceful degradation: falls back to a text-only post if image gen fails
-- Content generator produces varied, less "templated" post copy
+- Content generator produces varied, less "templated" post copy across SIX
+  distinct structural shapes (hot-take, question-hook, mini-story, stat-first,
+  listicle, contrarian) -- not just varied wording inside one fixed skeleton
+- Image cards use a real, relevant stock photo (Pexels, free tier), picked
+  from several query variants and filtered by resolution, with a vignette +
+  legibility scrim and optional brand tag, rendered at 2x supersampling and
+  downscaled for crisp, high-definition text -- flat gradient card and AI
+  photo providers remain as fallbacks
+- News extraction pulls from several topic-specific queries per run (not one
+  broad query), scores candidates on source quality, freshness decay, and
+  clickbait/press-release patterns, and actively rotates topic categories so
+  the page doesn't post five AI stories in a row
 - Config validation on startup so it fails fast with a clear message
 """
 
@@ -31,7 +42,7 @@ from logging.handlers import RotatingFileHandler
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import textwrap
 
 try:
@@ -74,6 +85,8 @@ NEWS_API_KEY = _get_secret("NEWS_API_KEY")
 STABILITY_API_KEY = _get_secret("STABILITY_API_KEY")
 GROQ_API_KEY = _get_secret("GROQ_API_KEY")  # optional -- enables the smarter narrative writer
 GEMINI_API_KEY = _get_secret("GEMINI_API_KEY")  # optional -- second free provider, also does free image gen
+PEXELS_API_KEY = _get_secret("PEXELS_API_KEY")  # optional -- free-tier real stock photos for the news card
+PAGE_BRAND_TAG = _get_secret("PAGE_BRAND_TAG")  # optional -- small brand label drawn on the card, e.g. "TechIndia Daily"
 
 # Ordered fallback list of free Groq models -- tried in order, first success wins.
 # Free-tier model rosters on Groq change without much notice (models get deprecated,
@@ -96,14 +109,22 @@ GEMINI_TEXT_MODEL_FALLBACKS = [
 GEMINI_IMAGE_MODEL = "gemini-2.5-flash-image"  # free image gen, ~500/day, no billing required
 
 # ========================================
-# NEWS CARD GRAPHICS (primary image method)
+# NEWS CARD GRAPHICS
 # ========================================
-# Locally-rendered headline cards via Pillow -- free, instant, unlimited, and
-# structurally incapable of the mangled-face/garbled-text problems that make
-# photorealistic AI image generation look "ugly" so often. Fonts are Google's
-# open-license Poppins family, fetched once and cached; falls back to
-# whatever DejaVu font the OS has if the download ever fails (no network
-# dependency at that point).
+# Two card styles share one renderer:
+#   1. Photo card (primary, if PEXELS_API_KEY is set): a real, topically
+#      relevant stock photo with a dark legibility scrim + headline overlay.
+#      This is what actually makes a scroll-stopping, "not obviously a bot"
+#      looking post -- flat gradient cards read as template-y fast.
+#   2. Gradient card (fallback): the original Pillow gradient background,
+#      themed by category. Free, instant, unlimited, no network dependency
+#      beyond a one-time font/photo download.
+# Both are rendered at 2x supersampling then downscaled with LANCZOS, which
+# is what gives noticeably crisper ("high-definition") text edges than
+# drawing straight at output size.
+CARD_W, CARD_H = 1200, 630
+SUPERSAMPLE = 2
+
 FONT_CACHE_DIR = os.path.join("/tmp/news_bot", "fonts")
 FONT_URLS = {
     "bold": "https://raw.githubusercontent.com/google/fonts/main/ofl/poppins/Poppins-Bold.ttf",
@@ -117,26 +138,79 @@ SYSTEM_FONT_FALLBACK_PATTERNS = {
 }
 
 # (keywords to match in the title, kicker label shown on the card, top gradient
-# color, bottom gradient color) -- first match wins, checked in this order.
+# color, bottom gradient color, Pexels search query) -- first match wins, checked
+# in this order. The Pexels query is deliberately generic/visual (not literal
+# headline text) since stock-photo search works far better on concepts than
+# on specific proper nouns.
 CATEGORY_THEMES = [
     (["ai", "artificial intelligence", "machine learning", "chatgpt", "llm", "openai"],
-     "ARTIFICIAL INTELLIGENCE", (76, 29, 149), (124, 58, 237)),
+     "ARTIFICIAL INTELLIGENCE", (76, 29, 149), (124, 58, 237), "artificial intelligence technology"),
     (["startup", "funding", "raises", "valuation", "venture capital", "seed round"],
-     "STARTUP & FUNDING", (154, 52, 18), (234, 88, 12)),
+     "STARTUP & FUNDING", (154, 52, 18), (234, 88, 12), "startup office team"),
     (["fintech", "payment", "upi", "banking", "paytm", "credit"],
-     "FINTECH", (6, 78, 59), (16, 185, 129)),
+     "FINTECH", (6, 78, 59), (16, 185, 129), "digital payment finance"),
     (["ecommerce", "e-commerce", "retail", "shopping", "flipkart", "amazon", "myntra"],
-     "E-COMMERCE", (131, 24, 67), (219, 39, 119)),
+     "E-COMMERCE", (131, 24, 67), (219, 39, 119), "online shopping delivery"),
     (["electric vehicle", "ev", "battery", "ola electric", "auto", "car"],
-     "ELECTRIC & AUTO", (12, 74, 110), (14, 165, 233)),
+     "ELECTRIC & AUTO", (12, 74, 110), (14, 165, 233), "electric vehicle charging"),
     (["space", "isro", "satellite", "rocket", "spacex"],
-     "SPACE", (30, 27, 75), (79, 70, 229)),
+     "SPACE", (30, 27, 75), (79, 70, 229), "rocket launch space"),
     (["mobile", "smartphone", "app", "gadget", "iphone", "android"],
-     "MOBILE & GADGETS", (17, 94, 89), (20, 184, 166)),
+     "MOBILE & GADGETS", (17, 94, 89), (20, 184, 166), "smartphone technology closeup"),
     (["healthcare", "medical", "health"],
-     "HEALTHCARE", (127, 29, 29), (220, 38, 38)),
+     "HEALTHCARE", (127, 29, 29), (220, 38, 38), "healthcare technology hospital"),
 ]
-DEFAULT_THEME = ("TECH NEWS", (30, 58, 138), (59, 130, 246))
+DEFAULT_THEME = ("TECH NEWS", (30, 58, 138), (59, 130, 246), "technology india city")
+
+# Last-resort Pexels queries if even the category query comes up empty/low-res --
+# broad enough to almost always return something usable.
+PEXELS_GENERIC_FALLBACKS = ["technology office India", "modern technology abstract"]
+
+# ========================================
+# NEWS EXTRACTION -- topic buckets, quality signals
+# ========================================
+# One broad NewsAPI query systematically under-covers whole categories --
+# whichever generic terms happen to trend on a given day dominate all 20
+# results, so space/fintech/EV stories rarely surface even though they're
+# exactly the kind of thing CATEGORY_THEMES is built to showcase. Querying
+# each topic bucket separately and merging the results gives real category
+# coverage instead of one algorithm's idea of "trending". Kept small enough
+# (7 buckets x ~4 runs/day = well under NewsAPI's 100 req/day free cap).
+NEWS_QUERY_BUCKETS = [
+    "India artificial intelligence OR India AI OR ChatGPT India",
+    "Indian startup funding OR India venture capital raises",
+    "India fintech OR UPI OR digital payments India",
+    "India ecommerce OR Flipkart OR Amazon India OR Myntra",
+    "India electric vehicle OR EV India OR Ola Electric",
+    "ISRO OR India space OR India satellite launch",
+    "Digital India OR Indian technology innovation",
+]
+NEWS_BUCKET_PAGE_SIZE = 8
+
+# Outlets whose reporting tends to be substantive rather than aggregated/
+# re-churned -- a small nudge toward stories worth reading, not a hard filter.
+SOURCE_QUALITY_BONUS = {
+    "techcrunch": 3, "the verge": 2, "reuters": 3, "bloomberg": 3,
+    "economic times": 2, "the economic times": 2, "livemint": 2, "mint": 2,
+    "moneycontrol": 2, "inc42": 2, "yourstory": 2, "business standard": 2,
+    "hindustan times": 1, "times of india": 1, "ndtv": 1, "the hindu": 2,
+    "financial express": 1, "cnbc": 2, "forbes india": 2,
+}
+# Wire-service press-release feeds -- technically "news", but almost always
+# unedited PR copy rather than reported stories. Downweighted, not excluded,
+# since occasionally the underlying announcement is genuinely the story.
+LOW_QUALITY_SOURCE_PENALTY = {
+    "prnewswire": 4, "businesswire": 4, "globenewswire": 4, "einpresswire": 3,
+}
+# Classic clickbait framing -- gets penalized hard rather than excluded
+# outright, since NewsAPI descriptions sometimes trip these on legitimate
+# stories (e.g. a headline genuinely about a "shocking" fraud case).
+CLICKBAIT_PATTERN = re.compile(
+    r"you won.?t believe|shocking|jaw-dropping|goes viral|top \d+ (?:reasons|ways|tips)|"
+    r"this is why|number \d+ will|what happened next",
+    re.IGNORECASE,
+)
+MAX_ARTICLE_AGE_HOURS = 72  # older than this reads as stale even if never posted before
 
 # ========================================
 # TOPIC ENGAGEMENT SCORING
@@ -159,6 +233,7 @@ ENGAGEMENT_KEYWORDS = {
 }
 
 POSTED_FILE = os.getenv("POSTED_FILE", "posted_articles.json")
+RECENT_CATEGORY_WINDOW = 4  # how many past posts count toward the "don't repeat this category" penalty
 
 
 def _kw_match(text_lower, keyword):
@@ -170,6 +245,8 @@ def _kw_match(text_lower, keyword):
     keywords and keywords with internal hyphens too."""
     pattern = re.compile(r'(?<![a-z0-9])' + re.escape(keyword.strip()) + r'(?![a-z0-9])')
     return bool(pattern.search(text_lower))
+
+
 LOG_FILE = os.getenv("LOG_FILE", "news_bot.log")
 REQUEST_TIMEOUT = 30  # seconds, applied to every outbound call
 
@@ -178,10 +255,11 @@ REQUIRED_VARS = {
     "FB_PAGE_ID": FB_PAGE_ID,
     "NEWS_API_KEY": NEWS_API_KEY,
 }
-# STABILITY_API_KEY is intentionally NOT required -- image generation now
-# falls back to Gemini (if GEMINI_API_KEY is set) and then to Pollinations.ai,
-# which needs no key at all. Posting still works with zero image providers
-# configured; it just goes out as a text-only post.
+# STABILITY_API_KEY / PEXELS_API_KEY are intentionally NOT required -- image
+# generation falls back through Pexels -> local gradient card -> Stability ->
+# Gemini -> Pollinations.ai, the last of which needs no key at all. Posting
+# still works with zero image providers configured; it just goes out as a
+# text-only post.
 
 
 # ========================================
@@ -207,6 +285,11 @@ def validate_config():
         logger.error("Missing required environment variables: %s", ", ".join(missing))
         logger.error("Set them in your shell or in a .env file (see .env.example). Exiting.")
         raise SystemExit(1)
+    if not PEXELS_API_KEY:
+        logger.info(
+            "PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of "
+            "real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards."
+        )
 
 
 def make_session(total_retries=3, backoff_factor=1.5):
@@ -233,6 +316,81 @@ def make_session(total_retries=3, backoff_factor=1.5):
     session.mount("https://", adapter)
     session.mount("http://", adapter)
     return session
+
+
+# ========================================
+# POST SHAPES
+# ========================================
+# The single biggest AI "tell" isn't word choice, it's structure: opener ->
+# headline -> description -> analysis -> closer -> source/date -> link ->
+# hashtags, every single time. Six distinct shapes below vary *what comes
+# first*, *what's omitted*, and *what the LLM is asked to produce* so
+# consecutive posts don't share a recognizable skeleton. Each shape has a
+# weight (relative pick frequency) and its own narrative instruction that
+# gets appended to the persona system prompt.
+POST_SHAPES = {
+    "hot_take": {
+        "weight": 3,
+        "narrative_instruction": (
+            "Structure: open with a single blunt one-line verdict on this news -- your take, stated "
+            "plainly, no hedging ('This is a big deal because...' / 'Don't buy the hype on this one.' "
+            "style, but in your own words). Then, in the same flow, back it up with 2-3 sentences of "
+            "concrete reasoning grounded in the source material. Do not restate the headline as your "
+            "opening line."
+        ),
+    },
+    "question_hook": {
+        "weight": 2,
+        "narrative_instruction": (
+            "Structure: open with one genuine, specific question a reader would actually wonder about "
+            "this story (not a rhetorical throwaway) -- e.g. what it means for a specific group, whether "
+            "it will actually work, who benefits. Then answer it directly using the source material. "
+            "The question must be answerable by what follows, not just a hook that goes nowhere."
+        ),
+    },
+    "mini_story": {
+        "weight": 2,
+        "narrative_instruction": (
+            "Structure: write it as a compact narrative arc -- what happened, then the immediate "
+            "complication or consequence, then why it matters. Use plain sequencing (first this, then "
+            "this) rather than a list. Keep it grounded strictly in the source material."
+        ),
+    },
+    "stat_first": {
+        "weight": 2,
+        "narrative_instruction": (
+            "Structure: the reader will see a standalone number/stat pulled from this story right "
+            "before your text, so do NOT repeat that exact figure as your opening words -- start instead "
+            "by explaining what that number actually means in practice, then broaden into the fuller "
+            "story."
+        ),
+    },
+    "listicle": {
+        "weight": 2,
+        "narrative_instruction": (
+            "Structure: produce exactly three short, punchy takeaways about this story (each under 16 "
+            "words, each a complete standalone thought, no numbering yourself). Separate the three "
+            "takeaways with ' || ' and nothing else -- no intro line, no closing line, just "
+            "'takeaway one || takeaway two || takeaway three'."
+        ),
+    },
+    "contrarian": {
+        "weight": 1,
+        "narrative_instruction": (
+            "Structure: open by naming, in one short clause, the obvious/expected reaction to this news "
+            "-- then pivot hard with 'but' or 'except' or 'actually' into the less obvious angle that "
+            "the obvious reaction misses. The pivot is the whole point; don't bury it."
+        ),
+    },
+}
+
+STAT_PATTERN = re.compile(
+    r'(\$\s?\d[\d,]*(?:\.\d+)?\s?(?:million|billion|m|bn|k)?|'
+    r'₹\s?\d[\d,]*(?:\.\d+)?\s?(?:crore|lakh|cr)?|'
+    r'\d[\d,]*(?:\.\d+)?\s?%|'
+    r'\d[\d,]*(?:\.\d+)?\s?(?:million|billion|crore|lakh|cities|users|million users))',
+    re.IGNORECASE,
+)
 
 
 # ========================================
@@ -268,6 +426,8 @@ class EnhancedNewsBot:
             "Let's dive in", "unpack", "game-changer", "revolutionize", "revolutionary",
             "not only... but also", "In an exciting development", "as we navigate",
             "This begs the question", "at the end of the day", "when it comes to",
+            "In a world where", "It goes without saying", "signals a shift",
+            "underscores the importance", "paves the way", "stay tuned",
         ]
 
         # --- Fallback pools (used only if BOTH Groq and Gemini fail/aren't
@@ -295,6 +455,7 @@ class EnhancedNewsBot:
             "Would love to hear if this matches what you're seeing on the ground.",
             "Save this one if you want to track how it plays out.",
             "Feel free to share this with someone who'd find it useful.",
+            "What's your read on this -- overhyped or genuinely big?",
             None,
         ]
 
@@ -338,26 +499,103 @@ class EnhancedNewsBot:
         url = (article.get('url') or '').split('?')[0].rstrip('/')
         return f"{norm_title}::{url}"
 
+    @staticmethod
+    def _posted_display(item):
+        """Human-readable line for --stats output -- handles both the new
+        dict entries (with category/date) and old plain-string entries."""
+        if isinstance(item, dict):
+            cat = f" [{item['category']}]" if item.get('category') else ""
+            return f"{item.get('title', item.get('key', '?'))[:60]}{cat}"
+        return f"{str(item)[:60]}"
+
+    def _posted_keys(self):
+        """Dedup keys regardless of storage format -- old entries are plain
+        strings (pre-category-tracking), new entries are dicts. Keeping both
+        readable means upgrading the script never causes re-posts of
+        already-published stories."""
+        keys = set()
+        for item in self.posted_today:
+            if isinstance(item, dict):
+                keys.add(item.get('key', ''))
+                if item.get('title'):
+                    keys.add(item['title'])
+            else:
+                keys.add(item)
+        return keys
+
+    def _recent_categories(self, n=RECENT_CATEGORY_WINDOW):
+        """Category labels (e.g. 'ARTIFICIAL INTELLIGENCE') from the last n
+        posts that have category data recorded. Old string-only entries are
+        silently skipped -- they predate category tracking."""
+        cats = [item.get('category') for item in self.posted_today if isinstance(item, dict) and item.get('category')]
+        return cats[-n:]
+
     def _already_posted(self, article):
         key = self._dedup_key(article)
         title = article.get('title', '').strip()
+        posted = self._posted_keys()
         # also check the raw title against older entries saved before this
         # dedup scheme existed, so upgrading the script doesn't cause re-posts
-        return key in self.posted_today or title in self.posted_today
+        return key in posted or title in posted
 
     def _engagement_score(self, article):
         """Rank candidate articles by how likely they are to actually catch
         attention -- recognizable names, funding/launch/record-type events,
-        and numbers in the headline consistently outperform generic coverage.
-        This decides WHICH already-fetched, already-recent article to post,
-        not anything about the content itself."""
+        and numbers in the headline consistently outperform generic coverage,
+        with adjustments for source quality, freshness, and topic diversity
+        against what the page just posted. This decides WHICH already-fetched
+        candidate to post, never anything about the content itself."""
         title_lower = article.get('title', '').lower()
         score = sum(weight for kw, weight in ENGAGEMENT_KEYWORDS.items() if _kw_match(title_lower, kw))
         if any(ch.isdigit() for ch in title_lower):
             score += 1  # "raises $200M", "40 cities" -- concrete numbers read as more credible/catchy
         if len(article.get('title', '')) < 70:
             score += 1  # short punchy headlines work better as a card title
+
+        source_name = (article.get('source', {}).get('name') or '').lower()
+        for name, bonus in SOURCE_QUALITY_BONUS.items():
+            if name in source_name:
+                score += bonus
+                break
+        for name, penalty in LOW_QUALITY_SOURCE_PENALTY.items():
+            if name in source_name:
+                score -= penalty
+                break
+
+        age = self._article_age_hours(article)
+        if age is not None:
+            if age <= 6:
+                score += 2
+            elif age <= 12:
+                score += 1
+            elif age > 48:
+                score -= 2
+
+        category, _, _, _ = self._category_theme(article.get('title', ''))
+        recent = self._recent_categories()
+        if recent:
+            repeats = recent.count(category)
+            score -= repeats * 2  # each recent repeat of this exact category makes it less attractive to post again
+
         return score
+
+    def _pick_candidate(self, candidates):
+        """Bias toward the highest-scoring stories without being 100%
+        deterministic. Always picking the single top-scored article means
+        that on days with a runaway headline, every run for hours posts
+        about the same predictable pick and the page's feed starts to feel
+        formulaic in *what* it covers, not just how it's worded. Weighted-
+        random over the top few keeps it genuinely curated (still skewed
+        hard toward the most engaging stories) while adding real variety."""
+        ranked = sorted(candidates, key=self._engagement_score, reverse=True)
+        pool = ranked[:min(3, len(ranked))]
+        weights = [self._engagement_score(a) + 1 for a in pool]  # +1 so a zero-score article is still pickable
+        choice = random.choices(pool, weights=weights, k=1)[0]
+        logger.info(
+            "Weighted pick from top %d candidate(s) (scores=%s): %s",
+            len(pool), [self._engagement_score(a) for a in pool], choice.get('title', '')[:70],
+        )
+        return choice
 
     # -------------------- persistence --------------------
     def load_posted_articles(self):
@@ -381,44 +619,98 @@ class EnhancedNewsBot:
             logger.error("Failed to save posted-articles file: %s", e)
 
     # -------------------- news fetching --------------------
-    def get_indian_tech_news(self):
+    def _fetch_bucket(self, query):
+        """Fetch one topic-bucket query. Isolated so one bucket's failure
+        (rate limit, transient error) doesn't take down the whole run --
+        the other buckets still contribute candidates."""
         try:
             url = "https://newsapi.org/v2/everything"
             params = {
-                'q': 'India technology OR Indian tech OR India AI OR India startup OR Indian innovation OR Digital India',
+                'q': query,
                 'apiKey': NEWS_API_KEY,
                 'language': 'en',
                 'sortBy': 'publishedAt',
-                'pageSize': 20,
+                'pageSize': NEWS_BUCKET_PAGE_SIZE,
                 'excludeDomains': 'reddit.com',
             }
             resp = self.session.get(url, params=params, timeout=REQUEST_TIMEOUT)
 
             if resp.status_code == 401:
                 logger.error("NewsAPI rejected the API key (401). Check NEWS_API_KEY.")
-                return []
+                return None  # signal "stop trying" -- a bad key fails every bucket identically
             if resp.status_code == 429:
-                logger.warning("NewsAPI rate limit hit. Skipping this run.")
+                logger.warning("NewsAPI rate limit hit on bucket %r -- skipping this bucket.", query[:40])
                 return []
             resp.raise_for_status()
-
-            articles = resp.json().get('articles', [])
-            filtered = [
-                a for a in articles
-                if a.get('title') and a.get('title') != '[Removed]'
-                and a.get('description') and len(a.get('description', '')) > 50
-                and a.get('url')
-            ]
-            logger.info("Found %d usable articles out of %d returned.", len(filtered), len(articles))
-            return filtered
+            return resp.json().get('articles', [])
 
         except requests.exceptions.Timeout:
-            logger.error("NewsAPI request timed out.")
+            logger.warning("NewsAPI request timed out on bucket %r.", query[:40])
         except requests.exceptions.RequestException as e:
-            logger.error("NewsAPI request failed: %s", e)
+            logger.warning("NewsAPI request failed on bucket %r: %s", query[:40], e)
         except (ValueError, KeyError) as e:
-            logger.error("Unexpected NewsAPI response format: %s", e)
+            logger.warning("Unexpected NewsAPI response format on bucket %r: %s", query[:40], e)
         return []
+
+    @staticmethod
+    def _is_low_quality_title(title):
+        """Clickbait framing gets filtered outright (not just penalized) --
+        it doesn't match the page's voice regardless of how the story scores
+        otherwise. ALL-CAPS titles (excluding short acronym-only headlines)
+        are usually spammy aggregator re-posts."""
+        if CLICKBAIT_PATTERN.search(title):
+            return True
+        letters = [c for c in title if c.isalpha()]
+        if len(letters) > 12 and sum(1 for c in letters if c.isupper()) / len(letters) > 0.7:
+            return True
+        return False
+
+    def _article_age_hours(self, article):
+        try:
+            published = datetime.fromisoformat(article.get('publishedAt', '').replace('Z', '+00:00'))
+            now = datetime.now(published.tzinfo)
+            return (now - published).total_seconds() / 3600
+        except (ValueError, TypeError):
+            return None
+
+    def get_indian_tech_news(self):
+        """Pulls from several topic-specific queries (see NEWS_QUERY_BUCKETS)
+        instead of one broad query, merges + dedups by URL, and filters out
+        stale, malformed, or clickbait/press-release-flavored results before
+        they ever reach scoring."""
+        seen_urls = set()
+        merged = []
+        for query in NEWS_QUERY_BUCKETS:
+            articles = self._fetch_bucket(query)
+            if articles is None:
+                return []  # bad API key -- no point hitting the remaining buckets
+            for a in articles:
+                url = (a.get('url') or '').split('?')[0].rstrip('/')
+                if url and url not in seen_urls:
+                    seen_urls.add(url)
+                    merged.append(a)
+
+        filtered = []
+        for a in merged:
+            title = a.get('title', '')
+            if not title or title == '[Removed]':
+                continue
+            if not a.get('description') or len(a.get('description', '')) <= 50:
+                continue
+            if not a.get('url'):
+                continue
+            if self._is_low_quality_title(title):
+                continue
+            age = self._article_age_hours(a)
+            if age is not None and age > MAX_ARTICLE_AGE_HOURS:
+                continue
+            filtered.append(a)
+
+        logger.info(
+            "Found %d usable article(s) after merging %d bucket queries and filtering (raw merged=%d).",
+            len(filtered), len(NEWS_QUERY_BUCKETS), len(merged),
+        )
+        return filtered
 
     # -------------------- full article scraping (optional, best-effort) --------------------
     SCRAPER_USER_AGENT = "Mozilla/5.0 (compatible; NewsBot/1.0; +https://example.com/bot)"
@@ -480,7 +772,7 @@ class EnhancedNewsBot:
             logger.info("Article scraping failed for %s (%s) -- using description only.", url, e)
             return None
 
-    # -------------------- image generation --------------------
+    # -------------------- image generation: AI photo providers (last resort) --------------------
     def _save_image_bytes(self, content, source_label):
         """Shared validation + save logic for any image provider's response."""
         os.makedirs("/tmp/news_bot", exist_ok=True)
@@ -589,7 +881,83 @@ class EnhancedNewsBot:
             logger.warning("Pollinations request failed (%s) -- falling back to text-only.", e)
         return None
 
-    # -------------------- news card graphics (primary image method) --------------------
+    # -------------------- real stock photo (Pexels, free tier) --------------------
+    MIN_PHOTO_WIDTH = 1600  # below this, upscaling to fill the 2x-supersampled card looks soft
+
+    def _pexels_search_once(self, query):
+        """One Pexels search call. Returns a list of photo objects (possibly
+        empty) or None on a hard failure (bad key / rate limit) that should
+        stop further query attempts this run."""
+        try:
+            resp = self.session.get(
+                "https://api.pexels.com/v1/search",
+                headers={"Authorization": PEXELS_API_KEY},
+                params={"query": query, "orientation": "landscape", "size": "large", "per_page": 8},
+                timeout=15,
+            )
+            if resp.status_code == 401:
+                logger.error("Pexels rejected the API key (401). Check PEXELS_API_KEY.")
+                return None
+            if resp.status_code == 429:
+                logger.warning("Pexels rate limit hit -- falling back to gradient card.")
+                return None
+            if resp.status_code != 200:
+                logger.warning("Pexels search error %s on query %r.", resp.status_code, query)
+                return []
+            return resp.json().get("photos", [])
+        except requests.exceptions.Timeout:
+            logger.warning("Pexels request timed out on query %r.", query)
+        except (requests.exceptions.RequestException, ValueError, KeyError) as e:
+            logger.warning("Pexels lookup failed on query %r (%s).", query, e)
+        return []
+
+    def _pexels_photo(self, queries):
+        """Try each query in `queries` (most specific first) until one
+        returns a usable, sufficiently high-resolution photo. A single fixed
+        category query often comes up empty or low-res for narrower topics --
+        trying a couple of fallbacks (still on-topic, then a generic tech/
+        India shot as a last resort) meaningfully raises the hit rate for a
+        real photo instead of falling through to the flat gradient card.
+        Returns raw image bytes, or None if every query comes up empty."""
+        if not PEXELS_API_KEY:
+            return None
+        for query in queries:
+            if not query:
+                continue
+            photos = self._pexels_search_once(query)
+            if photos is None:
+                return None  # bad key / rate limit -- no point trying more queries
+            good = [p for p in photos if p.get("width", 0) >= self.MIN_PHOTO_WIDTH]
+            pool = good or photos
+            if not pool:
+                continue
+
+            # Among qualifying photos, mildly prefer higher resolution but
+            # keep some randomness so the same story-category doesn't always
+            # surface the identical stock photo run after run.
+            pool.sort(key=lambda p: p.get("width", 0), reverse=True)
+            top_pool = pool[:min(4, len(pool))]
+            photo = random.choice(top_pool)
+            src_url = photo.get("src", {}).get("large2x") or photo.get("src", {}).get("large")
+            if not src_url:
+                continue
+
+            try:
+                img_resp = self.session.get(src_url, timeout=20)
+                if img_resp.status_code != 200:
+                    continue
+                if not img_resp.headers.get("Content-Type", "").startswith("image/"):
+                    continue
+                logger.info("Pexels photo matched on query %r (%dpx wide).", query, photo.get("width", 0))
+                return img_resp.content
+            except requests.exceptions.Timeout:
+                logger.warning("Pexels image download timed out for query %r.", query)
+                continue
+            except requests.exceptions.RequestException:
+                continue
+        return None
+
+    # -------------------- shared card rendering --------------------
     def _resolve_fonts(self):
         """Download and cache the Poppins font files once per process. Any
         font that fails to download gets a None entry, so _font() knows to
@@ -650,14 +1018,32 @@ class EnhancedNewsBot:
             draw.line([(0, y), (w, y)], fill=(r, g, b))
         return img
 
+    @staticmethod
+    def _cover_fit(img, w, h):
+        """Resize+crop a photo to exactly fill w x h (like CSS
+        background-size: cover), so real photos of any aspect ratio slot
+        cleanly into the card without distortion or letterboxing."""
+        src_ratio = img.width / img.height
+        dst_ratio = w / h
+        if src_ratio > dst_ratio:
+            new_h = h
+            new_w = int(h * src_ratio)
+        else:
+            new_w = w
+            new_h = int(w / src_ratio)
+        img = img.resize((new_w, new_h), Image.LANCZOS)
+        left = (new_w - w) // 2
+        top = (new_h - h) // 2
+        return img.crop((left, top, left + w, top + h))
+
     def _category_theme(self, title):
         text_lower = title.lower()
-        for keywords, label, top_rgb, bottom_rgb in CATEGORY_THEMES:
+        for keywords, label, top_rgb, bottom_rgb, pexels_query in CATEGORY_THEMES:
             if any(_kw_match(text_lower, kw) for kw in keywords):
-                return label, top_rgb, bottom_rgb
+                return label, top_rgb, bottom_rgb, pexels_query
         return DEFAULT_THEME
 
-    def _fit_headline(self, draw, text, max_width, max_lines, start_size=78, min_size=38):
+    def _fit_headline(self, draw, text, max_width, max_lines, start_size, min_size):
         """Shrinks the font until the headline wraps within max_lines, so a
         short punchy title renders big and a long one still fits cleanly
         instead of overflowing the card."""
@@ -678,12 +1064,153 @@ class EnhancedNewsBot:
             wrapped[-1] = wrapped[-1].rstrip() + "…"
         return font, wrapped
 
+    def _render_card(self, base_img, title, kicker, accent_rgb, source, date_str, scrim=False):
+        """Draw the pill + headline + footer onto a base image that is
+        already at supersampled (2x) resolution, then downscale to the final
+        1200x630 with LANCZOS for crisp anti-aliased text. `base_img` is
+        either a gradient background or a real photo (already cover-fit);
+        when it's a photo, `scrim=True` adds a bottom-up dark gradient first
+        so white text stays legible over unpredictable image content."""
+        W, H = base_img.width, base_img.height
+        scale = W / CARD_W  # supersample factor, so all pixel constants below stay proportional
+        img = base_img.convert("RGBA")
+
+        if scrim:
+            # subtle vignette first -- darkens the extreme corners of a real
+            # photo so it reads as considered photography rather than a raw
+            # stock crop, independent of the text-legibility scrim below.
+            # A bright ellipse mask (white=keep photo, black=darken) blurred
+            # at the edges gives a soft falloff instead of a hard ring.
+            mask = Image.new("L", (W, H), 0)
+            mdraw = ImageDraw.Draw(mask)
+            mdraw.ellipse([-int(W * 0.15), -int(H * 0.25), int(W * 1.15), int(H * 1.25)], fill=255)
+            mask = mask.filter(ImageFilter.GaussianBlur(radius=int(70 * scale)))
+            corner_dark = Image.new("RGBA", (W, H), (0, 0, 0, 110))
+            transparent = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            vignette_layer = Image.composite(transparent, corner_dark, mask)
+            img = Image.alpha_composite(img, vignette_layer)
+
+            grad = Image.new("L", (1, H), color=0)
+            for y in range(H):
+                t = y / H
+                # legibility scrim: mostly transparent at top, strong at bottom
+                grad.putpixel((0, y), int(235 * max(0, (t - 0.25) / 0.75) ** 1.4))
+            alpha = grad.resize((W, H))
+            dark = Image.new("RGBA", (W, H), (10, 10, 20, 255))
+            dark.putalpha(alpha)
+            img = Image.alpha_composite(img, dark)
+            # also a soft top-left glow so the kicker pill has contrast even
+            # over a bright sky/background photo
+            top_grad = Image.new("L", (1, H), color=0)
+            for y in range(H):
+                t = y / H
+                top_grad.putpixel((0, y), int(120 * max(0, (0.3 - t) / 0.3)))
+            top_alpha = top_grad.resize((W, H))
+            top_dark = Image.new("RGBA", (W, H), (0, 0, 0, 255))
+            top_dark.putalpha(top_alpha)
+            img = Image.alpha_composite(img, top_dark)
+        else:
+            overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            odraw = ImageDraw.Draw(overlay)
+            odraw.ellipse([W - int(W * 0.29), -int(H * 0.24), W + int(W * 0.21), int(H * 0.55)], fill=(255, 255, 255, 18))
+            odraw.ellipse([-int(W * 0.17), H - int(H * 0.48), int(W * 0.21), H + int(H * 0.32)], fill=(255, 255, 255, 14))
+            img = Image.alpha_composite(img, overlay)
+
+        draw = ImageDraw.Draw(img)
+
+        pill_font = self._font("semibold", int(26 * scale))
+        bbox = draw.textbbox((0, 0), kicker, font=pill_font)
+        pill_w = bbox[2] - bbox[0] + int(56 * scale)
+        pad = int(70 * scale)
+        pill_h0, pill_h1 = int(70 * scale), int(126 * scale)
+        pill_fill = (255, 255, 255, 235) if scrim else (255, 255, 255, 255)
+        draw.rounded_rectangle([pad, pill_h0, pad + pill_w, pill_h1], radius=int(28 * scale), fill=pill_fill)
+        draw.text((pad + int(28 * scale), pill_h0 + int(14 * scale)), kicker, font=pill_font, fill=accent_rgb)
+
+        font, wrapped = self._fit_headline(
+            draw, title, max_width=W - int(144 * scale), max_lines=4,
+            start_size=int(78 * scale), min_size=int(38 * scale),
+        )
+        line_h = int(font.size * 1.18)
+        area_top, area_bottom = int(160 * scale), H - int(155 * scale)
+        total_h = line_h * len(wrapped)
+        y = max(area_top, area_top + ((area_bottom - area_top) - total_h) // 2)
+        shadow_offset = max(1, int(2 * scale)) if scrim else 0
+        for line in wrapped:
+            if shadow_offset:
+                draw.text((int(72 * scale) + shadow_offset, y + shadow_offset), line, font=font, fill=(0, 0, 0, 140))
+            draw.text((int(72 * scale), y), line, font=font, fill=(255, 255, 255))
+            y += line_h
+
+        medium = self._font("medium", int(26 * scale))
+        draw.line(
+            [(int(72 * scale), H - int(110 * scale)), (W - int(72 * scale), H - int(110 * scale))],
+            fill=(255, 255, 255, 90), width=max(1, int(2 * scale)),
+        )
+        draw.text((int(72 * scale), H - int(85 * scale)), f"{source}  •  {date_str}", font=medium, fill=(235, 230, 255))
+
+        if PAGE_BRAND_TAG:
+            # small, unobtrusive bottom-right brand mark -- consistent
+            # branding across every post is what makes a page feel like a
+            # real outlet rather than a one-off bot account
+            brand_font = self._font("semibold", int(22 * scale))
+            bbox = draw.textbbox((0, 0), PAGE_BRAND_TAG, font=brand_font)
+            brand_w = bbox[2] - bbox[0]
+            draw.text(
+                (W - int(72 * scale) - brand_w, H - int(85 * scale)),
+                PAGE_BRAND_TAG, font=brand_font, fill=(255, 255, 255, 210),
+            )
+
+        # downscale from 2x supersample to final output size -- this is what
+        # gives noticeably sharper, higher-definition text/edges than
+        # rendering directly at 1200x630
+        final = img.convert("RGB").resize((CARD_W, CARD_H), Image.LANCZOS)
+        return final
+
+    def generate_photo_card(self, article):
+        """Primary image path: a real, topically relevant Pexels photo with
+        a legibility scrim and the headline overlaid, rendered at 2x
+        supersampling. Returns None (falls through to the gradient card) if
+        PEXELS_API_KEY isn't set or no suitable photo is found."""
+        try:
+            title = article.get('title', '').strip()
+            if not title:
+                return None
+            kicker, top_rgb, bottom_rgb, query = self._category_theme(title)
+            queries = [query, f"{query} closeup"] + PEXELS_GENERIC_FALLBACKS
+            photo_bytes = self._pexels_photo(queries)
+            if not photo_bytes:
+                return None
+
+            import io
+            photo = Image.open(io.BytesIO(photo_bytes)).convert("RGB")
+            base = self._cover_fit(photo, CARD_W * SUPERSAMPLE, CARD_H * SUPERSAMPLE)
+
+            source = article.get('source', {}).get('name', 'Tech News')
+            try:
+                date_obj = datetime.fromisoformat(article.get('publishedAt', '').replace('Z', '+00:00'))
+                date_str = date_obj.strftime('%b %d, %Y')
+            except ValueError:
+                date_str = datetime.now().strftime('%b %d, %Y')
+
+            final = self._render_card(base, title, kicker, top_rgb, source, date_str, scrim=True)
+
+            os.makedirs("/tmp/news_bot", exist_ok=True)
+            path = f"/tmp/news_bot/photocard_{int(time.time())}_{uuid.uuid4().hex[:8]}.png"
+            final.save(path, quality=95)
+            if os.path.getsize(path) < 1000:
+                return None
+            logger.info("Photo card generated: %s (theme=%s, source=Pexels)", path, kicker)
+            return path
+        except Exception as e:
+            logger.info("Photo card generation failed (%s) -- falling back to gradient card.", e)
+            return None
+
     def generate_news_card(self, article):
-        """Render a clean 1200x630 headline card locally: gradient background
-        themed to the story's category, a kicker pill, the (auto-fitted)
-        headline, and a source/date footer. No network dependency beyond a
-        one-time font download, no rate limits, no risk of the garbled-text/
-        mangled-face problems photorealistic AI generators are prone to."""
+        """Fallback image path: locally-rendered gradient card, no network
+        dependency beyond a one-time font download, no rate limits, no risk
+        of the garbled-text/mangled-face problems photorealistic AI
+        generators are prone to. Also rendered at 2x supersampling."""
         try:
             title = article.get('title', '').strip()
             if not title:
@@ -695,42 +1222,16 @@ class EnhancedNewsBot:
             except ValueError:
                 date_str = datetime.now().strftime('%b %d, %Y')
 
-            kicker, top_rgb, bottom_rgb = self._category_theme(title)
-
-            W, H = 1200, 630
-            img = self._gradient_image(W, H, top_rgb, bottom_rgb)
-            overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-            odraw = ImageDraw.Draw(overlay)
-            odraw.ellipse([W - 350, -150, W + 250, 350], fill=(255, 255, 255, 18))
-            odraw.ellipse([-200, H - 300, 250, H + 200], fill=(255, 255, 255, 14))
-            img = Image.alpha_composite(img.convert("RGBA"), overlay).convert("RGB")
-            draw = ImageDraw.Draw(img)
-
-            pill_font = self._font("semibold", 26)
-            bbox = draw.textbbox((0, 0), kicker, font=pill_font)
-            pill_w = bbox[2] - bbox[0] + 56
-            draw.rounded_rectangle([70, 70, 70 + pill_w, 126], radius=28, fill=(255, 255, 255, 255))
-            draw.text((98, 84), kicker, font=pill_font, fill=top_rgb)
-
-            font, wrapped = self._fit_headline(draw, title, max_width=W - 144, max_lines=4)
-            line_h = int(font.size * 1.18)
-            area_top, area_bottom = 160, H - 140
-            total_h = line_h * len(wrapped)
-            y = max(area_top, area_top + ((area_bottom - area_top) - total_h) // 2)
-            for line in wrapped:
-                draw.text((72, y), line, font=font, fill=(255, 255, 255))
-                y += line_h
-
-            medium = self._font("medium", 26)
-            draw.line([(72, H - 110), (W - 72, H - 110)], fill=(255, 255, 255, 80), width=2)
-            draw.text((72, H - 85), f"{source}  •  {date_str}", font=medium, fill=(235, 230, 255))
+            kicker, top_rgb, bottom_rgb, _query = self._category_theme(title)
+            base = self._gradient_image(CARD_W * SUPERSAMPLE, CARD_H * SUPERSAMPLE, top_rgb, bottom_rgb)
+            final = self._render_card(base, title, kicker, top_rgb, source, date_str, scrim=False)
 
             os.makedirs("/tmp/news_bot", exist_ok=True)
             path = f"/tmp/news_bot/card_{int(time.time())}_{uuid.uuid4().hex[:8]}.png"
-            img.save(path)
+            final.save(path)
             if os.path.getsize(path) < 1000:
                 return None
-            logger.info("News card generated: %s (theme=%s)", path, kicker)
+            logger.info("Gradient news card generated: %s (theme=%s)", path, kicker)
             return path
 
         except Exception as e:
@@ -738,16 +1239,21 @@ class EnhancedNewsBot:
             return None
 
     def generate_ai_image(self, article):
-        """Primary path: a locally-rendered news card (generate_news_card) --
-        free, instant, unlimited, no risk of AI-photo artifacts. Only if that
-        somehow fails does this fall through to AI photo providers: Stability
-        AI (needs credits) -> Gemini Nano Banana (free, ~500/day) ->
-        Pollinations (fully free, no key). Returns None only if literally
-        everything fails, in which case the caller posts text-only."""
-        card_path = self.generate_news_card(article)
-        if card_path:
-            return card_path
+        """Image fallback chain, best quality/reliability first:
+        1. Real Pexels stock photo + headline overlay (needs PEXELS_API_KEY)
+        2. Locally-rendered gradient card (free, unlimited, no key needed)
+        3. Stability AI photorealistic gen (needs credits)
+        4. Gemini Nano Banana (free, ~500/day)
+        5. Pollinations (fully free, no key)
+        Returns None only if literally everything fails, in which case the
+        caller posts text-only."""
+        return (
+            self.generate_photo_card(article)
+            or self.generate_news_card(article)
+            or self._ai_photo_fallback(article)
+        )
 
+    def _ai_photo_fallback(self, article):
         title = article.get('title', '').strip() if isinstance(article, dict) else str(article)
         prompt = (
             f"{title}, ultra-realistic, professional photography, cinematic lighting, "
@@ -804,35 +1310,37 @@ class EnhancedNewsBot:
             return None  # fine to skip -- this is a bonus, not core functionality
 
     # -------------------- smarter narrative (Groq, optional) --------------------
-    def _build_narrative_prompts(self, title, description, wiki_fact=None, full_text=None):
+    def _build_narrative_prompts(self, title, description, wiki_fact=None, full_text=None, shape="hot_take"):
         """Shared prompt-building for whichever LLM provider ends up handling
         the request. A randomly picked persona + an explicit list of banned
-        AI-cliche phrases does more for "doesn't sound like AI" than any
-        amount of generic 'be creative' instruction."""
+        AI-cliche phrases + a per-shape structural instruction is what
+        produces genuinely different-looking posts run to run, instead of
+        the same skeleton in different words."""
         persona = random.choice(self.personas)
         banned = ", ".join(f'"{p}"' for p in random.sample(self.banned_patterns, k=6))
+        shape_instruction = POST_SHAPES.get(shape, POST_SHAPES["hot_take"])["narrative_instruction"]
 
-        if full_text:
-            length_instruction = (
-                "Write two short paragraphs (roughly 100-170 words total). The first should explain "
-                "what's actually going on, pulling specific concrete details from the article body "
-                "below -- names, numbers, quotes if present. The second should be your own angle: "
-                "what a casual reader would miss, a tension, a comparison, an implication."
-            )
+        if shape == "listicle":
+            length_instruction = "Follow the structure instruction exactly for length and format."
+        elif full_text:
+            length_instruction = "Aim for roughly 100-170 words total, pulling specific concrete details from the article body below -- names, numbers, quotes if present."
         else:
-            length_instruction = "Write one sharp paragraph (40-65 words)."
+            length_instruction = "Aim for 40-65 words."
 
         system_prompt = (
-            f"You are {persona}, writing for a Facebook tech-news page. {length_instruction} "
+            f"You are {persona}, writing for a Facebook tech-news page. {length_instruction}\n\n"
+            f"{shape_instruction}\n\n"
             "Ground everything strictly in the source material given -- never invent statistics, dates, "
             "quotes, or claims that aren't in it. If the source material is thin, say less rather than "
             "pad with generic claims. You may use the optional background fact if it's relevant, and say "
             "plainly if you're connecting it speculatively.\n\n"
             f"Do not use these phrases or anything that reads like them: {banned}. "
-            "Also avoid: starting more than one sentence with 'This', overusing em-dashes, rhetorical "
-            "questions used as filler, and neat rule-of-three lists. Vary your sentence length -- mix "
-            "one short punchy sentence with a longer one. Use contractions. Sound like a specific person "
-            "with an opinion, not a summary engine. No emojis, no hashtags, no bullet points, no markdown."
+            "Also avoid: overusing em-dashes, rhetorical questions used as filler (unless the structure "
+            "instruction specifically asked for a question), and neat rule-of-three lists (unless the "
+            "structure instruction asked for exactly three). Vary your sentence length -- mix one short "
+            "punchy sentence with a longer one. Use contractions. Sound like a specific person with an "
+            "opinion, not a summary engine. No emojis, no hashtags, no markdown, no bullet characters "
+            "unless the structure instruction explicitly asks for the ' || ' separator."
         )
 
         user_prompt = f"Headline: {title}\n"
@@ -843,7 +1351,7 @@ class EnhancedNewsBot:
         if wiki_fact:
             user_prompt += f"\nOptional background fact (Wikipedia, use only if genuinely relevant): {wiki_fact}"
 
-        max_tokens = 340 if full_text else 160
+        max_tokens = 340 if full_text and shape != "listicle" else 180
         return system_prompt, user_prompt, max_tokens
 
     def get_groq_narrative(self, system_prompt, user_prompt, max_tokens):
@@ -951,13 +1459,13 @@ class EnhancedNewsBot:
         logger.warning("All Gemini fallback models failed.")
         return None
 
-    def get_ai_narrative(self, title, description, wiki_fact=None, full_text=None):
+    def get_ai_narrative(self, title, description, wiki_fact=None, full_text=None, shape="hot_take"):
         """Top-level narrative generator: Groq first (usually fastest + best
         free rate limits), then Gemini as a fully independent second provider,
         then None so the caller drops to the canned pool. A post always goes
         out no matter how many of these are unavailable."""
         system_prompt, user_prompt, max_tokens = self._build_narrative_prompts(
-            title, description, wiki_fact, full_text
+            title, description, wiki_fact, full_text, shape
         )
         return (
             self.get_groq_narrative(system_prompt, user_prompt, max_tokens)
@@ -990,10 +1498,28 @@ class EnhancedNewsBot:
         random.shuffle(tags)  # sorted order is a dead giveaway of programmatic generation
         return " ".join(tags)
 
+    def _pick_shape(self, title, description):
+        """Weighted-random shape choice, with stat_first only offered when
+        the source material actually contains an extractable number -- no
+        point promising a stat-led hook we can't back up."""
+        candidates = dict(POST_SHAPES)
+        if not STAT_PATTERN.search(f"{title} {description}"):
+            candidates.pop("stat_first", None)
+        shapes = list(candidates.keys())
+        weights = [candidates[s]["weight"] for s in shapes]
+        return random.choices(shapes, weights=weights, k=1)[0]
+
+    @staticmethod
+    def _extract_stat(title, description):
+        m = STAT_PATTERN.search(f"{title} {description}")
+        return m.group(0).strip() if m else None
+
     def create_engaging_post(self, article):
         """Build a post that reads like a person wrote it, not a template.
-        Structure and phrasing are randomized per call so consecutive posts
-        don't look identical in shape."""
+        A shape is chosen per call (hot-take / question-hook / mini-story /
+        stat-first / listicle / contrarian), and both the LLM instructions
+        AND the surrounding scaffold change per shape -- so consecutive
+        posts genuinely differ in structure, not just phrasing."""
         title = article.get('title', '').strip()
         description = self._clean_description(article.get('description', '').strip())
         source = article.get('source', {}).get('name', 'Tech News')
@@ -1006,39 +1532,74 @@ class EnhancedNewsBot:
             formatted_date = 'Today'
 
         emoji = self._emoji_for(title)
-        opener = random.choice(self.openers)
-        closer = random.choice(self.closers)
+        shape = self._pick_shape(title, description)
+        logger.info("Post shape selected: %s", shape)
 
-        # Try for a genuinely interesting, fact-grounded take first.
-        # Falls back to the canned pool if Groq/Gemini aren't configured or fail --
-        # the post always goes out either way.
         full_text = self.fetch_full_article_text(article.get('url'))
         wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
-        ai_narrative = self.get_ai_narrative(title, description, wiki_fact, full_text)
-        analysis = ai_narrative or random.choice(self.analysis_pool)
+        ai_narrative = self.get_ai_narrative(title, description, wiki_fact, full_text, shape)
+        used_ai = bool(ai_narrative)
 
-        # When full_text was available AND the AI actually used it, the narrative's
-        # first paragraph already explains what's going on in more depth than the
-        # 200-char NewsAPI snippet -- showing both means saying the same thing twice.
-        # Only show the raw snippet when the AI narrative is the short single-paragraph
-        # version (no full_text) or the canned fallback, where it's genuinely additive.
-        used_long_form_narrative = bool(ai_narrative) and bool(full_text)
+        if not used_ai:
+            # Canned fallback never knows about shapes -- always reads as a
+            # plain analysis paragraph, which is fine since it's the rare
+            # last-resort path when both LLM providers are down.
+            analysis = random.choice(self.analysis_pool)
+            shape = "hot_take"
+        else:
+            analysis = ai_narrative
+
+        used_long_form_narrative = used_ai and bool(full_text) and shape != "listicle"
 
         parts = []
 
-        if opener:
-            parts.append(opener)
+        if shape == "listicle" and used_ai and "||" in analysis:
+            points = [p.strip(" .") for p in analysis.split("||") if p.strip()]
+            parts.append(f"{emoji} {title}")
+            parts.append("")
+            number_emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣"]
+            for i, point in enumerate(points[:4]):
+                parts.append(f"{number_emojis[i]} {point}.")
             parts.append("")
 
-        parts.append(f"{emoji} {title}")
-        parts.append("")
-
-        if description and not used_long_form_narrative:
-            parts.append(description if description.endswith('.') else description + '.')
+        elif shape == "stat_first":
+            stat = self._extract_stat(title, description)
+            if stat:
+                parts.append(f"{stat.upper() if len(stat) < 12 else stat} -- that's the number driving today's headline.")
+                parts.append("")
+            parts.append(f"{emoji} {title}")
+            parts.append("")
+            if description and not used_long_form_narrative:
+                parts.append(description if description.endswith('.') else description + '.')
+                parts.append("")
+            parts.append(analysis)
             parts.append("")
 
-        parts.append(analysis)
-        parts.append("")
+        elif shape in ("hot_take", "question_hook", "contrarian"):
+            # LLM output already leads with the hook (verdict / question /
+            # pivot) per the shape instruction, so it comes BEFORE the
+            # headline here -- the headline functions as a supporting
+            # reference rather than the opening line.
+            parts.append(analysis)
+            parts.append("")
+            parts.append(f"{emoji} {title}")
+            parts.append("")
+            if description and not used_long_form_narrative:
+                parts.append(description if description.endswith('.') else description + '.')
+                parts.append("")
+
+        else:  # mini_story, or listicle fallback if the delimiter parse failed
+            opener = random.choice(self.openers)
+            if opener:
+                parts.append(opener)
+                parts.append("")
+            parts.append(f"{emoji} {title}")
+            parts.append("")
+            if description and not used_long_form_narrative:
+                parts.append(description if description.endswith('.') else description + '.')
+                parts.append("")
+            parts.append(analysis)
+            parts.append("")
 
         # Occasionally surface the raw Wikipedia fact as a standalone "did you know"
         # line -- real, sourced trivia, not something the LLM guessed at.
@@ -1046,6 +1607,7 @@ class EnhancedNewsBot:
             parts.append(f"📌 Background: {wiki_fact}")
             parts.append("")
 
+        closer = random.choice(self.closers) if shape != "listicle" else "Which of these lands hardest for you?"
         if closer:
             parts.append(closer)
             parts.append("")
@@ -1124,20 +1686,21 @@ class EnhancedNewsBot:
             logger.info("No new articles to post -- everything fetched was already posted.")
             return 0
 
-        # Post the most attention-grabbing unposted story, not just the newest one.
+        # Post the most attention-grabbing unposted story, weighted toward
+        # (but not locked to) the single top-scored pick -- see _pick_candidate.
         candidates.sort(key=self._engagement_score, reverse=True)
-        logger.info(
-            "Ranked %d candidate(s) by engagement score. Top pick (score=%d): %s",
-            len(candidates), self._engagement_score(candidates[0]), candidates[0].get('title', '')[:70],
-        )
+        first_pick = self._pick_candidate(candidates)
+        # Try the weighted pick first, then fall through the rest of the
+        # ranked list (excluding the one already tried) if it fails to post.
+        ordered = [first_pick] + [a for a in candidates if a is not first_pick]
 
         posted_count = 0
         consecutive_fb_failures = 0
         MAX_CONSECUTIVE_FAILURES = 2  # if FB rejects 2 in a row, it's the token/config, not the articles
 
-        for i, article in enumerate(candidates, 1):
+        for i, article in enumerate(ordered, 1):
             title = article.get('title', '').strip()
-            logger.info("Processing (%d/%d, score=%d): %s", i, len(candidates), self._engagement_score(article), title[:70])
+            logger.info("Processing (%d/%d, score=%d): %s", i, len(ordered), self._engagement_score(article), title[:70])
 
             image_path = self.generate_ai_image(article)
             if not image_path:
@@ -1146,7 +1709,13 @@ class EnhancedNewsBot:
             post_content = self.create_engaging_post(article)
 
             if self.post_to_facebook(post_content, image_path):
-                self.posted_today.append(self._dedup_key(article))
+                category, _, _, _ = self._category_theme(article.get('title', ''))
+                self.posted_today.append({
+                    "key": self._dedup_key(article),
+                    "title": article.get('title', '').strip(),
+                    "category": category,
+                    "posted_at": datetime.now().isoformat(),
+                })
                 self.save_posted_articles()
                 posted_count += 1
                 consecutive_fb_failures = 0
@@ -1229,10 +1798,10 @@ def main():
             return
         candidates = [a for a in articles if not bot._already_posted(a)] or articles
         candidates.sort(key=bot._engagement_score, reverse=True)
-        article = candidates[0]
+        article = bot._pick_candidate(candidates)
         print(f"[DRY RUN] Would post about (engagement score={bot._engagement_score(article)}): {article.get('title')}\n")
         print(bot.create_engaging_post(article))
-        card_path = bot.generate_news_card(article)
+        card_path = bot.generate_ai_image(article)
         if card_path:
             print(f"\n[DRY RUN] Preview card image saved locally at: {card_path}")
         print("\n[DRY RUN] No Facebook call made.")
@@ -1247,7 +1816,7 @@ def main():
     if args.stats:
         print(f"Articles posted today: {len(bot.posted_today)}")
         for article in bot.posted_today[-5:]:
-            print(f"  - {article[:60]}...")
+            print(f"  - {bot._posted_display(article)}")
         return
 
     if non_interactive:
@@ -1272,7 +1841,7 @@ def main():
     elif choice == "3":
         print(f"Articles posted today: {len(bot.posted_today)}")
         for article in bot.posted_today[-5:]:
-            print(f"  - {article[:60]}...")
+            print(f"  - {bot._posted_display(article)}")
     else:
         bot.run_once()
 

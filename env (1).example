@@ -1,0 +1,47 @@
+# ============================================================
+# Facebook News Bot -- environment variable template
+# Copy this file to `.env` and fill in real values.
+# Never commit the actual `.env` file -- only this template.
+# ============================================================
+
+# ---- REQUIRED --------------------------------------------------
+# Facebook Page access token (long-lived page token, not a user token)
+FB_PAGE_ACCESS_TOKEN=
+
+# The numeric Facebook Page ID the bot posts to
+FB_PAGE_ID=
+
+# NewsAPI.org API key (free tier is fine)
+NEWS_API_KEY=
+
+# ---- OPTIONAL -- narrative generation ---------------------------
+# Groq API key -- primary LLM provider for post narratives (free tier).
+# Get one at https://console.groq.com
+GROQ_API_KEY=
+
+# Gemini API key -- independent second LLM provider (narrative fallback)
+# AND free image generation fallback (~500 images/day, no billing needed).
+# Get one at https://aistudio.google.com/app/apikey
+GEMINI_API_KEY=
+
+# ---- OPTIONAL -- images ------------------------------------------
+# Pexels API key -- powers the PRIMARY image path: a real, relevant stock
+# photo with the headline overlaid, instead of a flat gradient card.
+# Free, no credit card. Get one at https://www.pexels.com/api/
+PEXELS_API_KEY=
+
+# Stability AI key -- optional photorealistic image fallback (needs paid
+# credits once the free trial is used up). Safe to leave blank.
+STABILITY_API_KEY=
+
+# Small brand label drawn in the bottom-right of every card (e.g.
+# "TechIndia Daily") -- optional, purely cosmetic/branding. Leave blank to
+# skip it.
+PAGE_BRAND_TAG=
+
+# ---- OPTIONAL -- misc ---------------------------------------------
+# Where dedup state is persisted between runs (default: posted_articles.json)
+POSTED_FILE=posted_articles.json
+
+# Log file path (default: news_bot.log)
+LOG_FILE=news_bot.log
