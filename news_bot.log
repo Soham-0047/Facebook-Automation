@@ -589,3 +589,12 @@
 2026-08-19 10:58:13,630 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
 2026-08-19 10:58:14,563 | INFO    | Groq narrative generated using openai/gpt-oss-120b (21 chars).
 2026-08-19 10:58:21,028 | INFO    | Posted to Facebook successfully. Post ID: 122163870512980670
+2026-08-19 15:03:16,872 | INFO    | Jittering start by 452s so this run isn't posting at a perfectly fixed second.
+2026-08-19 15:10:48,872 | INFO    | Run started at 2026-08-19 15:10:48
+2026-08-19 15:10:49,036 | INFO    | Found 20 usable articles out of 20 returned.
+2026-08-19 15:10:49,041 | INFO    | Ranked 20 candidate(s) by engagement score. Top pick (score=3): Swiggy investors approve foreign ownership cap
+2026-08-19 15:10:49,041 | INFO    | Processing (1/20, score=3): Swiggy investors approve foreign ownership cap
+2026-08-19 15:10:49,473 | INFO    | News card generated: /tmp/news_bot/card_1787152249_ca0d660e.png (theme=TECH NEWS)
+2026-08-19 15:10:50,131 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 15:10:55,099 | INFO    | Groq narrative generated using openai/gpt-oss-120b (2 chars).
+2026-08-19 15:11:01,993 | INFO    | Posted to Facebook successfully. Post ID: 122163897062980670
