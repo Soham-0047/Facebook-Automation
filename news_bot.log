@@ -580,3 +580,12 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-19 07:17:00,982 | WARNING | All Gemini fallback models failed.
 2026-08-19 07:17:04,366 | INFO    | Posted to Facebook successfully. Post ID: 122163851096980670
+2026-08-19 10:56:02,195 | INFO    | Jittering start by 129s so this run isn't posting at a perfectly fixed second.
+2026-08-19 10:58:11,195 | INFO    | Run started at 2026-08-19 10:58:11
+2026-08-19 10:58:11,566 | INFO    | Found 18 usable articles out of 18 returned.
+2026-08-19 10:58:11,570 | INFO    | Ranked 18 candidate(s) by engagement score. Top pick (score=4): Jefferies raises Belrise Industries target price, sees 18% upside on s
+2026-08-19 10:58:11,570 | INFO    | Processing (1/18, score=4): Jefferies raises Belrise Industries target price, sees 18% upside on s
+2026-08-19 10:58:12,241 | INFO    | News card generated: /tmp/news_bot/card_1787137092_56e23dc8.png (theme=STARTUP & FUNDING)
+2026-08-19 10:58:13,630 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-19 10:58:14,563 | INFO    | Groq narrative generated using openai/gpt-oss-120b (21 chars).
+2026-08-19 10:58:21,028 | INFO    | Posted to Facebook successfully. Post ID: 122163870512980670
