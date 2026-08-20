@@ -645,3 +645,27 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-20 03:20:06,347 | WARNING | All Gemini fallback models failed.
 2026-08-20 03:20:09,887 | INFO    | Posted to Facebook successfully. Post ID: 122163962738980670
+2026-08-20 07:15:03,072 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-20 07:15:03,072 | INFO    | Jittering start by 530s so this run isn't posting at a perfectly fixed second.
+2026-08-20 07:23:53,073 | INFO    | Run started at 2026-08-20 07:23:53
+2026-08-20 07:23:53,993 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=55).
+2026-08-20 07:23:54,018 | INFO    | Weighted pick from top 3 candidate(s) (scores=[5, 4, 4]): Axis Bank credit card rules change: What gets costlier from Aug 28
+2026-08-20 07:23:54,018 | INFO    | Processing (1/46, score=4): Axis Bank credit card rules change: What gets costlier from Aug 28
+2026-08-20 07:23:54,519 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787210634_5dec7180.png (theme=FINTECH)
+2026-08-20 07:23:54,520 | INFO    | Post shape selected: contrarian
+2026-08-20 07:23:54,559 | INFO    | robots.txt disallows scraping https://www.business-standard.com/finance/personal-finance/axis-bank-credit-card-rules-change-what-gets-costlier-from-aug-28-126081900382_1.html -- using description only.
+2026-08-20 07:23:54,687 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-20 07:23:55,181 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-20 07:23:55,226 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-20 07:23:55,271 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-20 07:23:55,272 | WARNING | All Groq fallback models failed.
+2026-08-20 07:23:55,430 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-20 07:23:55,525 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-20 07:23:55,525 | WARNING | All Gemini fallback models failed.
+2026-08-20 07:24:00,833 | INFO    | Posted to Facebook successfully. Post ID: 122163985496980670
