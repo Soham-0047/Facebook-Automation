@@ -11,11 +11,19 @@ Hardened version:
 - Content generator produces varied, less "templated" post copy across SIX
   distinct structural shapes (hot-take, question-hook, mini-story, stat-first,
   listicle, contrarian) -- not just varied wording inside one fixed skeleton
-- Image cards use a real, relevant stock photo (Pexels, free tier), picked
-  from several query variants and filtered by resolution, with a vignette +
-  legibility scrim and optional brand tag, rendered at 2x supersampling and
-  downscaled for crisp, high-definition text -- flat gradient card and AI
-  photo providers remain as fallbacks
+- Image cards use a real, relevant stock photo (Pexels, free tier). Query
+  selection is now entity-aware: a small hint table translates recognizable
+  companies/products/agencies in the headline (e.g. "Ola Electric", "ISRO",
+  "Zomato") into concrete, photographable Pexels queries ("electric scooter
+  showroom", "rocket launch pad", "food delivery bike rider") BEFORE falling
+  back to the generic category query -- literal brand-name searches on a
+  stock library mostly return nothing or unrelated logo mockups, so this is
+  what actually gets a photo that looks like it belongs to the story instead
+  of "generic tech photo #4". Photos are picked from several query variants,
+  filtered by resolution, rendered with a vignette + legibility scrim and
+  optional brand tag, at 2x supersampling then downscaled for crisp,
+  high-definition text -- flat gradient card and AI photo providers remain
+  as fallbacks.
 - News extraction pulls from several topic-specific queries per run (not one
   broad query), scores candidates on source quality, freshness decay, and
   clickbait/press-release patterns, and actively rotates topic categories so
@@ -165,6 +173,51 @@ DEFAULT_THEME = ("TECH NEWS", (30, 58, 138), (59, 130, 246), "technology india c
 # Last-resort Pexels queries if even the category query comes up empty/low-res --
 # broad enough to almost always return something usable.
 PEXELS_GENERIC_FALLBACKS = ["technology office India", "modern technology abstract"]
+
+# ----------------------------------------------------------------------------
+# ENTITY -> VISUAL QUERY HINTS
+# ----------------------------------------------------------------------------
+# Searching Pexels for a literal brand/agency name ("Ola Electric", "Zomato",
+# "ISRO") mostly returns nothing, or generic office/logo-mockup filler --
+# stock libraries are photographed around concepts, not corporate identities.
+# This table maps a recognizable name in the headline to a concrete,
+# *photographable* scene that's actually true to the story, so the picked
+# photo looks like it belongs to this specific article rather than being an
+# interchangeable "tech news #4" stock shot. Checked before the generic
+# CATEGORY_THEMES query; first match wins. Deliberately keyed on lowercase
+# word-boundary terms (matched with the same _kw_match helper used
+# elsewhere) so it composes cleanly with everything else in the file.
+ENTITY_VISUAL_HINTS = [
+    (["ola electric", "ather", "electric scooter", "e-scooter"], "electric scooter showroom"),
+    (["tata motors", "electric car", "ev charging"], "electric car charging station"),
+    (["isro", "satellite", "rocket", "spacex", "chandrayaan", "gaganyaan"], "rocket launch pad"),
+    (["zomato", "swiggy", "food delivery"], "food delivery bike rider city"),
+    (["flipkart", "amazon", "myntra", "ecommerce", "e-commerce"], "warehouse delivery packages"),
+    (["paytm", "upi", "phonepe", "digital payment", "fintech"], "mobile phone payment scan"),
+    (["reliance jio", "jio", "airtel", "vodafone", "telecom", "5g"], "mobile network tower city"),
+    (["chatgpt", "openai", "gemini ai", "llm", "generative ai"], "person using laptop chatbot"),
+    (["nvidia", "chip", "semiconductor", "processor"], "computer chip circuit board macro"),
+    (["ipo", "stock exchange", "nse", "bse", "sensex", "nifty"], "stock market trading screen"),
+    (["layoffs", "hiring", "jobs"], "office desk laptop work"),
+    (["data breach", "hack", "cyberattack", "cybersecurity"], "cybersecurity lock code screen"),
+    (["drone"], "drone flying outdoor"),
+    (["robot", "robotics", "automation"], "industrial robot arm factory"),
+    (["smartphone", "iphone", "android phone"], "hand holding smartphone screen"),
+    (["startup funding", "venture capital", "seed round", "series a", "series b"], "startup team meeting whiteboard"),
+    (["hospital", "healthcare", "medical device", "telemedicine"], "hospital technology doctor"),
+    (["agritech", "farmer", "agriculture"], "farmer field technology india"),
+    (["edtech", "online learning", "e-learning"], "student laptop online class"),
+]
+
+
+def _entity_visual_query(title_lower):
+    """Return the first matching concrete, photographable query for a
+    recognizable name/topic in the headline, or None if nothing matches --
+    caller falls back to the category-level query in that case."""
+    for keywords, visual_query in ENTITY_VISUAL_HINTS:
+        if any(_kw_match(title_lower, kw) for kw in keywords):
+            return visual_query
+    return None
 
 # ========================================
 # NEWS EXTRACTION -- topic buckets, quality signals
@@ -915,10 +968,11 @@ class EnhancedNewsBot:
         """Try each query in `queries` (most specific first) until one
         returns a usable, sufficiently high-resolution photo. A single fixed
         category query often comes up empty or low-res for narrower topics --
-        trying a couple of fallbacks (still on-topic, then a generic tech/
-        India shot as a last resort) meaningfully raises the hit rate for a
-        real photo instead of falling through to the flat gradient card.
-        Returns raw image bytes, or None if every query comes up empty."""
+        trying a couple of fallbacks (entity-specific first, then still
+        on-topic, then a generic tech/India shot as a last resort)
+        meaningfully raises the hit rate for a real, *relevant* photo instead
+        of falling through to the flat gradient card. Returns raw image
+        bytes, or None if every query comes up empty."""
         if not PEXELS_API_KEY:
             return None
         for query in queries:
@@ -1170,14 +1224,24 @@ class EnhancedNewsBot:
     def generate_photo_card(self, article):
         """Primary image path: a real, topically relevant Pexels photo with
         a legibility scrim and the headline overlaid, rendered at 2x
-        supersampling. Returns None (falls through to the gradient card) if
-        PEXELS_API_KEY isn't set or no suitable photo is found."""
+        supersampling. Query order: entity-specific hint first (if the
+        headline names something in ENTITY_VISUAL_HINTS), then the broader
+        category query and its 'closeup' variant, then generic fallbacks.
+        Returns None (falls through to the gradient card) if
+        PEXELS_API_KEY isn't set or no suitable photo is found for any
+        query in the chain."""
         try:
             title = article.get('title', '').strip()
             if not title:
                 return None
-            kicker, top_rgb, bottom_rgb, query = self._category_theme(title)
-            queries = [query, f"{query} closeup"] + PEXELS_GENERIC_FALLBACKS
+            kicker, top_rgb, bottom_rgb, category_query = self._category_theme(title)
+            entity_query = _entity_visual_query(title.lower())
+
+            queries = []
+            if entity_query:
+                queries.append(entity_query)
+            queries += [category_query, f"{category_query} closeup"] + PEXELS_GENERIC_FALLBACKS
+
             photo_bytes = self._pexels_photo(queries)
             if not photo_bytes:
                 return None
@@ -1200,7 +1264,10 @@ class EnhancedNewsBot:
             final.save(path, quality=95)
             if os.path.getsize(path) < 1000:
                 return None
-            logger.info("Photo card generated: %s (theme=%s, source=Pexels)", path, kicker)
+            logger.info(
+                "Photo card generated: %s (theme=%s, entity_query=%r, source=Pexels)",
+                path, kicker, entity_query,
+            )
             return path
         except Exception as e:
             logger.info("Photo card generation failed (%s) -- falling back to gradient card.", e)
@@ -1240,7 +1307,8 @@ class EnhancedNewsBot:
 
     def generate_ai_image(self, article):
         """Image fallback chain, best quality/reliability first:
-        1. Real Pexels stock photo + headline overlay (needs PEXELS_API_KEY)
+        1. Real Pexels stock photo (entity-aware query) + headline overlay
+           (needs PEXELS_API_KEY)
         2. Locally-rendered gradient card (free, unlimited, no key needed)
         3. Stability AI photorealistic gen (needs credits)
         4. Gemini Nano Banana (free, ~500/day)
