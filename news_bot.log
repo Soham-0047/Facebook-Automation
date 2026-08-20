@@ -692,3 +692,14 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-20 11:04:15,882 | WARNING | All Gemini fallback models failed.
 2026-08-20 11:04:20,026 | INFO    | Posted to Facebook successfully. Post ID: 122164004852980670
+2026-08-20 15:06:21,876 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-20 15:06:21,876 | INFO    | Jittering start by 492s so this run isn't posting at a perfectly fixed second.
+2026-08-20 15:14:33,877 | INFO    | Run started at 2026-08-20 15:14:33
+2026-08-20 15:14:34,784 | INFO    | Found 42 usable article(s) after merging 7 bucket queries and filtering (raw merged=49).
+2026-08-20 15:14:34,804 | INFO    | Weighted pick from top 3 candidate(s) (scores=[8, 7, 7]): Sachin Bansal's fintech Navi raises first outside capital with $100M P
+2026-08-20 15:14:34,805 | INFO    | Processing (1/42, score=7): Sachin Bansal's fintech Navi raises first outside capital with $100M P
+2026-08-20 15:14:35,222 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787238875_13350984.png (theme=STARTUP & FUNDING)
+2026-08-20 15:14:35,223 | INFO    | Post shape selected: contrarian
+2026-08-20 15:14:35,768 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-20 15:14:36,689 | INFO    | Groq narrative generated using openai/gpt-oss-120b (150 chars).
+2026-08-20 15:14:42,076 | INFO    | Posted to Facebook successfully. Post ID: 122164028912980670
