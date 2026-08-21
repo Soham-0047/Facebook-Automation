@@ -714,3 +714,26 @@
 2026-08-21 03:28:29,395 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
 2026-08-21 03:28:30,601 | INFO    | Groq narrative generated using openai/gpt-oss-120b (513 chars).
 2026-08-21 03:28:36,661 | INFO    | Posted to Facebook successfully. Post ID: 122164097678980670
+2026-08-21 07:22:06,648 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-21 07:22:06,649 | INFO    | Jittering start by 308s so this run isn't posting at a perfectly fixed second.
+2026-08-21 07:27:14,649 | INFO    | Run started at 2026-08-21 07:27:14
+2026-08-21 07:27:15,250 | INFO    | Found 44 usable article(s) after merging 7 bucket queries and filtering (raw merged=52).
+2026-08-21 07:27:15,273 | INFO    | Weighted pick from top 3 candidate(s) (scores=[4, 4, 4]): ‘RAMpocalypse’ is hurting Chinese OEMs in India as Samsung, Apple grow
+2026-08-21 07:27:15,273 | INFO    | Processing (1/43, score=4): ‘RAMpocalypse’ is hurting Chinese OEMs in India as Samsung, Apple grow
+2026-08-21 07:27:15,605 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787297235_2a3c6f7a.png (theme=MOBILE & GADGETS)
+2026-08-21 07:27:15,606 | INFO    | Post shape selected: listicle
+2026-08-21 07:27:15,957 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-21 07:27:16,650 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-21 07:27:16,699 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-21 07:27:16,745 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-21 07:27:16,745 | WARNING | All Groq fallback models failed.
+2026-08-21 07:27:16,889 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-21 07:27:16,999 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-21 07:27:16,999 | WARNING | All Gemini fallback models failed.
+2026-08-21 07:27:21,940 | INFO    | Posted to Facebook successfully. Post ID: 122164115174980670
