@@ -737,3 +737,27 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-21 07:27:16,999 | WARNING | All Gemini fallback models failed.
 2026-08-21 07:27:21,940 | INFO    | Posted to Facebook successfully. Post ID: 122164115174980670
+2026-08-21 10:58:28,294 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-21 10:58:28,294 | INFO    | Jittering start by 270s so this run isn't posting at a perfectly fixed second.
+2026-08-21 11:02:58,295 | INFO    | Run started at 2026-08-21 11:02:58
+2026-08-21 11:02:58,918 | INFO    | Found 47 usable article(s) after merging 7 bucket queries and filtering (raw merged=54).
+2026-08-21 11:02:58,943 | INFO    | Weighted pick from top 3 candidate(s) (scores=[6, 5, 4]): Barometers end with substantial gains; Nifty settles above 24,200
+2026-08-21 11:02:58,944 | INFO    | Processing (1/46, score=4): Barometers end with substantial gains; Nifty settles above 24,200
+2026-08-21 11:02:59,445 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787310179_0614665c.png (theme=TECH NEWS)
+2026-08-21 11:02:59,446 | INFO    | Post shape selected: stat_first
+2026-08-21 11:02:59,654 | INFO    | robots.txt disallows scraping https://www.business-standard.com/markets/capital-market-news/barometers-end-with-substantial-gains-nifty-settles-above-24-200-126082000835_1.html -- using description only.
+2026-08-21 11:02:59,860 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-21 11:03:00,414 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-21 11:03:00,493 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-21 11:03:00,552 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-21 11:03:00,552 | WARNING | All Groq fallback models failed.
+2026-08-21 11:03:00,868 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-21 11:03:01,036 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-21 11:03:01,037 | WARNING | All Gemini fallback models failed.
+2026-08-21 11:03:06,501 | INFO    | Posted to Facebook successfully. Post ID: 122164138448980670
