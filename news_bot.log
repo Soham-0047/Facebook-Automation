@@ -703,3 +703,14 @@
 2026-08-20 15:14:35,768 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
 2026-08-20 15:14:36,689 | INFO    | Groq narrative generated using openai/gpt-oss-120b (150 chars).
 2026-08-20 15:14:42,076 | INFO    | Posted to Facebook successfully. Post ID: 122164028912980670
+2026-08-21 03:26:50,281 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-21 03:26:50,281 | INFO    | Jittering start by 97s so this run isn't posting at a perfectly fixed second.
+2026-08-21 03:28:27,282 | INFO    | Run started at 2026-08-21 03:28:27
+2026-08-21 03:28:27,688 | INFO    | Found 45 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-21 03:28:27,712 | INFO    | Weighted pick from top 3 candidate(s) (scores=[6, 5, 4]): Sanja Fidler’s world model startup Veeda AI raises $90M in seed fundin
+2026-08-21 03:28:27,712 | INFO    | Processing (1/44, score=6): Sanja Fidler’s world model startup Veeda AI raises $90M in seed fundin
+2026-08-21 03:28:28,015 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787282907_2caf3134.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-21 03:28:28,017 | INFO    | Post shape selected: question_hook
+2026-08-21 03:28:29,395 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-21 03:28:30,601 | INFO    | Groq narrative generated using openai/gpt-oss-120b (513 chars).
+2026-08-21 03:28:36,661 | INFO    | Posted to Facebook successfully. Post ID: 122164097678980670
