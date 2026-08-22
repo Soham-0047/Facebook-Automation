@@ -855,3 +855,14 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-22 10:56:36,059 | WARNING | All Gemini fallback models failed.
 2026-08-22 10:56:41,821 | INFO    | Posted to Facebook successfully. Post ID: 122164252886980670
+2026-08-22 14:49:59,597 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-22 14:49:59,598 | INFO    | Jittering start by 45s so this run isn't posting at a perfectly fixed second.
+2026-08-22 14:50:44,598 | INFO    | Run started at 2026-08-22 14:50:44
+2026-08-22 14:50:45,177 | INFO    | Found 43 usable article(s) after merging 7 bucket queries and filtering (raw merged=50).
+2026-08-22 14:50:45,200 | INFO    | Weighted pick from top 3 candidate(s) (scores=[6, 5, 5]): Online Instruments India gets Sebi approval to float IPO
+2026-08-22 14:50:45,200 | INFO    | Processing (1/42, score=5): Online Instruments India gets Sebi approval to float IPO
+2026-08-22 14:50:45,453 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787410245_27ddc6f4.png (theme=TECH NEWS)
+2026-08-22 14:50:45,455 | INFO    | Post shape selected: mini_story
+2026-08-22 14:50:46,133 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-22 14:50:47,148 | INFO    | Groq narrative generated using openai/gpt-oss-120b (192 chars).
+2026-08-22 14:50:51,074 | INFO    | Posted to Facebook successfully. Post ID: 122164273562980670
