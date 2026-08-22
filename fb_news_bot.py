@@ -12,18 +12,23 @@ Hardened version:
   distinct structural shapes (hot-take, question-hook, mini-story, stat-first,
   listicle, contrarian) -- not just varied wording inside one fixed skeleton
 - Image cards use a real, relevant stock photo (Pexels, free tier). Query
-  selection is now entity-aware: a small hint table translates recognizable
-  companies/products/agencies in the headline (e.g. "Ola Electric", "ISRO",
-  "Zomato") into concrete, photographable Pexels queries ("electric scooter
-  showroom", "rocket launch pad", "food delivery bike rider") BEFORE falling
-  back to the generic category query -- literal brand-name searches on a
-  stock library mostly return nothing or unrelated logo mockups, so this is
-  what actually gets a photo that looks like it belongs to the story instead
-  of "generic tech photo #4". Photos are picked from several query variants,
-  filtered by resolution, rendered with a vignette + legibility scrim and
-  optional brand tag, at 2x supersampling then downscaled for crisp,
-  high-definition text -- flat gradient card and AI photo providers remain
-  as fallbacks.
+  selection is entity-aware: a hint table translates recognizable
+  companies/products/agencies in the headline into concrete, photographable
+  Pexels queries before falling back to the generic category query.
+- HEAVY-NEWS QUALITY GATE: candidate articles are scored on recognizability,
+  source quality, freshness, and "big story" signals (unicorns, IPOs,
+  records, government/regulatory action, etc). Only stories that clear a
+  configurable bar (MIN_ENGAGEMENT_SCORE_TO_POST) get posted -- routine,
+  low-signal news is skipped entirely rather than posted just to fill a
+  slot. A safety valve relaxes the bar only if the page has gone quiet for
+  too long (STALE_PAGE_SAFETY_HOURS), so it never goes fully dark.
+- BENGALI COMPANION POSTS: after a qualifying English post goes out, the bot
+  may (probabilistically, capped per day) also publish a short natural
+  Bengali version of the same story -- written directly in colloquial,
+  code-mixed Bengali by the LLM (not machine-translated), optionally
+  grounded with a snippet pulled from actual Bengali-language news coverage
+  of the same topic via NewsAPI, and rendered on its own image card using a
+  Bengali-capable font.
 - News extraction pulls from several topic-specific queries per run (not one
   broad query), scores candidates on source quality, freshness decay, and
   clickbait/press-release patterns, and actively rotates topic categories so
@@ -34,6 +39,7 @@ Hardened version:
 import os
 import re
 import sys
+import io
 import json
 import time
 import glob
@@ -96,6 +102,25 @@ GEMINI_API_KEY = _get_secret("GEMINI_API_KEY")  # optional -- second free provid
 PEXELS_API_KEY = _get_secret("PEXELS_API_KEY")  # optional -- free-tier real stock photos for the news card
 PAGE_BRAND_TAG = _get_secret("PAGE_BRAND_TAG")  # optional -- small brand label drawn on the card, e.g. "TechIndia Daily"
 
+# --- Heavy-news quality gate ------------------------------------------------
+# Only articles scoring at or above this bar get posted at all -- see
+# _engagement_score / BIG_STORY_KEYWORDS below. Tune via env var if the page
+# is posting too rarely (lower it) or too generically (raise it).
+MIN_ENGAGEMENT_SCORE_TO_POST = int(os.getenv("MIN_ENGAGEMENT_SCORE_TO_POST", "8"))
+# Safety valve: if nothing has been posted in this many hours, relax the bar
+# for one run rather than let the page go permanently silent.
+STALE_PAGE_SAFETY_HOURS = int(os.getenv("STALE_PAGE_SAFETY_HOURS", "20"))
+
+# --- Bengali companion posts -------------------------------------------------
+BENGALI_ENABLED = os.getenv("BENGALI_ENABLED", "true").strip().lower() != "false"
+BENGALI_MAX_PER_DAY = int(os.getenv("BENGALI_MAX_PER_DAY", "2"))  # hard cap, "once or twice a day"
+BENGALI_POST_CHANCE = float(os.getenv("BENGALI_POST_CHANCE", "0.5"))  # per-eligible-run chance
+# Google Fonts' Noto Sans Bengali variable font -- covers the Bengali script
+# properly (Poppins/DejaVu do not). Downloaded once and cached, same pattern
+# as the Latin fonts below. If this ever 404s, `apt-get install
+# fonts-noto-bengali` on the runner and the system-font fallback picks it up.
+FONT_URL_BENGALI = "https://raw.githubusercontent.com/google/fonts/main/ofl/notosansbengali/NotoSansBengali[wdth,wght].ttf"
+
 # Ordered fallback list of free Groq models -- tried in order, first success wins.
 # Free-tier model rosters on Groq change without much notice (models get deprecated,
 # renamed, or rate-limited differently), so hardcoding one model is fragile. If the
@@ -144,6 +169,7 @@ SYSTEM_FONT_FALLBACK_PATTERNS = {
     "semibold": ["DejaVuSans-Bold.ttf"],
     "medium": ["DejaVuSans.ttf"],
 }
+SYSTEM_FONT_FALLBACK_PATTERNS_BN = ["NotoSansBengali*.ttf", "Lohit-Bengali.ttf", "kalpurush.ttf", "*Bengali*.ttf"]
 
 # (keywords to match in the title, kicker label shown on the card, top gradient
 # color, bottom gradient color, Pexels search query) -- first match wins, checked
@@ -173,6 +199,20 @@ DEFAULT_THEME = ("TECH NEWS", (30, 58, 138), (59, 130, 246), "technology india c
 # Last-resort Pexels queries if even the category query comes up empty/low-res --
 # broad enough to almost always return something usable.
 PEXELS_GENERIC_FALLBACKS = ["technology office India", "modern technology abstract"]
+
+# Bengali kicker label for each category-theme label above -- used on the
+# Bengali companion card instead of the English kicker text.
+BN_CATEGORY_KICKERS = {
+    "ARTIFICIAL INTELLIGENCE": "কৃত্রিম বুদ্ধিমত্তা",
+    "STARTUP & FUNDING": "স্টার্টআপ ও ফান্ডিং",
+    "FINTECH": "ফিনটেক",
+    "E-COMMERCE": "ই-কমার্স",
+    "ELECTRIC & AUTO": "ইলেকট্রিক ও অটো",
+    "SPACE": "মহাকাশ",
+    "MOBILE & GADGETS": "মোবাইল ও গ্যাজেট",
+    "HEALTHCARE": "স্বাস্থ্যসেবা",
+    "TECH NEWS": "প্রযুক্তি সংবাদ",
+}
 
 # ----------------------------------------------------------------------------
 # ENTITY -> VISUAL QUERY HINTS
@@ -271,7 +311,7 @@ MAX_ARTICLE_AGE_HOURS = 72  # older than this reads as stale even if never poste
 # Weighted keywords used to rank same-day candidate articles by how likely
 # they are to actually get engagement -- recognizable names, funding/launch
 # events, and numbers in the headline consistently outperform generic
-# coverage. Used to pick WHICH of the ~20 fetched articles to post, not to
+# coverage. Used to pick WHICH of the fetched articles to post, not to
 # fabricate anything about it.
 ENGAGEMENT_KEYWORDS = {
     "openai": 3, "chatgpt": 3, "gemini": 2, "google": 2, "meta": 2, "apple": 2,
@@ -284,6 +324,19 @@ ENGAGEMENT_KEYWORDS = {
     "hack": 2, "breach": 2, "ai": 2, "artificial intelligence": 2,
     "robot": 1, "self-driving": 2,
 }
+
+# Extra weight for genuinely "heavy", broadly-attention-grabbing story types --
+# merged into ENGAGEMENT_KEYWORDS below so the quality gate actually filters
+# for the news that gets shared/commented on, not just anything on-topic.
+BIG_STORY_KEYWORDS = {
+    "unicorn": 4, "ipo": 4, "acquisition": 3, "acquires": 3, "record": 3,
+    "historic": 3, "first-ever": 3, "world's first": 4, "india's first": 4,
+    "largest": 3, "biggest": 3, "billion": 3, "trillion": 4, "market cap": 2,
+    "sebi": 2, "rbi": 2, "government": 1, "modi": 2, "parliament": 2,
+    "ban": 3, "crackdown": 2, "regulator": 2, "world record": 4, "landmark": 3,
+    "breakthrough": 2, "milestone": 2, "surpasses": 2, "overtakes": 2,
+}
+ENGAGEMENT_KEYWORDS.update(BIG_STORY_KEYWORDS)
 
 POSTED_FILE = os.getenv("POSTED_FILE", "posted_articles.json")
 RECENT_CATEGORY_WINDOW = 4  # how many past posts count toward the "don't repeat this category" penalty
@@ -342,6 +395,12 @@ def validate_config():
         logger.info(
             "PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of "
             "real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards."
+        )
+    if BENGALI_ENABLED and not (GROQ_API_KEY or GEMINI_API_KEY):
+        logger.info(
+            "BENGALI_ENABLED is on but neither GROQ_API_KEY nor GEMINI_API_KEY is set -- Bengali "
+            "companion posts need an LLM to write natural Bengali, so they'll silently be skipped "
+            "until one of those keys is configured."
         )
 
 
@@ -456,6 +515,7 @@ class EnhancedNewsBot:
         self._stop = False
         self._font_paths = None   # resolved lazily on first card render
         self._font_cache = {}     # (weight, size) -> ImageFont instance
+        self._bn_font_path = None  # resolved lazily on first Bengali card render
 
         # --- Persona voices for LLM-generated content -------------------
         # Randomly picking a persona per post is what actually kills the
@@ -481,6 +541,29 @@ class EnhancedNewsBot:
             "This begs the question", "at the end of the day", "when it comes to",
             "In a world where", "It goes without saying", "signals a shift",
             "underscores the importance", "paves the way", "stay tuned",
+        ]
+
+        # --- Bengali voice: personas + banned-phrase list -----------------
+        # Same principle as the English side, tuned for Bengali: a specific
+        # persona plus explicit "don't sound like a translation" phrases do
+        # far more than a generic "write this in Bengali" instruction.
+        self.bengali_personas = [
+            "a witty, conversational Bengali tech journalist who writes the way popular Bengali digital "
+            "portals write -- natural spoken-register Bengali, code-mixing common English tech words "
+            "(AI, startup, funding, app) the way Bengali readers actually read and write them",
+            "a plainspoken Bengali business reporter who explains money, valuation, and market impact "
+            "in everyday colloquial Bengali, not formal boardroom language",
+            "an enthusiastic young Bengali tech blogger explaining a gadget or AI story the way you'd "
+            "explain it to a friend over adda -- casual, direct, a little opinionated",
+        ]
+        self.banned_patterns_bn = [
+            "প্রযুক্তির এই দ্রুত পরিবর্তনশীল যুগে", "সামগ্রিকভাবে বলা যায়", "উপসংহারে",
+            "এই প্রেক্ষাপটে", "এক কথায় বলতে গেলে", "নিঃসন্দেহে", "বিপ্লব ঘটাতে চলেছে",
+            "যুগান্তকারী পদক্ষেপ", "চাঞ্চল্যকর খবর", "লক্ষণীয় বিষয় হলো",
+        ]
+        self.hashtag_pool_bn = [
+            "#বাংলাখবর", "#প্রযুক্তি", "#টেকনিউজ", "#স্টার্টআপ", "#ভারত",
+            "#TechIndia", "#IndianTech",
         ]
 
         # --- Fallback pools (used only if BOTH Groq and Gemini fail/aren't
@@ -555,10 +638,11 @@ class EnhancedNewsBot:
     @staticmethod
     def _posted_display(item):
         """Human-readable line for --stats output -- handles both the new
-        dict entries (with category/date) and old plain-string entries."""
+        dict entries (with category/date/lang) and old plain-string entries."""
         if isinstance(item, dict):
             cat = f" [{item['category']}]" if item.get('category') else ""
-            return f"{item.get('title', item.get('key', '?'))[:60]}{cat}"
+            lang = " (bn)" if item.get('lang') == 'bn' else ""
+            return f"{item.get('title', item.get('key', '?'))[:60]}{cat}{lang}"
         return f"{str(item)[:60]}"
 
     def _posted_keys(self):
@@ -590,6 +674,43 @@ class EnhancedNewsBot:
         # also check the raw title against older entries saved before this
         # dedup scheme existed, so upgrading the script doesn't cause re-posts
         return key in posted or title in posted
+
+    def _last_post_timestamp(self):
+        """Most recent posted_at timestamp across ALL posts (English or
+        Bengali), used only to decide whether the heavy-news bar should be
+        relaxed for one run -- see STALE_PAGE_SAFETY_HOURS."""
+        timestamps = []
+        for item in self.posted_today:
+            if isinstance(item, dict) and item.get("posted_at"):
+                try:
+                    timestamps.append(datetime.fromisoformat(item["posted_at"]))
+                except ValueError:
+                    continue
+        return max(timestamps) if timestamps else None
+
+    def _hours_since_last_post(self):
+        last = self._last_post_timestamp()
+        if not last:
+            return None
+        return (datetime.now() - last).total_seconds() / 3600
+
+    def _bengali_posts_today(self):
+        """How many Bengali companion posts have already gone out today --
+        used to enforce BENGALI_MAX_PER_DAY ("once or twice a day")."""
+        today = datetime.now().date().isoformat()
+        count = 0
+        for item in self.posted_today:
+            if isinstance(item, dict) and item.get("lang") == "bn":
+                if item.get("posted_at", "")[:10] == today:
+                    count += 1
+        return count
+
+    def _should_attempt_bengali(self):
+        if not BENGALI_ENABLED:
+            return False
+        if self._bengali_posts_today() >= BENGALI_MAX_PER_DAY:
+            return False
+        return random.random() < BENGALI_POST_CHANCE
 
     def _engagement_score(self, article):
         """Rank candidate articles by how likely they are to actually catch
@@ -729,8 +850,12 @@ class EnhancedNewsBot:
     def get_indian_tech_news(self):
         """Pulls from several topic-specific queries (see NEWS_QUERY_BUCKETS)
         instead of one broad query, merges + dedups by URL, and filters out
-        stale, malformed, or clickbait/press-release-flavored results before
-        they ever reach scoring."""
+        stale, malformed, thin, or clickbait/press-release-flavored results
+        before they ever reach scoring. The description-length floor is
+        deliberately strict (80 chars, not 50) -- thin descriptions are the
+        clearest early signal of a low-substance aggregator blurb rather than
+        an actual reported story, and we only want heavy-hitting news through
+        the door at all."""
         seen_urls = set()
         merged = []
         for query in NEWS_QUERY_BUCKETS:
@@ -748,7 +873,7 @@ class EnhancedNewsBot:
             title = a.get('title', '')
             if not title or title == '[Removed]':
                 continue
-            if not a.get('description') or len(a.get('description', '')) <= 50:
+            if not a.get('description') or len(a.get('description', '')) <= 80:
                 continue
             if not a.get('url'):
                 continue
@@ -764,6 +889,36 @@ class EnhancedNewsBot:
             len(filtered), len(NEWS_QUERY_BUCKETS), len(merged),
         )
         return filtered
+
+    def _fetch_bengali_source_snippet(self, query):
+        """Best-effort: pull one short snippet of ACTUAL Bengali-language news
+        coverage of the same topic/entity via NewsAPI (language=bn), so the
+        Bengali companion post can be grounded in how Bengali outlets are
+        covering it, not just an LLM guess at translation. Purely additive --
+        returns None on any failure, and the Bengali post still gets written
+        (from the English source material) without it."""
+        if not query:
+            return None
+        try:
+            resp = self.session.get(
+                "https://newsapi.org/v2/everything",
+                params={
+                    'q': query, 'apiKey': NEWS_API_KEY, 'language': 'bn',
+                    'sortBy': 'relevancy', 'pageSize': 3,
+                },
+                timeout=15,
+            )
+            if resp.status_code != 200:
+                return None
+            for a in resp.json().get('articles', []):
+                desc = a.get('description')
+                if desc and len(desc) > 40:
+                    return desc[:500]
+        except requests.exceptions.RequestException:
+            return None
+        except (ValueError, KeyError):
+            return None
+        return None
 
     # -------------------- full article scraping (optional, best-effort) --------------------
     SCRAPER_USER_AGENT = "Mozilla/5.0 (compatible; NewsBot/1.0; +https://example.com/bot)"
@@ -1011,7 +1166,7 @@ class EnhancedNewsBot:
                 continue
         return None
 
-    # -------------------- shared card rendering --------------------
+    # -------------------- shared card rendering (Latin fonts) --------------------
     def _resolve_fonts(self):
         """Download and cache the Poppins font files once per process. Any
         font that fails to download gets a None entry, so _font() knows to
@@ -1059,6 +1214,68 @@ class EnhancedNewsBot:
             font = ImageFont.load_default()
         self._font_cache[key] = font
         return font
+
+    # -------------------- Bengali font (Noto Sans Bengali, variable) --------------------
+    def _resolve_bengali_font(self):
+        """Download and cache Noto Sans Bengali once per process -- Poppins/
+        DejaVu don't cover the Bengali script at all, so the Bengali card
+        needs its own font. Falls back to a system-installed Bengali font
+        (e.g. from `apt install fonts-noto-bengali`) if the download fails,
+        and to the PIL default bitmap font (which will render Bengali as
+        boxes) only if truly nothing is available."""
+        if self._bn_font_path is not None:
+            return self._bn_font_path
+        local_path = os.path.join(FONT_CACHE_DIR, "NotoSansBengali.ttf")
+        try:
+            os.makedirs(FONT_CACHE_DIR, exist_ok=True)
+            if not os.path.exists(local_path):
+                resp = self.session.get(FONT_URL_BENGALI, timeout=15)
+                resp.raise_for_status()
+                with open(local_path, "wb") as f:
+                    f.write(resp.content)
+            self._bn_font_path = local_path
+        except Exception as e:
+            logger.info("Could not fetch Bengali font (%s) -- searching for a system Bengali font instead.", e)
+            self._bn_font_path = self._find_system_font(SYSTEM_FONT_FALLBACK_PATTERNS_BN)
+        return self._bn_font_path
+
+    def _font_bn(self, size, bold=True):
+        key = (f"bn_{'bold' if bold else 'regular'}", size)
+        if key in self._font_cache:
+            return self._font_cache[key]
+        path = self._resolve_bengali_font()
+        try:
+            font = ImageFont.truetype(path, size) if path else ImageFont.load_default()
+            if bold and path:
+                try:
+                    font.set_variation_by_axes([700])  # Noto Sans Bengali is a variable font (wght axis)
+                except Exception:
+                    pass  # static font, or variation not supported -- default weight is fine
+        except Exception:
+            font = ImageFont.load_default()
+        self._font_cache[key] = font
+        return font
+
+    def _fit_bengali_headline(self, draw, text, max_width, max_lines, start_size, min_size):
+        """Same shrink-to-fit logic as _fit_headline, using the Bengali font
+        and a Bengali reference glyph pair for width estimation (Bengali
+        conjuncts render wider on average than Latin characters)."""
+        size = start_size
+        while size >= min_size:
+            font = self._font_bn(size, bold=True)
+            avg_char_w = draw.textlength("অআ", font=font) / 2 or 1
+            wrap_width = max(6, int(max_width / avg_char_w))
+            wrapped = textwrap.wrap(text, width=wrap_width)
+            if len(wrapped) <= max_lines:
+                return font, wrapped
+            size -= 4
+        font = self._font_bn(min_size, bold=True)
+        avg_char_w = draw.textlength("অআ", font=font) / 2 or 1
+        wrap_width = max(6, int(max_width / avg_char_w))
+        wrapped = textwrap.wrap(text, width=wrap_width)[:max_lines]
+        if wrapped:
+            wrapped[-1] = wrapped[-1].rstrip() + "…"
+        return font, wrapped
 
     @staticmethod
     def _gradient_image(w, h, top_rgb, bottom_rgb):
@@ -1246,7 +1463,6 @@ class EnhancedNewsBot:
             if not photo_bytes:
                 return None
 
-            import io
             photo = Image.open(io.BytesIO(photo_bytes)).convert("RGB")
             base = self._cover_fit(photo, CARD_W * SUPERSAMPLE, CARD_H * SUPERSAMPLE)
 
@@ -1333,6 +1549,88 @@ class EnhancedNewsBot:
             or self._gemini_image(prompt)
             or self._pollinations_image(prompt)
         )
+
+    def generate_bengali_card(self, article, bn_headline):
+        """Image card for the Bengali companion post: same Pexels/gradient
+        background pipeline as the English card, but the kicker and headline
+        are drawn in Bengali using Noto Sans Bengali. Returns None (post goes
+        out text-only) if rendering fails for any reason."""
+        try:
+            title = article.get('title', '').strip()
+            kicker_en, top_rgb, bottom_rgb, category_query = self._category_theme(title)
+            kicker = BN_CATEGORY_KICKERS.get(kicker_en, "প্রযুক্তি সংবাদ")
+            entity_query = _entity_visual_query(title.lower())
+
+            queries = []
+            if entity_query:
+                queries.append(entity_query)
+            queries += [category_query, f"{category_query} closeup"] + PEXELS_GENERIC_FALLBACKS
+            photo_bytes = self._pexels_photo(queries)
+
+            W, H = CARD_W * SUPERSAMPLE, CARD_H * SUPERSAMPLE
+            scale = W / CARD_W
+            scrim = bool(photo_bytes)
+            if photo_bytes:
+                photo = Image.open(io.BytesIO(photo_bytes)).convert("RGB")
+                base = self._cover_fit(photo, W, H)
+            else:
+                base = self._gradient_image(W, H, top_rgb, bottom_rgb)
+
+            img = base.convert("RGBA")
+            if scrim:
+                grad = Image.new("L", (1, H), color=0)
+                for y in range(H):
+                    t = y / H
+                    grad.putpixel((0, y), int(235 * max(0, (t - 0.25) / 0.75) ** 1.4))
+                alpha = grad.resize((W, H))
+                dark = Image.new("RGBA", (W, H), (10, 10, 20, 255))
+                dark.putalpha(alpha)
+                img = Image.alpha_composite(img, dark)
+
+            draw = ImageDraw.Draw(img)
+            pill_font = self._font_bn(int(26 * scale), bold=True)
+            bbox = draw.textbbox((0, 0), kicker, font=pill_font)
+            pill_w = bbox[2] - bbox[0] + int(56 * scale)
+            pad = int(70 * scale)
+            pill_fill = (255, 255, 255, 235) if scrim else (255, 255, 255, 255)
+            draw.rounded_rectangle(
+                [pad, int(70 * scale), pad + pill_w, int(126 * scale)],
+                radius=int(28 * scale), fill=pill_fill,
+            )
+            draw.text((pad + int(24 * scale), int(80 * scale)), kicker, font=pill_font, fill=top_rgb)
+
+            font, wrapped = self._fit_bengali_headline(
+                draw, bn_headline, max_width=W - int(144 * scale), max_lines=4,
+                start_size=int(68 * scale), min_size=int(36 * scale),
+            )
+            line_h = int(font.size * 1.35)  # Bengali conjuncts/matras need extra line height vs Latin
+            area_top, area_bottom = int(160 * scale), H - int(155 * scale)
+            total_h = line_h * len(wrapped)
+            y = max(area_top, area_top + ((area_bottom - area_top) - total_h) // 2)
+            for line in wrapped:
+                if scrim:
+                    draw.text((int(72 * scale) + 2, y + 2), line, font=font, fill=(0, 0, 0, 140))
+                draw.text((int(72 * scale), y), line, font=font, fill=(255, 255, 255))
+                y += line_h
+
+            source = article.get('source', {}).get('name', 'Tech News')
+            footer_font = self._font_bn(int(24 * scale), bold=False)
+            draw.text(
+                (int(72 * scale), H - int(85 * scale)),
+                f"{source}  •  বাংলা সংস্করণ", font=footer_font, fill=(235, 230, 255),
+            )
+
+            final = img.convert("RGB").resize((CARD_W, CARD_H), Image.LANCZOS)
+            os.makedirs("/tmp/news_bot", exist_ok=True)
+            path = f"/tmp/news_bot/bncard_{int(time.time())}_{uuid.uuid4().hex[:8]}.png"
+            final.save(path, quality=95)
+            if os.path.getsize(path) < 1000:
+                return None
+            logger.info("Bengali card generated: %s (kicker=%s)", path, kicker)
+            return path
+        except Exception as e:
+            logger.info("Bengali card generation failed (%s) -- Bengali post will go out text-only.", e)
+            return None
 
     # -------------------- real-fact lookup (Wikipedia, free, no key) --------------------
     def _guess_entity(self, title):
@@ -1422,10 +1720,47 @@ class EnhancedNewsBot:
         max_tokens = 340 if full_text and shape != "listicle" else 180
         return system_prompt, user_prompt, max_tokens
 
+    def _build_bengali_prompts(self, title, description, wiki_fact=None, bn_context=None):
+        """Prompt-building for the Bengali companion post. Uses the SAME
+        generic Groq/Gemini callers as the English path (they're language-
+        agnostic) -- only the system/user prompts differ. Explicitly asks
+        for natural, code-mixed, conversational Bengali and names concrete
+        cliche phrases to avoid, which does far more for "doesn't read like
+        a translation" than a bare 'write this in Bengali' instruction."""
+        persona = random.choice(self.bengali_personas)
+        banned = ", ".join(f'"{p}"' for p in random.sample(
+            self.banned_patterns_bn, k=min(5, len(self.banned_patterns_bn))
+        ))
+
+        system_prompt = (
+            f"তুমি {persona}। ভারতীয় প্রযুক্তি সংবাদ নিয়ে ফেসবুকের জন্য বাংলায় একটা পোস্ট লিখছ। "
+            "একদম স্বাভাবিক, চলিত বাংলায় লিখবে -- যেন সরাসরি একজন মানুষ লিখছে, ইংরেজি থেকে যান্ত্রিকভাবে "
+            "অনুবাদ করা মনে না হয়। প্রযুক্তি সংক্রান্ত ইংরেজি শব্দ (যেমন AI, startup, funding, app, IPO) "
+            "দরকার হলে বাংলা লেখার মধ্যেই ইংরেজিতে রেখে দিতে পারো -- বাংলা পাঠকরা এভাবেই লেখেন ও পড়েন। "
+            "অতিরিক্ত কেতাবি, সংস্কৃতঘেঁষা বা 'অনুবাদ-অনুবাদ' শোনাচ্ছে এমন বাংলা এড়িয়ে চলো। "
+            f"এই ধরনের বাক্য বা প্রকাশভঙ্গি ব্যবহার কোরো না: {banned}।\n\n"
+            "উত্তর ঠিক এই বিন্যাসে দাও, আর কিছু নয়:\n"
+            "শিরোনাম: <ছোট, আকর্ষণীয়, একদম স্বাভাবিক বাংলা শিরোনাম -- আক্ষরিক অনুবাদ নয়, বাংলা পাঠকের কাছে "
+            "যেভাবে বলা স্বাভাবিক শোনায় সেভাবে>\n"
+            "<৩-৪টি ছোট বাক্যে মূল খবরটা এবং তোমার নিজের একটা সংক্ষিপ্ত পর্যবেক্ষণ বা মতামত, মোট ৬০-১০০ শব্দ>\n\n"
+            "শুধু বাংলায় লিখবে। কোনো ইংরেজি অনুবাদ, নোট, ব্যাখ্যা বা markdown যোগ কোরো না।"
+        )
+
+        user_prompt = f"Headline (English source): {title}\nDescription: {description}\n"
+        if wiki_fact:
+            user_prompt += f"Optional background fact (use only if relevant): {wiki_fact}\n"
+        if bn_context:
+            user_prompt += (
+                f"For tone/grounding only (don't just copy this), here is how Bengali-language news is "
+                f"covering a related topic: {bn_context}\n"
+            )
+        return system_prompt, user_prompt, 260
+
     def get_groq_narrative(self, system_prompt, user_prompt, max_tokens):
         """Tries each model in GROQ_MODEL_FALLBACKS in order, returns on first
         success. Returns None if GROQ_API_KEY isn't set, the key is invalid,
-        or every model fails -- caller moves on to the next provider."""
+        or every model fails -- caller moves on to the next provider. Note:
+        this is language-agnostic -- it's reused as-is for Bengali prompts."""
         if not GROQ_API_KEY:
             return None
 
@@ -1481,7 +1816,8 @@ class EnhancedNewsBot:
         """Second free provider, tried only if Groq isn't configured or fails
         entirely. Different company, different outage/quota surface -- this is
         what actually makes the 'AI service' layer resilient rather than just
-        having four models from one vendor."""
+        having four models from one vendor. Language-agnostic, like the Groq
+        caller above -- reused as-is for Bengali prompts."""
         if not GEMINI_API_KEY:
             return None
 
@@ -1539,6 +1875,43 @@ class EnhancedNewsBot:
             self.get_groq_narrative(system_prompt, user_prompt, max_tokens)
             or self.get_gemini_narrative(system_prompt, user_prompt, max_tokens)
         )
+
+    def get_bengali_narrative(self, title, description, wiki_fact=None, bn_context=None):
+        """Top-level Bengali narrative generator -- same Groq-then-Gemini
+        fallback chain as the English path. Returns None if both providers
+        are unavailable/fail, in which case the caller skips the Bengali
+        companion post entirely rather than fall back to a canned pool
+        (there's no natural-sounding canned Bengali pool, and a clumsy
+        fallback would be worse than simply not posting one that run)."""
+        system_prompt, user_prompt, max_tokens = self._build_bengali_prompts(
+            title, description, wiki_fact, bn_context
+        )
+        return (
+            self.get_groq_narrative(system_prompt, user_prompt, max_tokens)
+            or self.get_gemini_narrative(system_prompt, user_prompt, max_tokens)
+        )
+
+    @staticmethod
+    def _parse_bengali_narrative(raw_text, fallback_title):
+        """Split the LLM's 'শিরোনাম: ...\\n\\n<body>' response into
+        (headline, body). Falls back gracefully if the model didn't follow
+        the format exactly -- first line becomes the headline, the rest the
+        body -- rather than failing the whole post."""
+        if not raw_text:
+            return fallback_title, None
+        text = raw_text.strip()
+        m = re.search(r'শিরোনাম\s*[:：]\s*(.+)', text)
+        if m:
+            headline = m.group(1).splitlines()[0].strip()
+            body_lines = [ln for ln in text.splitlines() if not ln.strip().startswith("শিরোনাম")]
+            body = "\n".join(ln for ln in body_lines if ln.strip()).strip()
+            return headline or fallback_title, body or None
+        lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+        if not lines:
+            return fallback_title, None
+        headline = lines[0]
+        body = "\n".join(lines[1:]).strip() or None
+        return headline, body
 
     # -------------------- content generation --------------------
     def _emoji_for(self, text):
@@ -1694,6 +2067,38 @@ class EnhancedNewsBot:
 
         return final_post
 
+    def create_bengali_post(self, article, bn_headline, bn_body):
+        """Build the Bengali companion post text: Bengali headline + Bengali
+        body (both LLM-written, not translated), source/date line, the same
+        article link (so it still drives traffic/reach the same way), and a
+        Bengali-leaning hashtag mix with a couple of English tags kept in
+        for algorithmic reach."""
+        source = article.get('source', {}).get('name', 'Tech News')
+        published_at = article.get('publishedAt', '')
+        try:
+            date_obj = datetime.fromisoformat(published_at.replace('Z', '+00:00'))
+            formatted_date = date_obj.strftime('%d %B, %Y')
+        except ValueError:
+            formatted_date = 'আজ'
+
+        emoji = self._emoji_for(article.get('title', ''))
+        parts = [f"{emoji} {bn_headline}", ""]
+        if bn_body:
+            parts.append(bn_body)
+            parts.append("")
+        parts.append(f"({source}, {formatted_date})")
+        if article.get('url'):
+            parts.append(f"🔗 বিস্তারিত পড়ুন: {article['url']}")
+        parts.append("")
+        tags = random.sample(self.hashtag_pool_bn, k=min(4, len(self.hashtag_pool_bn)))
+        random.shuffle(tags)
+        parts.append(" ".join(tags))
+
+        final_post = "\n".join(parts)
+        if len(final_post) > 60000:
+            final_post = final_post[:59900].rsplit("\n", 1)[0]
+        return final_post
+
     # -------------------- publishing --------------------
     def post_to_facebook(self, message, image_path=None):
         """Post with an image if available, otherwise a text-only post.
@@ -1740,6 +2145,44 @@ class EnhancedNewsBot:
                     pass
         return False
 
+    def _post_bengali_companion(self, article):
+        """Best-effort: write and publish a natural Bengali version of the
+        story that was just posted in English. Grounded in the same
+        title/description (and, if available, a snippet of real Bengali-
+        language coverage of the same topic), written directly in Bengali by
+        the LLM rather than machine-translated. Never raises -- any failure
+        here just means no Bengali post this run, the English post already
+        succeeded."""
+        title = article.get('title', '').strip()
+        description = self._clean_description(article.get('description', '').strip())
+        wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
+        entity = self._guess_entity(title)
+        bn_context = self._fetch_bengali_source_snippet(entity or title[:60])
+
+        raw = self.get_bengali_narrative(title, description, wiki_fact=wiki_fact, bn_context=bn_context)
+        if not raw:
+            logger.info("Bengali narrative unavailable this run (Groq/Gemini both failed or unconfigured) -- skipping Bengali companion post.")
+            return False
+
+        bn_headline, bn_body = self._parse_bengali_narrative(raw, fallback_title=title)
+        post_text = self.create_bengali_post(article, bn_headline, bn_body)
+        image_path = self.generate_bengali_card(article, bn_headline)
+
+        if self.post_to_facebook(post_text, image_path):
+            self.posted_today.append({
+                "key": self._dedup_key(article) + "::bn",
+                "title": bn_headline,
+                "category": self._category_theme(title)[0],
+                "posted_at": datetime.now().isoformat(),
+                "lang": "bn",
+            })
+            self.save_posted_articles()
+            logger.info("Bengali companion post published: %s", bn_headline[:70])
+            return True
+
+        logger.warning("Bengali companion post failed to publish.")
+        return False
+
     # -------------------- run loop --------------------
     def run_once(self):
         logger.info("Run started at %s", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -1754,15 +2197,48 @@ class EnhancedNewsBot:
             logger.info("No new articles to post -- everything fetched was already posted.")
             return 0
 
-        # Post the most attention-grabbing unposted story, weighted toward
-        # (but not locked to) the single top-scored pick -- see _pick_candidate.
         candidates.sort(key=self._engagement_score, reverse=True)
-        first_pick = self._pick_candidate(candidates)
+
+        # --- Heavy-news quality gate ------------------------------------
+        # Only post stories that clear MIN_ENGAGEMENT_SCORE_TO_POST -- i.e.
+        # genuinely attention-grabbing news (big names, funding/records/IPOs,
+        # regulatory action, etc), not routine coverage. A safety valve
+        # relaxes this for one run if the page hasn't posted anything in a
+        # long while, so it never goes fully silent.
+        hours_stale = self._hours_since_last_post()
+        heavy_candidates = [a for a in candidates if self._engagement_score(a) >= MIN_ENGAGEMENT_SCORE_TO_POST]
+
+        if heavy_candidates:
+            pool = heavy_candidates
+            logger.info(
+                "%d candidate(s) cleared the heavy-news bar (score >= %d).",
+                len(pool), MIN_ENGAGEMENT_SCORE_TO_POST,
+            )
+        elif hours_stale is None:
+            pool = candidates
+            logger.info("No posting history yet -- skipping the heavy-news bar for this first run.")
+        elif hours_stale >= STALE_PAGE_SAFETY_HOURS:
+            pool = candidates
+            logger.warning(
+                "No candidate cleared the heavy-news bar (score >= %d), but it's been %.1fh since the "
+                "last post -- posting the best available story anyway so the page doesn't go dark.",
+                MIN_ENGAGEMENT_SCORE_TO_POST, hours_stale,
+            )
+        else:
+            logger.info(
+                "No candidate cleared the heavy-news bar (score >= %d) this run, and the last post was "
+                "only %.1fh ago -- skipping this run rather than posting a routine story.",
+                MIN_ENGAGEMENT_SCORE_TO_POST, hours_stale,
+            )
+            return 0
+
+        first_pick = self._pick_candidate(pool)
         # Try the weighted pick first, then fall through the rest of the
-        # ranked list (excluding the one already tried) if it fails to post.
-        ordered = [first_pick] + [a for a in candidates if a is not first_pick]
+        # qualifying pool (excluding the one already tried) if it fails to post.
+        ordered = [first_pick] + [a for a in pool if a is not first_pick]
 
         posted_count = 0
+        posted_article = None
         consecutive_fb_failures = 0
         MAX_CONSECUTIVE_FAILURES = 2  # if FB rejects 2 in a row, it's the token/config, not the articles
 
@@ -1783,9 +2259,11 @@ class EnhancedNewsBot:
                     "title": article.get('title', '').strip(),
                     "category": category,
                     "posted_at": datetime.now().isoformat(),
+                    "lang": "en",
                 })
                 self.save_posted_articles()
                 posted_count += 1
+                posted_article = article
                 consecutive_fb_failures = 0
                 break  # one article per run, same as before
             else:
@@ -1802,6 +2280,13 @@ class EnhancedNewsBot:
 
         if posted_count == 0:
             logger.info("No new posts created this run.")
+            return posted_count
+
+        # --- Bengali companion post (best-effort, capped, probabilistic) --
+        if posted_article is not None and self._should_attempt_bengali():
+            logger.info("Attempting a Bengali companion post for this story.")
+            self._post_bengali_companion(posted_article)
+
         return posted_count
 
     def run_continuous(self, interval_hours=4):
@@ -1845,6 +2330,7 @@ def main():
     parser = argparse.ArgumentParser(description="Facebook news bot")
     parser.add_argument("--once", action="store_true", help="Post one article and exit (for cron/GitHub Actions)")
     parser.add_argument("--dry-run", action="store_true", help="Build a post (incl. Groq/Wikipedia calls) and print it, but never call Facebook")
+    parser.add_argument("--bengali-preview", action="store_true", help="With --dry-run, also generate and print a Bengali companion post preview")
     parser.add_argument("--continuous", action="store_true", help="Run forever, posting every N hours (not for serverless/CI)")
     parser.add_argument("--stats", action="store_true", help="Print how many articles have been posted today")
     parser.add_argument("--interval-hours", type=int, default=4, help="Hours between posts in --continuous mode")
@@ -1866,12 +2352,37 @@ def main():
             return
         candidates = [a for a in articles if not bot._already_posted(a)] or articles
         candidates.sort(key=bot._engagement_score, reverse=True)
-        article = bot._pick_candidate(candidates)
-        print(f"[DRY RUN] Would post about (engagement score={bot._engagement_score(article)}): {article.get('title')}\n")
+        heavy = [a for a in candidates if bot._engagement_score(a) >= MIN_ENGAGEMENT_SCORE_TO_POST]
+        pool = heavy or candidates
+        if heavy:
+            print(f"[DRY RUN] {len(heavy)} candidate(s) clear the heavy-news bar (score >= {MIN_ENGAGEMENT_SCORE_TO_POST}).")
+        else:
+            print(f"[DRY RUN] No candidate clears the heavy-news bar (score >= {MIN_ENGAGEMENT_SCORE_TO_POST}) -- "
+                  f"showing the best available anyway for preview purposes. A live run might skip posting entirely.")
+        article = bot._pick_candidate(pool)
+        print(f"\n[DRY RUN] Would post about (engagement score={bot._engagement_score(article)}): {article.get('title')}\n")
         print(bot.create_engaging_post(article))
         card_path = bot.generate_ai_image(article)
         if card_path:
             print(f"\n[DRY RUN] Preview card image saved locally at: {card_path}")
+
+        if args.bengali_preview:
+            print("\n" + "=" * 40)
+            print("[DRY RUN] Bengali companion preview:")
+            description = bot._clean_description(article.get('description', '').strip())
+            wiki_fact = bot.get_wikipedia_fact(bot._guess_entity(article.get('title', '')))
+            entity = bot._guess_entity(article.get('title', ''))
+            bn_context = bot._fetch_bengali_source_snippet(entity or article.get('title', '')[:60])
+            raw = bot.get_bengali_narrative(article.get('title', ''), description, wiki_fact=wiki_fact, bn_context=bn_context)
+            if raw:
+                bn_headline, bn_body = bot._parse_bengali_narrative(raw, fallback_title=article.get('title', ''))
+                print(bot.create_bengali_post(article, bn_headline, bn_body))
+                bn_card = bot.generate_bengali_card(article, bn_headline)
+                if bn_card:
+                    print(f"\n[DRY RUN] Bengali card saved locally at: {bn_card}")
+            else:
+                print("Bengali narrative unavailable -- check GROQ_API_KEY / GEMINI_API_KEY.")
+
         print("\n[DRY RUN] No Facebook call made.")
         return
 
