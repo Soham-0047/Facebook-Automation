@@ -808,3 +808,26 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-22 03:19:13,092 | WARNING | All Gemini fallback models failed.
 2026-08-22 03:19:19,782 | INFO    | Posted to Facebook successfully. Post ID: 122164214078980670
+2026-08-22 07:08:01,450 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-22 07:08:01,450 | INFO    | Jittering start by 367s so this run isn't posting at a perfectly fixed second.
+2026-08-22 07:14:08,450 | INFO    | Run started at 2026-08-22 07:14:08
+2026-08-22 07:14:08,971 | INFO    | Found 49 usable article(s) after merging 7 bucket queries and filtering (raw merged=56).
+2026-08-22 07:14:08,994 | INFO    | Weighted pick from top 3 candidate(s) (scores=[6, 5, 4]): Despite Skyroot feat, India has world's costliest rocket launches
+2026-08-22 07:14:08,994 | INFO    | Processing (1/47, score=4): Despite Skyroot feat, India has world's costliest rocket launches
+2026-08-22 07:14:09,516 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787382849_728f7338.png (theme=SPACE)
+2026-08-22 07:14:09,517 | INFO    | Post shape selected: listicle
+2026-08-22 07:14:10,037 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-22 07:14:10,696 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-22 07:14:10,731 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-22 07:14:10,766 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-22 07:14:10,766 | WARNING | All Groq fallback models failed.
+2026-08-22 07:14:10,904 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-22 07:14:10,964 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-22 07:14:10,964 | WARNING | All Gemini fallback models failed.
+2026-08-22 07:14:17,214 | INFO    | Posted to Facebook successfully. Post ID: 122164232192980670
