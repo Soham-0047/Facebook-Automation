@@ -831,3 +831,27 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-22 07:14:10,964 | WARNING | All Gemini fallback models failed.
 2026-08-22 07:14:17,214 | INFO    | Posted to Facebook successfully. Post ID: 122164232192980670
+2026-08-22 10:50:47,837 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-22 10:50:47,838 | INFO    | Jittering start by 346s so this run isn't posting at a perfectly fixed second.
+2026-08-22 10:56:33,838 | INFO    | Run started at 2026-08-22 10:56:33
+2026-08-22 10:56:34,396 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-22 10:56:34,419 | INFO    | Weighted pick from top 3 candidate(s) (scores=[6, 4, 3]): AI enters smartphone buying equation, but basics still matter most: Am
+2026-08-22 10:56:34,420 | INFO    | Processing (1/45, score=6): AI enters smartphone buying equation, but basics still matter most: Am
+2026-08-22 10:56:34,710 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787396194_0caa4363.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-22 10:56:34,712 | INFO    | Post shape selected: hot_take
+2026-08-22 10:56:34,762 | INFO    | robots.txt disallows scraping https://www.business-standard.com/technology/tech-news/ai-smartphone-buying-india-amazon-best-in-tech-survey-126082100790_1.html -- using description only.
+2026-08-22 10:56:34,897 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-22 10:56:35,760 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-22 10:56:35,802 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-22 10:56:35,839 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-22 10:56:35,839 | WARNING | All Groq fallback models failed.
+2026-08-22 10:56:35,975 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-22 10:56:36,059 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-22 10:56:36,059 | WARNING | All Gemini fallback models failed.
+2026-08-22 10:56:41,821 | INFO    | Posted to Facebook successfully. Post ID: 122164252886980670
