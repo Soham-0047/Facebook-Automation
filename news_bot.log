@@ -866,3 +866,8 @@
 2026-08-22 14:50:46,133 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
 2026-08-22 14:50:47,148 | INFO    | Groq narrative generated using openai/gpt-oss-120b (192 chars).
 2026-08-22 14:50:51,074 | INFO    | Posted to Facebook successfully. Post ID: 122164273562980670
+2026-08-23 03:26:44,319 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-23 03:26:44,319 | INFO    | Jittering start by 319s so this run isn't posting at a perfectly fixed second.
+2026-08-23 03:32:03,320 | INFO    | Run started at 2026-08-23 03:32:03
+2026-08-23 03:32:04,324 | INFO    | Found 44 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-23 03:32:04,351 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 12.7h ago -- skipping this run rather than posting a routine story.
