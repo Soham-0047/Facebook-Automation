@@ -954,3 +954,8 @@
     "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
 2026-08-24 07:36:08,891 | WARNING | All Gemini fallback models failed.
 2026-08-24 07:36:08,891 | INFO    | Bengali narrative unavailable this run (Groq/Gemini both failed or unconfigured) -- skipping Bengali companion post.
+2026-08-24 11:02:58,677 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-24 11:02:58,677 | INFO    | Jittering start by 436s so this run isn't posting at a perfectly fixed second.
+2026-08-24 11:10:14,678 | INFO    | Run started at 2026-08-24 11:10:14
+2026-08-24 11:10:15,188 | INFO    | Found 47 usable article(s) after merging 7 bucket queries and filtering (raw merged=55).
+2026-08-24 11:10:15,210 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 3.6h ago -- skipping this run rather than posting a routine story.
