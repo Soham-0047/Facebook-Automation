@@ -926,3 +926,31 @@
 2026-08-24 03:37:34,343 | INFO    | Run started at 2026-08-24 03:37:34
 2026-08-24 03:37:34,857 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=55).
 2026-08-24 03:37:34,886 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 16.7h ago -- skipping this run rather than posting a routine story.
+2026-08-24 07:34:41,344 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-24 07:34:41,344 | INFO    | Jittering start by 78s so this run isn't posting at a perfectly fixed second.
+2026-08-24 07:35:59,344 | INFO    | Run started at 2026-08-24 07:35:59
+2026-08-24 07:36:00,275 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=54).
+2026-08-24 07:36:00,305 | WARNING | No candidate cleared the heavy-news bar (score >= 8), but it's been 20.7h since the last post -- posting the best available story anyway so the page doesn't go dark.
+2026-08-24 07:36:00,318 | INFO    | Weighted pick from top 3 candidate(s) (scores=[4, 4, 3]): The road to 2047 runs through UPI
+2026-08-24 07:36:00,319 | INFO    | Processing (1/46, score=4): The road to 2047 runs through UPI
+2026-08-24 07:36:00,967 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787556960_75f0a512.png (theme=FINTECH)
+2026-08-24 07:36:00,968 | INFO    | Post shape selected: mini_story
+2026-08-24 07:36:01,489 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-24 07:36:02,477 | INFO    | Groq narrative generated using openai/gpt-oss-120b (476 chars).
+2026-08-24 07:36:07,618 | INFO    | Posted to Facebook successfully. Post ID: 122164481894980670
+2026-08-24 07:36:07,619 | INFO    | Attempting a Bengali companion post for this story.
+2026-08-24 07:36:07,800 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-24 07:36:08,553 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-24 07:36:08,611 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-24 07:36:08,672 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-24 07:36:08,672 | WARNING | All Groq fallback models failed.
+2026-08-24 07:36:08,812 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-24 07:36:08,891 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-24 07:36:08,891 | WARNING | All Gemini fallback models failed.
+2026-08-24 07:36:08,891 | INFO    | Bengali narrative unavailable this run (Groq/Gemini both failed or unconfigured) -- skipping Bengali companion post.
