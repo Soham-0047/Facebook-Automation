@@ -969,3 +969,31 @@
 2026-08-25 03:27:32,675 | INFO    | Run started at 2026-08-25 03:27:32
 2026-08-25 03:27:33,746 | INFO    | Found 39 usable article(s) after merging 7 bucket queries and filtering (raw merged=50).
 2026-08-25 03:27:33,765 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 19.9h ago -- skipping this run rather than posting a routine story.
+2026-08-25 07:23:30,711 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-25 07:23:30,711 | INFO    | Jittering start by 357s so this run isn't posting at a perfectly fixed second.
+2026-08-25 07:29:27,711 | INFO    | Run started at 2026-08-25 07:29:27
+2026-08-25 07:29:28,172 | INFO    | Found 42 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-25 07:29:28,200 | WARNING | No candidate cleared the heavy-news bar (score >= 8), but it's been 23.9h since the last post -- posting the best available story anyway so the page doesn't go dark.
+2026-08-25 07:29:28,213 | INFO    | Weighted pick from top 3 candidate(s) (scores=[3, 2, 1]): Compute capacity is foundational infra of the AI era, says Preeti Loba
+2026-08-25 07:29:28,213 | INFO    | Processing (1/42, score=3): Compute capacity is foundational infra of the AI era, says Preeti Loba
+2026-08-25 07:29:28,464 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787642968_13b3e84f.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-25 07:29:28,465 | INFO    | Post shape selected: contrarian
+2026-08-25 07:29:29,186 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-25 07:29:30,095 | INFO    | Groq narrative generated using openai/gpt-oss-120b (420 chars).
+2026-08-25 07:29:35,358 | INFO    | Posted to Facebook successfully. Post ID: 122164622486980670
+2026-08-25 07:29:35,359 | INFO    | Attempting a Bengali companion post for this story.
+2026-08-25 07:29:35,437 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-25 07:29:36,126 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-25 07:29:36,168 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-25 07:29:36,212 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-25 07:29:36,212 | WARNING | All Groq fallback models failed.
+2026-08-25 07:29:36,334 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-25 07:29:36,423 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-25 07:29:36,424 | WARNING | All Gemini fallback models failed.
+2026-08-25 07:29:36,424 | INFO    | Bengali narrative unavailable this run (Groq/Gemini both failed or unconfigured) -- skipping Bengali companion post.
