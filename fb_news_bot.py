@@ -30,9 +30,39 @@ Hardened version:
   of the same topic via NewsAPI, and rendered on its own image card using a
   Bengali-capable font.
 - News extraction pulls from several topic-specific queries per run (not one
-  broad query), scores candidates on source quality, freshness decay, and
-  clickbait/press-release patterns, and actively rotates topic categories so
-  the page doesn't post five AI stories in a row
+  broad query), scores candidates on source quality, freshness decay, an
+  "unconfirmed/reportedly" penalty, and clickbait/press-release patterns,
+  and actively rotates topic categories so the page doesn't post five AI
+  stories in a row
+- HUMANIZER PASS: generated narratives are scored for common AI "tells"
+  (robotic connector words, overused em-dashes, repeated sentence openers,
+  suspiciously uniform sentence length, neat rule-of-three lists). A draft
+  that scores too high gets sent back for ONE corrective rewrite before
+  it's accepted. The prompt also actively steers away from this page's own
+  recent post-openings and personas, so the page doesn't settle into a new
+  set of tics over time.
+- GROUNDING / HALLUCINATION CHECK: any numeric claim (funding figures,
+  percentages, user counts) in a generated narrative is checked against the
+  source material it was given. A narrative citing a number that isn't
+  anywhere in the source gets discarded in favor of the canned fallback --
+  better under-written than confidently wrong.
+- RETENTION MECHANICS: the article link is posted as the first COMMENT
+  rather than in the post body by default (a well-known organic-reach lever
+  -- link-free posts get shown to more people, the link is still one tap
+  away). A lightweight performance-feedback loop pulls real like/comment/
+  share counts from the Graph API for posts old enough to have accumulated
+  engagement, and folds them into a rolling per-category score that nudges
+  future story selection toward whatever this page's actual audience
+  responds to.
+- CROSS-SOURCE CORROBORATION: before scoring, articles are clustered by
+  shared significant title words (no extra API calls -- reuses the same
+  fetched data) so the bot knows how many DISTINCT outlets are covering
+  roughly the same story. Multi-source stories score higher (more likely
+  both accurate and genuinely big); single-sourced "reportedly"/"rumored"
+  items score lower.
+- LINK HEALTH CHECK: the article's own URL is verified to still resolve
+  right before publishing -- a dead or 404 link on the story being promoted
+  gets skipped in favor of the next candidate rather than posted anyway.
 - Config validation on startup so it fails fast with a clear message
 """
 
@@ -120,6 +150,102 @@ BENGALI_POST_CHANCE = float(os.getenv("BENGALI_POST_CHANCE", "0.5"))  # per-elig
 # as the Latin fonts below. If this ever 404s, `apt-get install
 # fonts-noto-bengali` on the runner and the system-font fallback picks it up.
 FONT_URL_BENGALI = "https://raw.githubusercontent.com/google/fonts/main/ofl/notosansbengali/NotoSansBengali[wdth,wght].ttf"
+
+# --- "Doesn't sound like AI" humanizer pass ---------------------------------
+# Banned-phrase lists catch known cliches, but they can't catch *structural*
+# tells (uniform sentence length, robotic connector words, three-item lists).
+# AI_TELL_THRESHOLD controls how aggressively a draft gets sent back for one
+# corrective rewrite before it's accepted -- see _ai_tell_score() below.
+AI_TELL_THRESHOLD = int(os.getenv("AI_TELL_THRESHOLD", "3"))
+# How many of this page's own past post-openings to actively steer new posts
+# away from repeating, so the page doesn't develop its own new set of tics.
+RECENT_OPENING_WINDOW = int(os.getenv("RECENT_OPENING_WINDOW", "6"))
+
+# --- Fact-accuracy guardrail -------------------------------------------------
+# Best-effort check that any numeric claim the LLM makes is actually present
+# somewhere in the source material -- catches the single most common and most
+# damaging hallucination pattern (an invented stat) before it ever gets
+# posted. Doesn't try to catch every kind of hallucination, just the cheap,
+# checkable one.
+GROUNDING_CHECK_ENABLED = os.getenv("GROUNDING_CHECK_ENABLED", "true").strip().lower() != "false"
+
+# --- Retention mechanics ------------------------------------------------------
+# Posting the article link as the FIRST COMMENT rather than in the post body
+# is a well-known organic-reach lever on Facebook: posts that don't contain
+# an outbound link in the body get shown to more people by the algorithm,
+# and the link is still one tap away for anyone who wants it. Configurable
+# in case a future policy change or an A/B test says otherwise.
+POST_LINK_AS_FIRST_COMMENT = os.getenv("POST_LINK_AS_FIRST_COMMENT", "true").strip().lower() != "false"
+# Once a post is old enough to have accumulated real reactions, the bot pulls
+# its like/comment/share counts and folds them into a rolling per-category
+# performance score -- so which categories get engagement-scoring priority
+# reflects what THIS page's actual audience responds to, not just generic
+# keyword weights. Purely additive/best-effort; disabled by setting to "false".
+PERFORMANCE_FEEDBACK_ENABLED = os.getenv("PERFORMANCE_FEEDBACK_ENABLED", "true").strip().lower() != "false"
+PERFORMANCE_MIN_AGE_HOURS = int(os.getenv("PERFORMANCE_MIN_AGE_HOURS", "3"))  # let engagement accumulate first
+CATEGORY_PERF_FILE = os.getenv("CATEGORY_PERF_FILE", "category_performance.json")
+
+AI_TELL_PATTERNS = [
+    re.compile(r'\bmoreover\b', re.IGNORECASE),
+    re.compile(r'\bfurthermore\b', re.IGNORECASE),
+    re.compile(r"\bit'?s worth noting\b", re.IGNORECASE),
+    re.compile(r'\bin conclusion\b', re.IGNORECASE),
+    re.compile(r'\bgame.changer\b', re.IGNORECASE),
+    re.compile(r'\brevolutioniz', re.IGNORECASE),
+    re.compile(r'\bunderscores?\b', re.IGNORECASE),
+    re.compile(r'\bpaves? the way\b', re.IGNORECASE),
+    re.compile(r'\bnot only\b.{0,60}\bbut also\b', re.IGNORECASE),
+    re.compile(r'\bin today\'?s\b', re.IGNORECASE),
+    re.compile(r'\bstay tuned\b', re.IGNORECASE),
+    re.compile(r'\bsignals? a shift\b', re.IGNORECASE),
+]
+
+
+def _ai_tell_score(text):
+    """Cheap heuristic scorer for how "AI-generated" a piece of text reads.
+    Combines known cliche phrases with structural tells that a banned-phrase
+    list alone can't catch: overused em-dashes, repeated 'This...' sentence
+    openers, suspiciously uniform sentence length, and neat rule-of-three
+    lists. Higher = more robotic. Used to decide whether to send a draft
+    back for one corrective rewrite, not as a hard pass/fail gate."""
+    if not text:
+        return 0
+    score = 0
+    for pattern in AI_TELL_PATTERNS:
+        if pattern.search(text):
+            score += 2
+
+    dash_count = text.count('—') + text.count(' - ')
+    if dash_count >= 3:
+        score += 2
+
+    sentences = [s.strip() for s in re.split(r'(?<=[.!?])\s+', text) if s.strip()]
+    this_starts = sum(1 for s in sentences if s.lower().startswith('this '))
+    if this_starts >= 2:
+        score += 2
+
+    lengths = [len(s.split()) for s in sentences]
+    if len(lengths) >= 4:
+        avg = sum(lengths) / len(lengths)
+        variance = sum((l - avg) ** 2 for l in lengths) / len(lengths)
+        if variance < 4:  # every sentence is almost exactly the same length -- a classic LLM tell
+            score += 1
+
+    if re.search(r',\s*[a-z]+,\s*[a-z]+,?\s+and\s+[a-z]+', text, re.IGNORECASE):
+        score += 1  # neat rule-of-three list
+
+    return score
+
+
+def _extract_numeric_tokens(text):
+    """Numbers worth fact-checking -- ignores tiny numbers (list indices,
+    single-digit counts) since those are rarely the hallucination risk and
+    flagging them just creates noise."""
+    if not text:
+        return set()
+    raw = re.findall(r'\d[\d,]*\.?\d*', text)
+    return {n for n in raw if len(n.replace(',', '').replace('.', '')) >= 3}
+
 
 # Ordered fallback list of free Groq models -- tried in order, first success wins.
 # Free-tier model rosters on Groq change without much notice (models get deprecated,
@@ -353,6 +479,61 @@ def _kw_match(text_lower, keyword):
     return bool(pattern.search(text_lower))
 
 
+_TITLE_STOPWORDS = {
+    "the", "and", "for", "with", "from", "that", "this", "will", "have",
+    "has", "are", "was", "were", "its", "his", "her", "into", "over",
+    "after", "before", "amid", "amidst", "says", "said", "new", "india",
+    "indian", "how", "what", "why", "who", "not",
+}
+
+
+def _title_cluster_key(title):
+    """Significant-word set for a headline, used only to detect when several
+    different outlets are covering essentially the same story (see
+    _corroboration_counts). Short/common words are stripped so two
+    headlines match on what the story is actually about, not on shared
+    boilerplate like 'India' or 'says'."""
+    words = re.findall(r'[a-z0-9]+', title.lower())
+    return frozenset(w for w in words if len(w) > 3 and w not in _TITLE_STOPWORDS)
+
+
+def _corroboration_counts(articles):
+    """How many DISTINCT sources are covering approximately the same story,
+    for every article in the list -- computed entirely from data already
+    fetched (no extra API calls). A story independently reported by several
+    outlets is both more likely to be accurate (corroborated, not a single
+    outlet's unconfirmed scoop) and more likely to be a genuinely significant
+    story, so this number feeds directly into both the fact-accuracy and
+    heavy-news-only goals. O(n^2) over title-word-set Jaccard similarity,
+    which is fine at the ~50-article scale this runs at."""
+    keyed = [(a, _title_cluster_key(a.get('title', ''))) for a in articles]
+    counts = {}
+    for i, (art_i, key_i) in enumerate(keyed):
+        if not key_i:
+            counts[id(art_i)] = 1
+            continue
+        matched_sources = {(art_i.get('source', {}).get('name') or '').lower()}
+        count = 1
+        for j, (art_j, key_j) in enumerate(keyed):
+            if i == j or not key_j:
+                continue
+            src_j = (art_j.get('source', {}).get('name') or '').lower()
+            if src_j in matched_sources:
+                continue
+            overlap = key_i & key_j
+            union = key_i | key_j
+            # threshold tuned for short, differently-worded headlines about
+            # the same story ("X raises $300M" vs "X secures $300M funding")
+            # -- real corroboration rarely shares more than ~1/3 of all
+            # significant words once verbs/framing differ, but almost always
+            # shares at least 2 concrete words (the entity + the core fact).
+            if len(overlap) >= 2 and union and len(overlap) / len(union) >= 0.3:
+                count += 1
+                matched_sources.add(src_j)
+        counts[id(art_i)] = count
+    return counts
+
+
 LOG_FILE = os.getenv("LOG_FILE", "news_bot.log")
 REQUEST_TIMEOUT = 30  # seconds, applied to every outbound call
 
@@ -512,10 +693,13 @@ class EnhancedNewsBot:
     def __init__(self):
         self.session = make_session()
         self.posted_today = self.load_posted_articles()
+        self.category_performance = self.load_category_performance()
         self._stop = False
         self._font_paths = None   # resolved lazily on first card render
         self._font_cache = {}     # (weight, size) -> ImageFont instance
         self._bn_font_path = None  # resolved lazily on first Bengali card render
+        self._current_persona = None  # set by _build_narrative_prompts, read back by create_engaging_post
+        self._last_narrative_opening = None  # first few words of the accepted narrative, for anti-repeat tracking
 
         # --- Persona voices for LLM-generated content -------------------
         # Randomly picking a persona per post is what actually kills the
@@ -675,6 +859,47 @@ class EnhancedNewsBot:
         # dedup scheme existed, so upgrading the script doesn't cause re-posts
         return key in posted or title in posted
 
+    def _last_used_shape(self):
+        """Structural shape of the most recent ENGLISH post, if recorded --
+        used so _pick_shape can avoid immediately repeating it."""
+        for item in reversed(self.posted_today):
+            if isinstance(item, dict) and item.get("lang", "en") == "en" and item.get("shape"):
+                return item["shape"]
+        return None
+
+    def _last_used_persona(self):
+        for item in reversed(self.posted_today):
+            if isinstance(item, dict) and item.get("lang", "en") == "en" and item.get("persona"):
+                return item["persona"]
+        return None
+
+    def _recent_openings(self, n=RECENT_OPENING_WINDOW):
+        """First few words of this page's last n English post narratives --
+        fed back into the prompt as phrasing to actively avoid repeating, so
+        the page doesn't settle into its own new set of tics over time (the
+        same failure mode the persona/banned-phrase system exists to prevent,
+        just applied to the page's own history instead of generic AI tells)."""
+        openings = [item.get("opening") for item in self.posted_today
+                    if isinstance(item, dict) and item.get("lang", "en") == "en" and item.get("opening")]
+        return openings[-n:]
+
+    def _entity_history_note(self, entity):
+        """If this page has covered the same company/agency/product before,
+        surface that as optional context -- lets the writer reference
+        continuity ('the same company that...') when it's natural, which
+        reads as a page that actually follows a beat rather than firing off
+        disconnected one-off stories. Purely a suggestion; the prompt makes
+        clear it shouldn't be forced."""
+        if not entity:
+            return None
+        matches = [item for item in self.posted_today
+                   if isinstance(item, dict) and item.get("lang", "en") == "en"
+                   and entity.lower() in (item.get("title") or "").lower()]
+        if matches:
+            return (f"This page has covered {entity} before ({len(matches)} time(s) recently) -- "
+                     "you may reference that continuity naturally if it genuinely fits, but don't force it.")
+        return None
+
     def _last_post_timestamp(self):
         """Most recent posted_at timestamp across ALL posts (English or
         Bengali), used only to decide whether the heavy-news bar should be
@@ -751,6 +976,39 @@ class EnhancedNewsBot:
             repeats = recent.count(category)
             score -= repeats * 2  # each recent repeat of this exact category makes it less attractive to post again
 
+        # Accuracy signal: "reportedly", "sources say", "rumored" etc. mark a
+        # story as unconfirmed -- fine to post once it's officially confirmed,
+        # but not the kind of thing a heavy-news page should lead with.
+        if re.search(r'\b(reportedly|rumou?red|sources say|leak(?:ed)?|unconfirmed|allegedly)\b', title_lower):
+            score -= 3
+
+        # Corroboration signal: a story independently covered by several
+        # distinct outlets (see _corroboration_counts, computed once per run
+        # in get_indian_tech_news) is both more likely to be accurate and
+        # more likely to be a genuinely big story, not a single site's
+        # single-sourced item -- directly serves both the accuracy and
+        # heavy-news-only goals.
+        corroboration = article.get('_corroboration_count', 1)
+        if corroboration >= 4:
+            score += 4
+        elif corroboration >= 3:
+            score += 3
+        elif corroboration >= 2:
+            score += 1
+
+        # Learned signal: once a category has at least 3 real Facebook posts'
+        # worth of engagement data, nudge future scoring toward whatever this
+        # specific page's audience has actually responded to -- capped so it
+        # can meaningfully tie-break between similar stories without letting
+        # one viral fluke dominate every future run.
+        perf = self.category_performance.get(category, {})
+        if perf.get("n", 0) >= 3:
+            all_avgs = [v["avg"] for v in self.category_performance.values() if v.get("n", 0) >= 3]
+            baseline = sum(all_avgs) / len(all_avgs) if all_avgs else 0
+            if baseline > 0:
+                adjustment = round((perf["avg"] - baseline) / max(baseline, 1) * 2)
+                score += max(-2, min(3, adjustment))
+
         return score
 
     def _pick_candidate(self, candidates):
@@ -791,6 +1049,93 @@ class EnhancedNewsBot:
             os.replace(tmp_path, POSTED_FILE)  # atomic write, avoids corruption mid-crash
         except OSError as e:
             logger.error("Failed to save posted-articles file: %s", e)
+
+    def load_category_performance(self):
+        """Rolling per-category engagement averages, built up over time from
+        real Facebook insights (see _update_category_performance). Missing
+        or corrupt file just means the bot hasn't learned anything yet --
+        falls back to the static keyword-based scoring until it has."""
+        if os.path.exists(CATEGORY_PERF_FILE):
+            try:
+                with open(CATEGORY_PERF_FILE, "r") as f:
+                    data = json.load(f)
+                    return data if isinstance(data, dict) else {}
+            except (json.JSONDecodeError, OSError) as e:
+                logger.warning("Could not read %s (%s) -- starting fresh.", CATEGORY_PERF_FILE, e)
+                return {}
+        return {}
+
+    def save_category_performance(self):
+        try:
+            tmp_path = CATEGORY_PERF_FILE + ".tmp"
+            with open(tmp_path, "w") as f:
+                json.dump(self.category_performance, f)
+            os.replace(tmp_path, CATEGORY_PERF_FILE)
+        except OSError as e:
+            logger.error("Failed to save category performance file: %s", e)
+
+    def _update_category_performance(self):
+        """Best-effort: find the single most recent English post that's old
+        enough for real engagement to have accumulated (PERFORMANCE_MIN_AGE_HOURS)
+        and hasn't been scored yet, pull its like/comment/share counts from
+        the Graph API, and fold them into a rolling per-category average.
+        This is what lets _engagement_score's category adjustment reflect
+        what THIS page's actual audience responds to over time, instead of
+        only the static keyword weights. Deliberately checks only one post
+        per run to keep this cheap and never blocks posting if it fails."""
+        if not PERFORMANCE_FEEDBACK_ENABLED:
+            return
+        for item in reversed(self.posted_today):
+            if not isinstance(item, dict) or item.get("lang", "en") != "en":
+                continue
+            if item.get("perf_scored"):
+                continue
+            post_id = item.get("post_id")
+            posted_at = item.get("posted_at")
+            category = item.get("category")
+            if not post_id or not posted_at or not category:
+                continue
+            try:
+                age_hours = (datetime.now() - datetime.fromisoformat(posted_at)).total_seconds() / 3600
+            except ValueError:
+                continue
+            if age_hours < PERFORMANCE_MIN_AGE_HOURS:
+                continue  # too soon -- engagement hasn't had time to accumulate
+
+            try:
+                resp = self.session.get(
+                    f"https://graph.facebook.com/v18.0/{post_id}",
+                    params={
+                        "fields": "likes.summary(true).limit(0),comments.summary(true).limit(0),shares",
+                        "access_token": FB_PAGE_ACCESS_TOKEN,
+                    },
+                    timeout=15,
+                )
+                if resp.status_code != 200:
+                    item["perf_scored"] = True  # don't keep retrying a post we can't read insights for
+                    break
+                data = resp.json()
+                likes = data.get("likes", {}).get("summary", {}).get("total_count", 0)
+                comments = data.get("comments", {}).get("summary", {}).get("total_count", 0)
+                shares = data.get("shares", {}).get("count", 0)
+                engagement = likes + comments * 2 + shares * 3  # comments/shares weighted higher -- stronger buy-in signal than a like
+
+                prev = self.category_performance.get(category, {"avg": 0.0, "n": 0})
+                new_n = prev["n"] + 1
+                new_avg = prev["avg"] + (engagement - prev["avg"]) / new_n
+                self.category_performance[category] = {"avg": round(new_avg, 2), "n": new_n}
+                item["perf_scored"] = True
+                item["engagement_snapshot"] = engagement
+                logger.info(
+                    "Performance recorded for %r (likes=%d, comments=%d, shares=%d) -- rolling avg for %s now %.1f (n=%d).",
+                    item.get("title", "")[:40], likes, comments, shares, category, new_avg, new_n,
+                )
+            except (requests.exceptions.RequestException, ValueError, KeyError) as e:
+                logger.info("Could not fetch performance insights for a recent post (%s) -- will retry next run.", e)
+            break  # only ever process the single most recent unscored post per run
+
+        self.save_posted_articles()
+        self.save_category_performance()
 
     # -------------------- news fetching --------------------
     def _fetch_bucket(self, query):
@@ -847,6 +1192,28 @@ class EnhancedNewsBot:
         except (ValueError, TypeError):
             return None
 
+    def _url_is_reachable(self, url):
+        """One quick check that the article's own link still resolves before
+        the bot commits to posting it (as the post's photo-post link target
+        and/or the first-comment link) -- a dead/404 link on the very story
+        being promoted is a fast way to lose reader trust. HEAD first (cheap),
+        falls back to a streamed GET since some news sites don't support HEAD
+        properly. Defaults to True on network hiccups -- this is a quality
+        nudge, not something that should block posting over a transient
+        timeout on the publisher's own server."""
+        if not url:
+            return False
+        try:
+            resp = self.session.head(url, timeout=10, allow_redirects=True)
+            if resp.status_code < 400:
+                return True
+            if resp.status_code in (405, 403):  # HEAD not allowed/blocked -- try a real GET instead
+                resp = self.session.get(url, timeout=10, stream=True)
+                return resp.status_code < 400
+            return False
+        except requests.exceptions.RequestException:
+            return True  # can't tell either way -- don't block a post over our own network flakiness
+
     def get_indian_tech_news(self):
         """Pulls from several topic-specific queries (see NEWS_QUERY_BUCKETS)
         instead of one broad query, merges + dedups by URL, and filters out
@@ -883,6 +1250,15 @@ class EnhancedNewsBot:
             if age is not None and age > MAX_ARTICLE_AGE_HOURS:
                 continue
             filtered.append(a)
+
+        # Cross-reference how many distinct outlets are covering roughly the
+        # same story -- computed over the full merged set (before the filter
+        # above) so a corroborating article that itself got filtered out
+        # (thin description, etc.) still counts as a second source. Stashed
+        # as an internal field consumed by _engagement_score.
+        counts = _corroboration_counts(merged)
+        for a in filtered:
+            a['_corroboration_count'] = counts.get(id(a), 1)
 
         logger.info(
             "Found %d usable article(s) after merging %d bucket queries and filtering (raw merged=%d).",
@@ -1676,13 +2052,22 @@ class EnhancedNewsBot:
             return None  # fine to skip -- this is a bonus, not core functionality
 
     # -------------------- smarter narrative (Groq, optional) --------------------
-    def _build_narrative_prompts(self, title, description, wiki_fact=None, full_text=None, shape="hot_take"):
+    def _build_narrative_prompts(self, title, description, wiki_fact=None, full_text=None,
+                                  shape="hot_take", entity=None, retry_note=None):
         """Shared prompt-building for whichever LLM provider ends up handling
         the request. A randomly picked persona + an explicit list of banned
         AI-cliche phrases + a per-shape structural instruction is what
         produces genuinely different-looking posts run to run, instead of
-        the same skeleton in different words."""
-        persona = random.choice(self.personas)
+        the same skeleton in different words. Also steers away from this
+        page's own recent persona/opening choices and can carry a corrective
+        `retry_note` when the first draft read too roboticly (see
+        get_ai_narrative). Sets self._current_persona so the caller can
+        record which persona actually got used, for next time's anti-repeat
+        check and for the archive."""
+        available_personas = [p for p in self.personas if p != self._last_used_persona()] or self.personas
+        persona = random.choice(available_personas)
+        self._current_persona = persona
+
         banned = ", ".join(f'"{p}"' for p in random.sample(self.banned_patterns, k=6))
         shape_instruction = POST_SHAPES.get(shape, POST_SHAPES["hot_take"])["narrative_instruction"]
 
@@ -1709,6 +2094,20 @@ class EnhancedNewsBot:
             "unless the structure instruction explicitly asks for the ' || ' separator."
         )
 
+        recent_openings = self._recent_openings()
+        if recent_openings:
+            system_prompt += (
+                f"\n\nThis page's last few posts opened with phrasing like: {'; '.join(recent_openings)}. "
+                "Open this one differently -- don't echo those sentence patterns or rhythms."
+            )
+
+        entity_note = self._entity_history_note(entity)
+        if entity_note:
+            system_prompt += f"\n\n{entity_note}"
+
+        if retry_note:
+            system_prompt += f"\n\nIMPORTANT: {retry_note}"
+
         user_prompt = f"Headline: {title}\n"
         if full_text:
             user_prompt += f"Full article text:\n{full_text}\n"
@@ -1720,7 +2119,7 @@ class EnhancedNewsBot:
         max_tokens = 340 if full_text and shape != "listicle" else 180
         return system_prompt, user_prompt, max_tokens
 
-    def _build_bengali_prompts(self, title, description, wiki_fact=None, bn_context=None):
+    def _build_bengali_prompts(self, title, description, wiki_fact=None, bn_context=None, retry_note=None):
         """Prompt-building for the Bengali companion post. Uses the SAME
         generic Groq/Gemini callers as the English path (they're language-
         agnostic) -- only the system/user prompts differ. Explicitly asks
@@ -1745,6 +2144,9 @@ class EnhancedNewsBot:
             "<৩-৪টি ছোট বাক্যে মূল খবরটা এবং তোমার নিজের একটা সংক্ষিপ্ত পর্যবেক্ষণ বা মতামত, মোট ৬০-১০০ শব্দ>\n\n"
             "শুধু বাংলায় লিখবে। কোনো ইংরেজি অনুবাদ, নোট, ব্যাখ্যা বা markdown যোগ কোরো না।"
         )
+
+        if retry_note:
+            system_prompt += f"\n\nগুরুত্বপূর্ণ: {retry_note}"
 
         user_prompt = f"Headline (English source): {title}\nDescription: {description}\n"
         if wiki_fact:
@@ -1863,33 +2265,112 @@ class EnhancedNewsBot:
         logger.warning("All Gemini fallback models failed.")
         return None
 
-    def get_ai_narrative(self, title, description, wiki_fact=None, full_text=None, shape="hot_take"):
+    def _narrative_grounded(self, narrative, source_material):
+        """Best-effort hallucination check: any numeric figure the narrative
+        states (funding amounts, percentages, user counts...) should also
+        appear somewhere in the source material. Doesn't catch every kind of
+        hallucination, but invented statistics are the single most common
+        and most damaging failure mode for a news page, and this catches
+        them cheaply without another API call."""
+        if not GROUNDING_CHECK_ENABLED:
+            return True
+        narrative_nums = _extract_numeric_tokens(narrative)
+        if not narrative_nums:
+            return True
+        source_nums = _extract_numeric_tokens(source_material or "")
+        suspect = narrative_nums - source_nums
+        if suspect:
+            logger.warning(
+                "Narrative contains number(s) not found in the source material (%s) -- treating as a "
+                "likely hallucination and discarding this draft.", sorted(suspect),
+            )
+            return False
+        return True
+
+    def get_ai_narrative(self, title, description, wiki_fact=None, full_text=None, shape="hot_take", entity=None):
         """Top-level narrative generator: Groq first (usually fastest + best
         free rate limits), then Gemini as a fully independent second provider,
         then None so the caller drops to the canned pool. A post always goes
-        out no matter how many of these are unavailable."""
+        out no matter how many of these are unavailable.
+
+        Two quality passes sit on top of the raw generation:
+        1. AI-tell check -- if the first draft scores too high on robotic
+           patterns (_ai_tell_score), it's regenerated once with corrective
+           feedback, keeping whichever draft reads more human.
+        2. Grounding check -- if the accepted draft states a number that
+           doesn't appear anywhere in the source material, it's discarded
+           entirely (better to fall back to the canned pool than post a
+           plausible-sounding invented statistic)."""
         system_prompt, user_prompt, max_tokens = self._build_narrative_prompts(
-            title, description, wiki_fact, full_text, shape
+            title, description, wiki_fact, full_text, shape, entity=entity
         )
-        return (
+        persona_used = self._current_persona
+        narrative = (
             self.get_groq_narrative(system_prompt, user_prompt, max_tokens)
             or self.get_gemini_narrative(system_prompt, user_prompt, max_tokens)
         )
+        if not narrative:
+            return None
+
+        tell_score = _ai_tell_score(narrative)
+        if tell_score >= AI_TELL_THRESHOLD:
+            logger.info("Narrative draft scored %d on AI-tell patterns (threshold %d) -- regenerating once.",
+                        tell_score, AI_TELL_THRESHOLD)
+            retry_note = (
+                "A previous draft for this same story read as stiff, formulaic AI writing -- overly "
+                "uniform sentence lengths, corporate connector words, or neat listy phrasing. Write a "
+                "genuinely different, looser, more human draft this time."
+            )
+            retry_system, _, _ = self._build_narrative_prompts(
+                title, description, wiki_fact, full_text, shape, entity=entity, retry_note=retry_note
+            )
+            retry = (
+                self.get_groq_narrative(retry_system, user_prompt, max_tokens)
+                or self.get_gemini_narrative(retry_system, user_prompt, max_tokens)
+            )
+            if retry and _ai_tell_score(retry) < tell_score:
+                narrative = retry
+                persona_used = self._current_persona
+
+        source_material = f"{title} {description} {full_text or ''}"
+        if not self._narrative_grounded(narrative, source_material):
+            return None
+
+        self._current_persona = persona_used
+        return narrative
 
     def get_bengali_narrative(self, title, description, wiki_fact=None, bn_context=None):
         """Top-level Bengali narrative generator -- same Groq-then-Gemini
-        fallback chain as the English path. Returns None if both providers
-        are unavailable/fail, in which case the caller skips the Bengali
-        companion post entirely rather than fall back to a canned pool
-        (there's no natural-sounding canned Bengali pool, and a clumsy
-        fallback would be worse than simply not posting one that run)."""
+        fallback chain as the English path, plus the same AI-tell retry
+        pass (using the Bengali banned-phrase list as the tell signal, since
+        the structural English heuristics don't transfer to Bengali script).
+        Returns None if both providers are unavailable/fail, in which case
+        the caller skips the Bengali companion post entirely rather than
+        fall back to a canned pool (there's no natural-sounding canned
+        Bengali pool, and a clumsy fallback would be worse than simply not
+        posting one that run)."""
         system_prompt, user_prompt, max_tokens = self._build_bengali_prompts(
             title, description, wiki_fact, bn_context
         )
-        return (
+        narrative = (
             self.get_groq_narrative(system_prompt, user_prompt, max_tokens)
             or self.get_gemini_narrative(system_prompt, user_prompt, max_tokens)
         )
+        if not narrative:
+            return None
+
+        if any(phrase in narrative for phrase in self.banned_patterns_bn):
+            logger.info("Bengali draft used a banned cliche phrase -- regenerating once.")
+            retry_note = "আগের একটা ড্রাফটে কেতাবি/অনুবাদ-অনুবাদ শোনাচ্ছে এমন একটা বাক্যাংশ চলে এসেছিল -- এবার সেটা এড়িয়ে আরও স্বাভাবিকভাবে লেখো।"
+            retry_system, _, _ = self._build_bengali_prompts(title, description, wiki_fact, bn_context, retry_note=retry_note)
+            retry = (
+                self.get_groq_narrative(retry_system, user_prompt, max_tokens)
+                or self.get_gemini_narrative(retry_system, user_prompt, max_tokens)
+            )
+            if retry and not any(phrase in retry for phrase in self.banned_patterns_bn):
+                narrative = retry
+
+        return narrative
 
     @staticmethod
     def _parse_bengali_narrative(raw_text, fallback_title):
@@ -1942,10 +2423,17 @@ class EnhancedNewsBot:
     def _pick_shape(self, title, description):
         """Weighted-random shape choice, with stat_first only offered when
         the source material actually contains an extractable number -- no
-        point promising a stat-led hook we can't back up."""
+        point promising a stat-led hook we can't back up. Also excludes
+        whichever shape was used last (when there's another option), so two
+        consecutive posts don't land on the same structure back-to-back --
+        the shape system's whole point is variety run over run, and pure
+        weighted-random can still repeat by chance often enough to notice."""
         candidates = dict(POST_SHAPES)
         if not STAT_PATTERN.search(f"{title} {description}"):
             candidates.pop("stat_first", None)
+        last_shape = self._last_used_shape()
+        if last_shape and last_shape in candidates and len(candidates) > 1:
+            candidates.pop(last_shape, None)
         shapes = list(candidates.keys())
         weights = [candidates[s]["weight"] for s in shapes]
         return random.choices(shapes, weights=weights, k=1)[0]
@@ -1976,9 +2464,10 @@ class EnhancedNewsBot:
         shape = self._pick_shape(title, description)
         logger.info("Post shape selected: %s", shape)
 
+        entity = self._guess_entity(title)
         full_text = self.fetch_full_article_text(article.get('url'))
-        wiki_fact = self.get_wikipedia_fact(self._guess_entity(title))
-        ai_narrative = self.get_ai_narrative(title, description, wiki_fact, full_text, shape)
+        wiki_fact = self.get_wikipedia_fact(entity)
+        ai_narrative = self.get_ai_narrative(title, description, wiki_fact, full_text, shape, entity=entity)
         used_ai = bool(ai_narrative)
 
         if not used_ai:
@@ -1987,8 +2476,16 @@ class EnhancedNewsBot:
             # last-resort path when both LLM providers are down.
             analysis = random.choice(self.analysis_pool)
             shape = "hot_take"
+            self._current_persona = None
+            self._last_narrative_opening = None
         else:
             analysis = ai_narrative
+            self._last_narrative_opening = " ".join(analysis.split()[:6])
+
+        # Surfaced for run_once to record on the posted_today entry -- lets
+        # _pick_shape / _last_used_persona / _recent_openings actually see
+        # what this post ended up using, closing the anti-repeat feedback loop.
+        self._last_post_shape = shape
 
         used_long_form_narrative = used_ai and bool(full_text) and shape != "listicle"
 
@@ -2054,7 +2551,10 @@ class EnhancedNewsBot:
             parts.append("")
 
         parts.append(f"({source}, {formatted_date})")
-        if article.get('url'):
+        # When POST_LINK_AS_FIRST_COMMENT is on, the link goes in the first
+        # comment instead (see _post_link_as_comment) -- keeping the post
+        # body itself link-free tends to get more organic reach.
+        if article.get('url') and not POST_LINK_AS_FIRST_COMMENT:
             parts.append(f"🔗 Full story: {article['url']}")
         parts.append("")
         parts.append(self._pick_hashtags(title))
@@ -2087,7 +2587,7 @@ class EnhancedNewsBot:
             parts.append(bn_body)
             parts.append("")
         parts.append(f"({source}, {formatted_date})")
-        if article.get('url'):
+        if article.get('url') and not POST_LINK_AS_FIRST_COMMENT:
             parts.append(f"🔗 বিস্তারিত পড়ুন: {article['url']}")
         parts.append("")
         tags = random.sample(self.hashtag_pool_bn, k=min(4, len(self.hashtag_pool_bn)))
@@ -2102,7 +2602,10 @@ class EnhancedNewsBot:
     # -------------------- publishing --------------------
     def post_to_facebook(self, message, image_path=None):
         """Post with an image if available, otherwise a text-only post.
-        Returns True/False; never raises."""
+        Returns (success: bool, post_id: str | None); never raises. The
+        post_id is what lets callers add a first comment (see
+        _post_link_as_comment) and later pull engagement insights for the
+        performance-feedback loop."""
         try:
             if image_path and os.path.exists(image_path):
                 url = f"https://graph.facebook.com/v18.0/{FB_PAGE_ID}/photos"
@@ -2116,9 +2619,12 @@ class EnhancedNewsBot:
                 resp = self.session.post(url, data=data, timeout=REQUEST_TIMEOUT)
 
             if resp.status_code == 200:
-                post_id = resp.json().get('id', 'N/A')
+                resp_data = resp.json()
+                # the /photos endpoint returns {"id": <photo_id>, "post_id": <post_id>};
+                # the /feed endpoint returns {"id": <post_id>} directly.
+                post_id = resp_data.get('post_id') or resp_data.get('id', 'N/A')
                 logger.info("Posted to Facebook successfully. Post ID: %s", post_id)
-                return True
+                return True, post_id
 
             # Try to surface Facebook's actual error message
             try:
@@ -2131,7 +2637,7 @@ class EnhancedNewsBot:
                     logger.error("Your FB_PAGE_ACCESS_TOKEN appears invalid or expired -- generate a new one.")
             except ValueError:
                 logger.error("Facebook post failed [%s]: %s", resp.status_code, resp.text[:300])
-            return False
+            return False, None
 
         except requests.exceptions.Timeout:
             logger.error("Facebook post request timed out.")
@@ -2143,6 +2649,29 @@ class EnhancedNewsBot:
                     os.remove(image_path)
                 except OSError:
                     pass
+        return False, None
+
+    def _post_link_as_comment(self, post_id, url):
+        """Retention/reach lever: add the article link as the first comment
+        rather than in the post body. Posts without an outbound link in the
+        body tend to get more organic distribution, and the link is still
+        one tap away in the top comment for anyone who wants to read
+        further. Best-effort -- if this fails, the post itself already
+        succeeded, so it's logged and otherwise ignored."""
+        if not post_id or not url:
+            return False
+        try:
+            resp = self.session.post(
+                f"https://graph.facebook.com/v18.0/{post_id}/comments",
+                data={"message": f"Full story: {url}", "access_token": FB_PAGE_ACCESS_TOKEN},
+                timeout=REQUEST_TIMEOUT,
+            )
+            if resp.status_code == 200:
+                logger.info("Posted the article link as the first comment (keeps the post itself link-free for reach).")
+                return True
+            logger.info("Could not post link as a comment [%s]: %s", resp.status_code, resp.text[:200])
+        except requests.exceptions.RequestException as e:
+            logger.info("Could not post link as a comment (%s).", e)
         return False
 
     def _post_bengali_companion(self, article):
@@ -2168,13 +2697,17 @@ class EnhancedNewsBot:
         post_text = self.create_bengali_post(article, bn_headline, bn_body)
         image_path = self.generate_bengali_card(article, bn_headline)
 
-        if self.post_to_facebook(post_text, image_path):
+        success, post_id = self.post_to_facebook(post_text, image_path)
+        if success:
+            if POST_LINK_AS_FIRST_COMMENT and article.get('url'):
+                self._post_link_as_comment(post_id, article['url'])
             self.posted_today.append({
                 "key": self._dedup_key(article) + "::bn",
                 "title": bn_headline,
                 "category": self._category_theme(title)[0],
                 "posted_at": datetime.now().isoformat(),
                 "lang": "bn",
+                "post_id": post_id,
             })
             self.save_posted_articles()
             logger.info("Bengali companion post published: %s", bn_headline[:70])
@@ -2186,6 +2719,11 @@ class EnhancedNewsBot:
     # -------------------- run loop --------------------
     def run_once(self):
         logger.info("Run started at %s", datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+
+        try:
+            self._update_category_performance()
+        except Exception as e:
+            logger.info("Performance-feedback check failed (%s) -- continuing without it.", e)
 
         articles = self.get_indian_tech_news()
         if not articles:
@@ -2246,13 +2784,20 @@ class EnhancedNewsBot:
             title = article.get('title', '').strip()
             logger.info("Processing (%d/%d, score=%d): %s", i, len(ordered), self._engagement_score(article), title[:70])
 
+            if not self._url_is_reachable(article.get('url')):
+                logger.warning("Article link no longer resolves (dead/removed) -- skipping this candidate: %s", title[:70])
+                continue
+
             image_path = self.generate_ai_image(article)
             if not image_path:
                 logger.warning("Falling back to a text-only post for this article.")
 
             post_content = self.create_engaging_post(article)
 
-            if self.post_to_facebook(post_content, image_path):
+            success, post_id = self.post_to_facebook(post_content, image_path)
+            if success:
+                if POST_LINK_AS_FIRST_COMMENT and article.get('url'):
+                    self._post_link_as_comment(post_id, article['url'])
                 category, _, _, _ = self._category_theme(article.get('title', ''))
                 self.posted_today.append({
                     "key": self._dedup_key(article),
@@ -2260,6 +2805,10 @@ class EnhancedNewsBot:
                     "category": category,
                     "posted_at": datetime.now().isoformat(),
                     "lang": "en",
+                    "post_id": post_id,
+                    "shape": getattr(self, "_last_post_shape", None),
+                    "persona": self._current_persona,
+                    "opening": self._last_narrative_opening,
                 })
                 self.save_posted_articles()
                 posted_count += 1
