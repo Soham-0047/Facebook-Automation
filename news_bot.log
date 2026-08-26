@@ -1021,3 +1021,8 @@
 2026-08-26 03:29:47,876 | WARNING | Narrative contains number(s) not found in the source material (['2027.']) -- treating as a likely hallucination and discarding this draft.
 2026-08-26 03:29:55,282 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122164721522980670
 2026-08-26 03:29:56,494 | INFO    | Could not post link as a comment [403]: {"error":{"message":"(#200) You do not have sufficient permissions to perform this action","type":"OAuthException","code":200,"fbtrace_id":"Az088Q9zyklnRPMmua87ZSz"}}
+2026-08-26 07:23:30,536 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-26 07:23:30,536 | INFO    | Jittering start by 288s so this run isn't posting at a perfectly fixed second.
+2026-08-26 07:28:18,536 | INFO    | Run started at 2026-08-26 07:28:18
+2026-08-26 07:28:20,365 | INFO    | Found 39 usable article(s) after merging 7 bucket queries and filtering (raw merged=49).
+2026-08-26 07:28:20,393 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 4.0h ago -- skipping this run rather than posting a routine story.
