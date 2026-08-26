@@ -1031,3 +1031,8 @@
 2026-08-26 11:06:50,498 | INFO    | Run started at 2026-08-26 11:06:50
 2026-08-26 11:06:51,426 | INFO    | Found 42 usable article(s) after merging 7 bucket queries and filtering (raw merged=51).
 2026-08-26 11:06:51,455 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 7.6h ago -- skipping this run rather than posting a routine story.
+2026-08-26 16:01:12,135 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-26 16:01:12,136 | INFO    | Jittering start by 235s so this run isn't posting at a perfectly fixed second.
+2026-08-26 16:05:07,136 | INFO    | Run started at 2026-08-26 16:05:07
+2026-08-26 16:05:10,956 | INFO    | Found 43 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-26 16:05:10,985 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 12.6h ago -- skipping this run rather than posting a routine story.
