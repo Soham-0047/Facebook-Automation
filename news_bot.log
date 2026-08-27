@@ -1007,3 +1007,73 @@
 2026-08-25 15:29:20,258 | INFO    | Run started at 2026-08-25 15:29:20
 2026-08-25 15:29:21,125 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=54).
 2026-08-25 15:29:21,153 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 8.0h ago -- skipping this run rather than posting a routine story.
+2026-08-26 03:29:35,376 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-26 03:29:35,376 | INFO    | Jittering start by 9s so this run isn't posting at a perfectly fixed second.
+2026-08-26 03:29:44,377 | INFO    | Run started at 2026-08-26 03:29:44
+2026-08-26 03:29:45,386 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=55).
+2026-08-26 03:29:45,416 | WARNING | No candidate cleared the heavy-news bar (score >= 8), but it's been 20.0h since the last post -- posting the best available story anyway so the page doesn't go dark.
+2026-08-26 03:29:45,429 | INFO    | Weighted pick from top 3 candidate(s) (scores=[5, 5, 4]): SpaceX, Nvidia develop space-optimized AI system for orbital launch ne
+2026-08-26 03:29:45,429 | INFO    | Processing (1/46, score=5): SpaceX, Nvidia develop space-optimized AI system for orbital launch ne
+2026-08-26 03:29:46,333 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787714986_6bf79999.png (theme=ARTIFICIAL INTELLIGENCE)
+2026-08-26 03:29:46,335 | INFO    | Post shape selected: hot_take
+2026-08-26 03:29:46,943 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-26 03:29:47,875 | INFO    | Groq narrative generated using openai/gpt-oss-120b (110 chars).
+2026-08-26 03:29:47,876 | WARNING | Narrative contains number(s) not found in the source material (['2027.']) -- treating as a likely hallucination and discarding this draft.
+2026-08-26 03:29:55,282 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122164721522980670
+2026-08-26 03:29:56,494 | INFO    | Could not post link as a comment [403]: {"error":{"message":"(#200) You do not have sufficient permissions to perform this action","type":"OAuthException","code":200,"fbtrace_id":"Az088Q9zyklnRPMmua87ZSz"}}
+2026-08-26 07:23:30,536 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-26 07:23:30,536 | INFO    | Jittering start by 288s so this run isn't posting at a perfectly fixed second.
+2026-08-26 07:28:18,536 | INFO    | Run started at 2026-08-26 07:28:18
+2026-08-26 07:28:20,365 | INFO    | Found 39 usable article(s) after merging 7 bucket queries and filtering (raw merged=49).
+2026-08-26 07:28:20,393 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 4.0h ago -- skipping this run rather than posting a routine story.
+2026-08-26 11:02:41,497 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-26 11:02:41,498 | INFO    | Jittering start by 249s so this run isn't posting at a perfectly fixed second.
+2026-08-26 11:06:50,498 | INFO    | Run started at 2026-08-26 11:06:50
+2026-08-26 11:06:51,426 | INFO    | Found 42 usable article(s) after merging 7 bucket queries and filtering (raw merged=51).
+2026-08-26 11:06:51,455 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 7.6h ago -- skipping this run rather than posting a routine story.
+2026-08-26 16:01:12,135 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-26 16:01:12,136 | INFO    | Jittering start by 235s so this run isn't posting at a perfectly fixed second.
+2026-08-26 16:05:07,136 | INFO    | Run started at 2026-08-26 16:05:07
+2026-08-26 16:05:10,956 | INFO    | Found 43 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-26 16:05:10,985 | INFO    | No candidate cleared the heavy-news bar (score >= 8) this run, and the last post was only 12.6h ago -- skipping this run rather than posting a routine story.
+2026-08-27 12:55:59,283 | INFO    | PEXELS_API_KEY not set -- news cards will use flat gradient backgrounds instead of real stock photos. Get a free key at pexels.com/api for noticeably more eye-catching cards.
+2026-08-27 12:55:59,283 | INFO    | Jittering start by 298s so this run isn't posting at a perfectly fixed second.
+2026-08-27 13:00:57,283 | INFO    | Run started at 2026-08-27 13:00:57
+2026-08-27 13:00:57,988 | INFO    | Found 46 usable article(s) after merging 7 bucket queries and filtering (raw merged=53).
+2026-08-27 13:00:58,008 | WARNING | No candidate cleared the heavy-news bar (score >= 8), but it's been 33.5h since the last post -- posting the best available story anyway so the page doesn't go dark.
+2026-08-27 13:00:58,017 | INFO    | Weighted pick from top 3 candidate(s) (scores=[7, 6, 5]): Wealthtech’s new funding wave; Blinkit freezes new launches
+2026-08-27 13:00:58,017 | INFO    | Processing (1/46, score=5): Wealthtech’s new funding wave; Blinkit freezes new launches
+2026-08-27 13:00:58,903 | INFO    | Gradient news card generated: /tmp/news_bot/card_1787835658_156671ca.png (theme=STARTUP & FUNDING)
+2026-08-27 13:00:58,904 | INFO    | Post shape selected: listicle
+2026-08-27 13:00:59,281 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-27 13:01:00,474 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-27 13:01:00,542 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-27 13:01:00,599 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-27 13:01:00,599 | WARNING | All Groq fallback models failed.
+2026-08-27 13:01:00,903 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-27 13:01:01,000 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-27 13:01:01,000 | WARNING | All Gemini fallback models failed.
+2026-08-27 13:01:08,797 | INFO    | Posted to Facebook successfully. Post ID: 740031959195289_122164905734980670
+2026-08-27 13:01:10,079 | INFO    | Could not post link as a comment [403]: {"error":{"message":"(#200) You do not have sufficient permissions to perform this action","type":"OAuthException","code":200,"fbtrace_id":"AML72QJN4DyAR3tEf_CrVuU"}}
+2026-08-27 13:01:10,080 | INFO    | Attempting a Bengali companion post for this story.
+2026-08-27 13:01:10,185 | WARNING | Groq model llama-3.3-70b-versatile not found (likely deprecated) -- trying next fallback model.
+2026-08-27 13:01:14,389 | WARNING | Groq returned an empty response on openai/gpt-oss-120b -- trying next fallback model.
+2026-08-27 13:01:14,430 | WARNING | Groq model qwen/qwen3-32b not found (likely deprecated) -- trying next fallback model.
+2026-08-27 13:01:14,497 | WARNING | Groq model llama-3.1-8b-instant not found (likely deprecated) -- trying next fallback model.
+2026-08-27 13:01:14,497 | WARNING | All Groq fallback models failed.
+2026-08-27 13:01:14,589 | WARNING | Gemini error 404 on gemini-2.5-flash: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features a -- trying next fallback model.
+2026-08-27 13:01:14,669 | WARNING | Gemini error 404 on gemini-2.5-flash-lite: {
+  "error": {
+    "code": 404,
+    "message": "This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest  -- trying next fallback model.
+2026-08-27 13:01:14,669 | WARNING | All Gemini fallback models failed.
+2026-08-27 13:01:14,669 | INFO    | Bengali narrative unavailable this run (Groq/Gemini both failed or unconfigured) -- skipping Bengali companion post.
