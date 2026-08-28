@@ -1,30 +1,35 @@
 {
  "posted_keys": [
   "26ba5da75cfde433108843bb18e58508",
-  "2c9273432b588832292dc5d1274fd0df"
+  "2c9273432b588832292dc5d1274fd0df",
+  "24c7e114c8e7b8d38f8a5299048dac27"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
-  "jio platforms gets sebi nod for 3 8 billion ipo could be india s biggest listing"
+  "jio platforms gets sebi nod for 3 8 billion ipo could be india s biggest listing",
+  "watch sarvam ai s unicorn leap india s biggest sovereign ai moment sarvam ai has joined the unicorn club after raising 234 million in fresh funding marking one of the largest investments in an indian ai startup the round was led by hcltech why"
  ],
- "last_post_ts": 1787928461.268275,
+ "last_post_ts": 1787956239.3561,
  "recent_categories": [
   "unicorn",
-  "regulatory"
+  "regulatory",
+  "unicorn"
  ],
  "recent_domains": [
   "techcrunch",
-  "firstpost"
+  "firstpost",
+  "linkedin"
  ],
  "recent_shapes": [
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_personas": [
-  "riya",
-  "arjun"
+  "arjun",
+  "meera"
  ],
- "post_counter": 2,
- "bengali_date": "2026-08-28",
- "bengali_count": 2
+ "post_counter": 3,
+ "bengali_date": "2026-08-29",
+ "bengali_count": 0
 }
