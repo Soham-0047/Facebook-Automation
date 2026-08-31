@@ -7,7 +7,8 @@
   "1228c654b6e0a2e03901426fcb23d530",
   "5ecd66cc7bb2e53f4735630a49f97714",
   "e58ec7ca1984592f6b20cdf7782d1899",
-  "e6975869307aa98d8d590b2fec977afd"
+  "e6975869307aa98d8d590b2fec977afd",
+  "149c398487fcf0c923f8f0bd4c739236"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -17,31 +18,32 @@
   "indian ai startup emergent becomes unicorn after raising 130 million at 1 5 billion valuation",
   "jio ipo soon ril s telecom arm gets sebi nod for rs 37 700 crore offering",
   "mctech3 hcltech to lead sarvam ai 300 million round startup ipo lock ins hit unlock season after layoffs oracle revokes campus offers",
-  "ai cybersecurity startup deep algorithm raises rs 16 crore funding from unicorn india ventures"
+  "ai cybersecurity startup deep algorithm raises rs 16 crore funding from unicorn india ventures",
+  "chinese ai chipmaker enflame aims to raise 908 million after setting shanghai ipo price"
  ],
- "last_post_ts": 1788167544.0804794,
+ "last_post_ts": 1788203456.6151981,
  "recent_categories": [
-  "regulatory",
   "unicorn",
   "regulatory",
   "ipo",
-  "unicorn"
+  "unicorn",
+  "regulatory"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "linkedin",
-  "indianstartupnews"
+  "indianstartupnews",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_personas": [
-  "arjun",
-  "ananya"
+  "ananya",
+  "arjun"
  ],
- "post_counter": 8,
- "bengali_date": "2026-08-31",
- "bengali_count": 1
+ "post_counter": 9,
+ "bengali_date": "2026-09-01",
+ "bengali_count": 0
 }
