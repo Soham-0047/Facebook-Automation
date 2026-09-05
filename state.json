@@ -18,7 +18,8 @@
   "6e30dfad686526806565efa35e2f53e8",
   "1d87e1fa1d6fa4c2baf06b3a564c55cf",
   "c4ba41f35e59b5fb7bd2ca6435c73a0d",
-  "940e39cbd65de7a2dd5c7b318ee9748f"
+  "940e39cbd65de7a2dd5c7b318ee9748f",
+  "fd00dd023bd25f5f49b55e087add5ffe"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -39,31 +40,32 @@
   "square yards becomes india s newest unicorn after raising rs 900 crore gears up for ipo",
   "indian ai coding startup emergent becomes a unicorn with 130m series c",
   "shein seeks fast fashion deals to spur growth",
-  "national stock exchange of india gets sebi approval for landmark 3 6 billion ipo"
+  "national stock exchange of india gets sebi approval for landmark 3 6 billion ipo",
+  "slice valuation crash fintech unicorn s value plunges nearly 70 in 100 million down round as it transforms into small finance bank"
  ],
- "last_post_ts": 1788621811.5799227,
+ "last_post_ts": 1788632929.4582906,
  "recent_categories": [
-  "unicorn",
   "ipo",
   "unicorn",
   "ipo",
-  "regulatory"
+  "regulatory",
+  "unicorn"
  ],
  "recent_domains": [
-  "techcrunch",
   "economictimes.indiatimes.com",
-  "cryptobriefing.com"
+  "cryptobriefing.com",
+  "openthemagazine.com"
  ],
  "recent_shapes": [
-  "listicle",
   "contrarian",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_personas": [
-  "arjun",
-  "ananya"
+  "ananya",
+  "arjun"
  ],
- "post_counter": 19,
+ "post_counter": 20,
  "bengali_date": "2026-09-05",
  "bengali_count": 1
 }
