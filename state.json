@@ -19,7 +19,8 @@
   "1d87e1fa1d6fa4c2baf06b3a564c55cf",
   "c4ba41f35e59b5fb7bd2ca6435c73a0d",
   "940e39cbd65de7a2dd5c7b318ee9748f",
-  "fd00dd023bd25f5f49b55e087add5ffe"
+  "fd00dd023bd25f5f49b55e087add5ffe",
+  "515a6e4410f898195f8e3d9c90ffa7db"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -41,31 +42,36 @@
   "indian ai coding startup emergent becomes a unicorn with 130m series c",
   "shein seeks fast fashion deals to spur growth",
   "national stock exchange of india gets sebi approval for landmark 3 6 billion ipo",
-  "slice valuation crash fintech unicorn s value plunges nearly 70 in 100 million down round as it transforms into small finance bank"
+  "slice valuation crash fintech unicorn s value plunges nearly 70 in 100 million down round as it transforms into small finance bank",
+  "tcs hypervault to invest 70 000 cr to set up ai data centre in hyderabad"
  ],
- "last_post_ts": 1788632929.4582906,
+ "last_post_ts": 1788634046.1897259,
  "recent_categories": [
-  "ipo",
   "unicorn",
   "ipo",
   "regulatory",
-  "unicorn"
+  "unicorn",
+  "funding"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "cryptobriefing.com",
-  "openthemagazine.com"
+  "openthemagazine.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
+ ],
+ "recent_photo_ids": [
+  31735054,
+  5843637
  ],
  "recent_personas": [
-  "ananya",
-  "arjun"
+  "arjun",
+  "meera"
  ],
- "post_counter": 20,
- "bengali_date": "2026-09-05",
+ "post_counter": 21,
+ "bengali_date": "2026-09-06",
  "bengali_count": 1
 }
