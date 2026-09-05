@@ -1,36 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-INDIA TECH NEWS - FACEBOOK PAGE BOT  .  v5.0
+INDIA TECH NEWS - FACEBOOK PAGE BOT  .  v5.3
 =============================================
 Single-file bot: fetches Indian tech news from many free sources, scores it,
 writes a human-sounding post (English + optional Bengali companion), renders a
 designed 1080x1350 image card, and publishes to a Facebook Page.
 
-WHAT'S NEW IN v5.0
-  FETCHING (much stronger)
-    * Multi-source fan-out: NewsAPI + 11 direct RSS feeds + 6 Google News RSS
-      queries + Hacker News (Algolia) + optional GNews API - all free.
-    * Parallel fetching, per-source fault isolation, GET-only retries.
-    * Cross-source corroboration boost: the same story on 2-3 outlets scores
-      higher (clustered with fuzzy title matching).
-    * Stronger scoring engine: weighted keyword categories, ~85 company/entity
-      table, money-magnitude detection, recency decay, vagueness penalties,
-      junk/sponsored/clickbait filters.
-    * Fuzzy near-duplicate detection (not just exact normalized title + URL).
-    * Category & domain diversity rotation so the page never repeats itself.
-  IMAGES (much more attractive)
-    * 1080x1350 portrait cards (maximum feed real estate), 3 rotating layouts:
-      photo bottom-sheet / photo top-banner / split photo+panel card.
-    * Photo cards: entity-aware Pexels search, multi-candidate download with
-      vividness/contrast picking, auto colour/contrast/sharpness enhancement,
-      smart top-biased cropping.
-    * Branded overlay: category chip, auto-fit headline, accent bar, source
-      line, optional page handle, cinematic gradient scrim (text stays
-      readable on ANY photo).
-    * Designer fallback card when no good photo exists: duotone gradient,
-      dot-grid texture, decorative rings, same typography system - never a
-      plain gradient rectangle.
+WHAT'S NEW IN v5.3 (top-rated content + sharper images)
+  CONTENT QUALITY
+    * Source-authority tiers: ET / Moneycontrol / Mint / Inc42 / YourStory ...
+      get a quality bonus; gadget-deal SEO farms (gadgetsnow, 91mobiles,
+      smartprix ...) get penalised - the same story from a better outlet wins.
+    * SEO-junk firewall: "Top 10 / best under Rs X / deals / buying guide /
+      unboxing / roundup / newsletter" listicles, viral-bait and digest
+      headlines are heavily penalised - the page posts NEWS, not filler.
+    * Money-magnitude scoring: amounts normalised to USD-millions, so a
+      $1.2B round outranks a $5M one ("500 million users" no longer
+      masquerades as money).
+    * Freshness decay after 24h (stale stories sink), undated-article
+      penalty, ALL-CAPS tabloid + empty-question headline penalties, and
+      non-India global stories need 3+ corroborating outlets.
+    * Google News India-edition topic feeds (Business + Technology top
+      stories) joined the fan-out - genuinely top-ranked news gets
+      corroborated and rises naturally.
+    * Default posting bar raised 8 -> 9 (env: MIN_ENGAGEMENT_SCORE_TO_POST).
+  IMAGES
+    * Two accent palettes per category, rotated per post - the same topic
+      never looks identical on back-to-back cards.
+    * Soft drop shadows behind every photo-card headline, cinematic vignette
+      on full-bleed / giant-stat posters, accent glow behind the big number.
+  Earlier: v5.2 (6 layouts, stat posters, photo anti-repeat, calmer Bengali),
+  v5.1 (Groq model-line migration), v5.0 (multi-source fan-out + scoring).
+  IMAGES carry-over
+    * 1080x1350 portrait cards, 6 rotating layouts; entity-aware Pexels
+      search, vividness-ranked multi-candidate pick, auto enhancement,
+      smart top-biased crop, cinematic scrims, category chip, auto-fit
+      headline, accent bar, source line, optional page handle.
+    * Designer fallback (duotone gradient + rotating motifs) when no photo.
     * 2x supersampling + LANCZOS downscale for crisp text; UUID filenames.
   STATE
     * state.json persists dedup keys, rotation counters, Bengali daily cap.
@@ -54,7 +61,7 @@ ENV / SECRETS  (Google Colab userdata OR environment; GitHub Actions secrets)
     GNEWS_API_KEY                         optional extra source
     PAGE_HANDLE                           optional, e.g. "@indiatechdaily"
     POST_LINK_AS_FIRST_COMMENT            optional "true"/"false" (default false)
-    MIN_ENGAGEMENT_SCORE_TO_POST          optional (default 8)
+    MIN_ENGAGEMENT_SCORE_TO_POST          optional (default 9)
     BENGALI_PROBABILITY / BENGALI_MAX_PER_DAY / QUIET_HOURS / BOT_STATE_PATH
 """
 
@@ -96,7 +103,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.1"
+VERSION = "5.3.1"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -130,11 +137,12 @@ def _env_bool(name: str, default: bool) -> bool:
     return val.strip().lower() in {"1", "true", "yes", "on", "y"}
 
 
-MIN_ENGAGEMENT_SCORE_TO_POST = _env_int("MIN_ENGAGEMENT_SCORE_TO_POST", 8)
+MIN_ENGAGEMENT_SCORE_TO_POST = _env_int("MIN_ENGAGEMENT_SCORE_TO_POST", 9)
 QUIET_HOURS = _env_float("QUIET_HOURS", 20.0)        # hours of silence -> relax the bar
 QUIET_RELAX_DROP = _env_int("QUIET_RELAX_DROP", 3)   # how much to relax it
-BENGALI_PROBABILITY = _env_float("BENGALI_PROBABILITY", 0.5)
-BENGALI_MAX_PER_DAY = _env_int("BENGALI_MAX_PER_DAY", 2)
+# v5.2: tuned down - 0.5/2 felt spammy on the feed (user feedback)
+BENGALI_PROBABILITY = _env_float("BENGALI_PROBABILITY", 0.18)
+BENGALI_MAX_PER_DAY = _env_int("BENGALI_MAX_PER_DAY", 1)
 POST_LINK_AS_FIRST_COMMENT = _env_bool("POST_LINK_AS_FIRST_COMMENT", False)
 PAGE_HANDLE = os.getenv("PAGE_HANDLE", "").strip()   # e.g. "@indiatechdaily"
 FB_API_VERSION = os.getenv("FB_API_VERSION", "v21.0")
@@ -143,7 +151,9 @@ HTTP_TIMEOUT = _env_int("HTTP_TIMEOUT", 25)
 # card geometry (final output is always 1080x1350; rendered at 2x internally)
 CARD_W, CARD_H = 1080, 1350
 SUPERSAMPLE = _env_int("SUPERSAMPLE", 2)
-CARD_VARIANTS = ["bottom_sheet", "top_banner", "split_card"]
+# 6 rotating layouts - structural variety beats colour tweaks in the feed
+CARD_VARIANTS = ["bottom_sheet", "top_banner", "split_card",
+                 "full_bleed", "stat_hero", "magazine"]
 
 # ==========================================================================
 # SCORING CONFIG - keyword rules (ALL word-boundary safe, case-insensitive)
@@ -153,7 +163,7 @@ _KEYWORD_RULES = [
     ("ipo", 6, r"\bIPOs?\b|\bDRHP\b|\bpublic issue\b|\bmarket debut\b|\bshare sale\b|\bgrey market premium\b|\blisting gains?\b|\bIPO subscription\b"),
     ("ipo", 3, r"\blisting\b|\bgoing public\b|\bNYSE\b|\bNasdaq\b|\bNSE\b|\bBSE\b"),
     ("ma", 6, r"\bacquir(?:e|es|ed|ing)?\b|\bacquisition\b|\btakeover\b|\bmerger\b|\bbuyout\b|\bdivest\w*\b|\bamalgamation\b"),
-    ("ma", 3, r"\bstake (?:in|sale|purchase|buyout)\b|\bbuys?\b|\bbought\b"),
+    ("ma", 3, r"\bstake (?:in|sale|purchase|buyout)\b|\bbuys\b|\bbought\b"),   # v5.3: 'buys' only - bare 'buy' is shopping context
     ("regulatory", 6, r"\bSEBI\b|\bRBI\b|\bCCI\b|\bEnforcement Directorate\b|\bPMLA\b|\bSFIO\b|\bIT raid\b|\bincome tax (?:raid|notice)\b|\bshow-?cause notice\b"),
     ("regulatory", 4, r"\bban(?:s|ned|ning)?\b|\bfine(?:s|d)?\b|\bpenalt\w+\b|\bprobe\b|\bcrackdown\b|\binvestigat\w+\b|\bregulat\w+\b|\banti-?trust\b|\bfraud\b|\bscam\b|\bcheat\w*\b|\bviolat\w+\b"),
     ("unicorn", 6, r"\bunicorns?\b|\bdecacorn\b|\bsoonicorn\b"),
@@ -181,6 +191,18 @@ _NEGATIVE_RULES = [
     (r"\bhiring\b|\bjob (?:openings?|listings?|fair)\b|\bwalk-?in\b|\bcareers?\b", 8),
     (r"\bhoroscope\b|\bastrolog\w*\b|\bcricket\b|\bBollywood\b|\bIPL\b|\bbox office\b|\bentertainment\b|\brecipes?\b", 9),
     (r"\breportedly\b|\balleged\w*\b|\brumou?r\w*\b|\bleak\w*\b|\bmight\b|\bexpected to\b|\bplanning to\b|\bslated to\b|\bin talks\b|\bunconfirmed\b", 1),
+    # v5.3: SEO/listicle firewall - evergreen deal filler, not news
+    (r"\b(?:top|best|worst|cheapest|coolest)\s+\d+\w*\b|\b\d+\s+(?:best|top|must-?haves?)\b|\bunder\s?\u20b9\s?\d[\d,.]*\b|\bbuying guide\b|\bhow to (?:choose|buy|pick|get)\b|\bfull specs?\b|\bunboxing\b|\breview roundup\b|\bprice list\b|\bcoupon codes?\b|\b(?:deal|offer) alert\b", 9),
+    # v5.3: digests / roundups / newsletters - yesterday's news sandwiches
+    (r"\b(?:roundup|wrap-?up|digest|recap|week in review|this week in tech|top stories of the week|stories of the week|morning brief|newsletter)\b", 5),
+    # v5.3.1: date-range recap series ("Between June 01 and June 06, as many
+    # as 18 Indian startups raised..." / "...raised $1.08 Bn from June 22 to
+    # June 27" - Inc42 weekly tracker in sentence form)
+    (r"\b(?:Between|from)\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}\s+(?:and|to)\s+", 6),
+    # v5.3.1: hashtag video-clip headlines ("#WATCH | ...") - link posts, not stories
+    (r"\#(?:WATCH|VIDEO|LIVE|LIVETV)\s*[|\u00bb:\-]?", 3),
+    # v5.3: viral-bait headlines
+    (r"\b(?:gone viral|goes viral|viral video|you won'?t believe|this one trick|shocking(?:ly)?|jaw-?dropping|mind-?blowing|unmissable|breaking the internet|internet by storm)\b", 6),
 ]
 
 _MONEY_RE = re.compile(
@@ -190,6 +212,64 @@ _MONEY_RE = re.compile(
     r"|\b\d[\d,.]*\s?(?:billion|bn\b|million|mn\b)\b",
     re.I,
 )
+
+# v5.3: source-authority tiers - the SAME story from a Tier-1 outlet beats
+# an SEO gadget blog. Matched by substring on the article domain.
+_DOMAIN_AUTHORITY = {
+    # tier 1: India's business/tech incumbents
+    "economictimes.indiatimes.com": 2.5,
+    "moneycontrol.com": 2.5,
+    "livemint.com": 2.5,
+    "timesofindia.indiatimes.com": 2.0,
+    "business-standard.com": 2.2,
+    "hindubusinessline.com": 1.8,
+    # tier 2: specialist tech/startup/business outlets
+    "inc42.com": 2.0,
+    "yourstory.com": 1.8,
+    "vccircle.com": 1.8,
+    "gadgets.ndtv.com": 1.6,
+    "ndtv.com": 1.8,
+    "cnbctv18.com": 1.8,
+    "businesstoday.in": 1.6,
+    "hindustantimes.com": 1.4,
+    "indianexpress.com": 1.4,
+    "thehindu.com": 1.4,
+    "news18.com": 1.2,
+    "techcrunch.com": 1.2,
+    # penalised: gadget-deal / SEO farms (listicles, coupons, price pages)
+    "gadgetsnow.com": -1.5, "91mobiles.com": -2.0, "mysmartprice.com": -2.0,
+    "smartprix.com": -2.0, "pricebaba.com": -1.5, "gizbot.com": -1.5,
+    "fonearena.com": -1.0, "cashify.in": -1.5, "phonearena.com": -1.0,
+    # v5.3.1: social-media aggregators are not publications - weak sourcing,
+    # and they must not masquerade as corroboration for the India gate
+    "linkedin": -2.5, "instagram": -2.5, "facebook": -2.5, "twitter": -2.5,
+    "x.com": -2.5, "youtube": -2.5, "reddit": -2.5, "medium": -1.0,
+}
+
+_AUTHORITY_LOOKUP = sorted(_DOMAIN_AUTHORITY.items(), key=lambda kv: -len(kv[0]))
+
+# v5.3.1: social-media aggregators - they rank down AND don't count as
+# corroboration (an ET + Instagram + Facebook cluster is really 1 outlet)
+_SOCIAL_AGGREGATORS = ("linkedin", "instagram", "facebook", "twitter",
+                       "youtube", "reddit", "medium", "t.me", "pinterest", "quora")
+
+
+def _is_social(domain: str) -> bool:
+    d = (domain or "").lower()
+    if d == "x.com" or d.endswith(".x.com"):
+        return True
+    return any(k in d for k in _SOCIAL_AGGREGATORS)
+
+
+def _domain_authority(domain: str) -> float:
+    d = (domain or "").lower()
+    if not d:
+        return 0.0
+    for key, val in _AUTHORITY_LOOKUP:
+        if key in d:            # suffix or substring match (m. / tech. subdomains)
+            return float(val)
+    return 0.0
+
 
 # category used for the chip label / image theme when several match
 _CATEGORY_PRIORITY = [
@@ -271,10 +351,20 @@ GOOGLE_NEWS_QUERIES = [
     "India technology acquisition merger",
     "India AI artificial intelligence",
     "Indian tech company SEBI RBI",
+    # v5.3: extra targeted fan-out
+    "India semiconductor chip fab",
+    "India tech layoffs",
 ]
 
 # Bengali-language Google News queries (companion-post grounding + previews)
 GOOGLE_NEWS_BN_QUERIES = ["প্রযুক্তি ভারত", "ভারতীয় স্টার্টআপ", "আইপিও ভারত", "কৃত্রিম বুদ্ধিমত্তা"]
+
+# v5.3: Google News India-edition topic feeds - these ARE the top-rated
+# stories; joining the fan-out lets corroboration promote real big news.
+GOOGLE_NEWS_TOPIC_FEEDS = [
+    ("GoogleNews Business", "https://news.google.com/rss/headlines/topic/BUSINESS?hl=en-IN&gl=IN&ceid=IN:en"),
+    ("GoogleNews Technology", "https://news.google.com/rss/headlines/topic/TECHNOLOGY?hl=en-IN&gl=IN&ceid=IN:en"),
+]
 
 NEWSAPI_EVERYTHING_QUERIES = [
     "India startup funding raise",
@@ -418,24 +508,25 @@ FALLBACK_IMAGE_QUERIES = [
 ]
 
 # per-category design system: chip label + accent colour + designer gradient
+# v5.3: accent2 = rotated second palette - same category never looks identical
 CATEGORY_THEME = {
-    "ai":          {"label": "AI",           "accent": (86, 204, 242),  "grad": [(10, 14, 26), (26, 60, 120)]},
-    "funding":     {"label": "FUNDING",      "accent": (255, 170, 60),  "grad": [(30, 20, 8), (120, 60, 20)]},
-    "ipo":         {"label": "IPO",          "accent": (80, 220, 180),  "grad": [(6, 26, 24), (20, 80, 70)]},
-    "ma":          {"label": "M&A",          "accent": (200, 160, 255), "grad": [(22, 14, 36), (80, 40, 120)]},
-    "regulatory":  {"label": "REGULATION",   "accent": (255, 120, 120), "grad": [(30, 10, 12), (110, 30, 40)]},
-    "unicorn":     {"label": "UNICORN",      "accent": (255, 140, 220), "grad": [(28, 10, 30), (110, 30, 110)]},
-    "fintech":     {"label": "FINTECH",      "accent": (120, 220, 140), "grad": [(8, 24, 14), (20, 90, 60)]},
-    "ev":          {"label": "EV",           "accent": (120, 230, 200), "grad": [(6, 24, 20), (20, 80, 70)]},
-    "gadgets":     {"label": "GADGETS",      "accent": (255, 200, 90),  "grad": [(24, 18, 8), (100, 70, 20)]},
-    "space":       {"label": "SPACE",        "accent": (140, 180, 255), "grad": [(8, 10, 30), (30, 40, 100)]},
-    "cybersecurity": {"label": "CYBERSECURITY", "accent": (110, 230, 120), "grad": [(8, 20, 10), (20, 70, 30)]},
-    "telecom":     {"label": "TELECOM",      "accent": (255, 150, 100), "grad": [(26, 14, 8), (90, 50, 20)]},
-    "ecommerce":   {"label": "ECOMMERCE",    "accent": (255, 120, 160), "grad": [(28, 8, 18), (100, 30, 60)]},
-    "layoffs":     {"label": "LAYOFFS",      "accent": (255, 120, 120), "grad": [(26, 10, 12), (90, 30, 40)]},
-    "record":      {"label": "RECORD",       "accent": (255, 210, 90),  "grad": [(28, 20, 6), (110, 80, 20)]},
-    "profit":      {"label": "BUSINESS",     "accent": (150, 230, 120), "grad": [(10, 22, 10), (30, 80, 30)]},
-    "general":     {"label": "TECH",         "accent": (110, 180, 255), "grad": [(10, 14, 24), (30, 50, 100)]},
+    "ai":          {"label": "AI",           "accent": (86, 204, 242),  "accent2": (167, 139, 250), "grad": [(10, 14, 26), (26, 60, 120)]},
+    "funding":     {"label": "FUNDING",      "accent": (255, 170, 60),  "accent2": (245, 200, 66),  "grad": [(30, 20, 8), (120, 60, 20)]},
+    "ipo":         {"label": "IPO",          "accent": (80, 220, 180),  "accent2": (170, 235, 110), "grad": [(6, 26, 24), (20, 80, 70)]},
+    "ma":          {"label": "M&A",          "accent": (200, 160, 255), "accent2": (240, 130, 200), "grad": [(22, 14, 36), (80, 40, 120)]},
+    "regulatory":  {"label": "REGULATION",   "accent": (255, 120, 120), "accent2": (255, 170, 95),  "grad": [(30, 10, 12), (110, 30, 40)]},
+    "unicorn":     {"label": "UNICORN",      "accent": (255, 140, 220), "accent2": (190, 145, 255), "grad": [(28, 10, 30), (110, 30, 110)]},
+    "fintech":     {"label": "FINTECH",      "accent": (120, 220, 140), "accent2": (140, 230, 215), "grad": [(8, 24, 14), (20, 90, 60)]},
+    "ev":          {"label": "EV",           "accent": (120, 230, 200), "accent2": (175, 235, 120), "grad": [(6, 24, 20), (20, 80, 70)]},
+    "gadgets":     {"label": "GADGETS",      "accent": (255, 200, 90),  "accent2": (255, 150, 120), "grad": [(24, 18, 8), (100, 70, 20)]},
+    "space":       {"label": "SPACE",        "accent": (140, 180, 255), "accent2": (180, 160, 255), "grad": [(8, 10, 30), (30, 40, 100)]},
+    "cybersecurity": {"label": "CYBERSECURITY", "accent": (110, 230, 120), "accent2": (110, 200, 240), "grad": [(8, 20, 10), (20, 70, 30)]},
+    "telecom":     {"label": "TELECOM",      "accent": (255, 150, 100), "accent2": (250, 205, 95),  "grad": [(26, 14, 8), (90, 50, 20)]},
+    "ecommerce":   {"label": "ECOMMERCE",    "accent": (255, 120, 160), "accent2": (255, 175, 120), "grad": [(28, 8, 18), (100, 30, 60)]},
+    "layoffs":     {"label": "LAYOFFS",      "accent": (255, 120, 120), "accent2": (235, 150, 150), "grad": [(26, 10, 12), (90, 30, 40)]},
+    "record":      {"label": "RECORD",       "accent": (255, 210, 90),  "accent2": (255, 240, 130), "grad": [(28, 20, 6), (110, 80, 20)]},
+    "profit":      {"label": "BUSINESS",     "accent": (150, 230, 120), "accent2": (200, 240, 120), "grad": [(10, 22, 10), (30, 80, 30)]},
+    "general":     {"label": "TECH",         "accent": (110, 180, 255), "accent2": (100, 220, 220), "grad": [(10, 14, 24), (30, 50, 100)]},
 }
 
 BN_CATEGORY_LABELS = {
@@ -536,6 +627,7 @@ def _default_state() -> dict:
         "recent_categories": [],  # last 5 posted categories
         "recent_domains": [],     # last 3 posted domains
         "recent_shapes": [],      # last 3 post shapes used
+        "recent_photo_ids": [],   # last 10 Pexels photo ids (feed never repeats a photo)
         "recent_personas": [],    # last persona id
         "post_counter": 0,        # drives shape / card-variant rotation
         "bengali_date": "",       # IST date string for the daily Bengali cap
@@ -901,6 +993,7 @@ def fetch_all_articles() -> list:
     _add("newsapi", fetch_newsapi())
     _add("rss", fetch_rss_all(RSS_FEEDS))
     _add("google-news", fetch_google_news(GOOGLE_NEWS_QUERIES))
+    _add("google-top", fetch_rss_all(GOOGLE_NEWS_TOPIC_FEEDS, via="google-top"))
     _add("hackernews", fetch_hn())
     _add("gnews", fetch_gnews_api())
     log.info("Fetched %d unique articles: %s", len(arts),
@@ -967,6 +1060,76 @@ _COMPILED_ENTITIES = {
 }
 
 
+# v5.3: magnitude-aware money scoring - a $1.2B round outranks a $5M one.
+# "500 million users" is NOT money, so a nearby user-noun kills the match.
+_NON_MONEY_AFTER = re.compile(
+    r"\s(?:users?|customers?|subscribers?|downloads?|people|jobs?|employees?|"
+    r"units?|devices?|phones?|handsets?|rides?|orders?|transactions?|stores?|"
+    r"apps?|videos?|views?|hours?|tonnes?|cars?|scooters?|satellites?)\b", re.I)
+_NON_MONEY_BEFORE = re.compile(
+    r"(?:users?|customers?|subscribers?|people|downloads?)\s+"
+    r"(?:cross(?:es|ed)?|tops?|hits?|reach(?:es|ed)?|surpass\w*)\s*$"
+    r"|(?:under|from|starting|priced|costing|just|only)\s*$", re.I)   # price-listing, not a deal amount
+
+
+def _money_usd_m(raw: str) -> float:
+    """One money string ('Rs 4,400 crore', '$234 million') -> USD millions."""
+    nm = re.search(r"(\d[\d,]*(?:\.\d+)?)", raw)
+    if not nm:
+        return 0.0
+    try:
+        val = float(nm.group(1).replace(",", ""))
+    except Exception:
+        return 0.0
+    low = raw.lower()
+    inr = ("\u20b9" in raw) or low.startswith("rs") or low.startswith("inr")
+    usd = "$" in raw
+    if "crore" in low or re.search(r"\bcrs?\b", low):
+        unit = 0.12                       # Rs 1 crore ~ $0.12M
+    elif "lakh" in low:
+        unit = 0.0012
+    elif "billion" in low or re.search(r"\bbn\b", low):
+        unit = 1000.0 if (usd or not inr) else 12.0
+    elif "million" in low or re.search(r"\bmn\b", low):
+        unit = 1.0 if (usd or not inr) else 0.012
+    elif usd:
+        unit = 1e-6
+    elif inr:
+        unit = 1.2e-8
+    else:
+        return 0.0
+    return val * unit
+
+
+def _money_score(text: str) -> float:
+    """Largest amount in the text, mapped to points (capped at 4)."""
+    best, n = 0.0, 0
+    for m in _MONEY_RE.finditer(text):
+        tail = text[m.end():m.end() + 18]
+        if _NON_MONEY_AFTER.match(tail):
+            continue                     # counts/users, not cash
+        head = text[max(0, m.start() - 24):m.start()]
+        if _NON_MONEY_BEFORE.search(head):
+            continue                     # "users cross ..."
+        v = _money_usd_m(m.group(0))
+        if v > 0:
+            n += 1
+            best = max(best, v)
+    if n == 0:
+        return 0.0
+    if best >= 500:
+        s = 4.0
+    elif best >= 50:
+        s = 3.2
+    elif best >= 5:
+        s = 2.4
+    elif best >= 0.5:
+        s = 1.6
+    else:
+        s = 1.0
+    return min(4.0, s + (0.4 if n >= 2 else 0.0))
+
+
 def _score_one(a: Article, now: datetime):
     text = f"{a.title}. {a.description}"[:700]
     cat_pts = {}
@@ -983,14 +1146,25 @@ def _score_one(a: Article, now: datetime):
                 break
     ent_pts = min(ent_pts, 7)
 
-    money = min(3.0, 1.5 * len(_MONEY_RE.findall(text)))
+    money = _money_score(text)          # v5.3: magnitude-aware
 
     rec = 0.0
     if a.published_at:
         hrs = (now - a.published_at).total_seconds() / 3600
         if hrs < 0:
             hrs = 0
-        rec = 3.0 if hrs <= 6 else 2.0 if hrs <= 12 else 1.0 if hrs <= 24 else 0.0
+        # v5.3: fresh <24h scores as before; beyond that stories decay fast
+        # (24h -> 0, 72h -> -3) so the page never posts stale news
+        if hrs <= 6:
+            rec = 3.0
+        elif hrs <= 12:
+            rec = 2.0
+        elif hrs <= 24:
+            rec = 1.0
+        else:
+            rec = -min(3.0, (hrs - 24) / 16.0)
+    else:
+        rec = -1.0                       # v5.3: undated -> probably stale
 
     spec = 0.0
     if re.search(r"\d", a.title):
@@ -1003,8 +1177,15 @@ def _score_one(a: Article, now: datetime):
         m = rx.findall(text)
         if m:
             pen -= float(p if p >= 4 else min(3, len(m)))
+    # v5.3: title quality - tabloid ALL-CAPS & empty question hooks
+    letters = [c for c in a.title if c.isalpha()]
+    if letters and sum(1 for c in letters if c.isupper()) / len(letters) > 0.5:
+        pen -= 2.0
+    if a.title.rstrip().endswith("?") and len(a.title.split()) < 9:
+        pen -= 1.5
 
-    base = sum(min(v, 8.0) for v in cat_pts.values()) + ent_pts + money + rec + spec + pen
+    base = (sum(min(v, 8.0) for v in cat_pts.values()) + ent_pts + money + rec
+            + spec + pen + _domain_authority(a.domain))   # v5.3: outlet tier
 
     chosen = ""
     for cat in _CATEGORY_PRIORITY:
@@ -1014,6 +1195,40 @@ def _score_one(a: Article, now: datetime):
     if not chosen and ent_cat:
         chosen = ent_cat
     return max(0.0, base), chosen
+
+
+# v5.3: a story needs an India angle (or 3+ corroborating outlets) to rank.
+# The signal must come from the STORY, not just the outlet - ET/Moneycontrol
+# carry global wire stories too (Shein, Shanghai IPOs...).
+_INDIAN_PLACE_RE = re.compile(
+    r"\b(?:india|indian|india'?s|bharat|bengaluru|bangalore|mumbai|delhi|hyderabad|"
+    r"pune|chennai|kolkata|gurugram|gurgaon|noida|ahmedabad|jaipur|kochi|coimbatore|"
+    r"gujarat|karnataka|maharashtra|tamil nadu|telangana)\b", re.I)
+# India-specific vocabulary that only appears in Indian stories
+_INDIAN_TERM_RE = re.compile(
+    r"\b(?:RBI|SEBI|NSE|BSE|Nifty|Sensex|NIFTY|SENSEX|UPI|NITI Aayog|DRHP|"
+    r"crore|crores|lakh|lakhs|rupee|rupees|repo rate|LIC)\b")
+# global entities in the entity table (NOT India signals)
+_GLOBAL_ENTITY_KEYS = {"apple", "google", "microsoft", "openai", "nvidia", "tesla",
+                       "samsung", "xiaomi", "oneplus", "vivo", "oppo", "realme",
+                       "nothing phone", "motorola", "meta", "whatsapp", "youtube",
+                       "amazon", "oneweb", "starlink", "google pay"}
+_INDIAN_ENTITY_RES = [re.compile(r"\b" + re.escape(k) + r"\b", re.I)
+                      for k in _ENTITIES if k not in _GLOBAL_ENTITY_KEYS]
+
+
+def _india_signal(a) -> bool:
+    if a.via == "hn":
+        return True                    # HN query is India-filtered
+    text = f"{a.title} {a.description}"
+    if _INDIAN_PLACE_RE.search(text) or _INDIAN_TERM_RE.search(text):
+        return True
+    if (a.domain or "").endswith(".in"):
+        return True
+    for rx in _INDIAN_ENTITY_RES:      # an Indian company in the story
+        if rx.search(text):
+            return True
+    return False
 
 
 def _cluster_articles(articles: list) -> list:
@@ -1029,7 +1244,7 @@ def _cluster_articles(articles: list) -> list:
         if not placed:
             clusters.append([a])
     for c in clusters:
-        doms = {x.domain for x in c}
+        doms = {x.domain for x in c if not _is_social(x.domain)}
         for a in c:
             a.corroborations = len(doms)
     return clusters
@@ -1042,10 +1257,14 @@ def score_articles(articles: list) -> list:
         a.score, a.category = s, cat or "general"
     clusters = _cluster_articles(articles)
     for c in clusters:
-        doms = len({x.domain for x in c})
+        doms = len({x.domain for x in c if not _is_social(x.domain)})
         boost = 4.0 if doms >= 3 else 2.0 if doms == 2 else 0.0
+        india_ok = any(_india_signal(x) for x in c)
         for a in c:
+            a.india_ok = india_ok      # v5.3: cluster-level India signal
             a.score += boost
+            if not india_ok and doms < 3:
+                a.score -= 2.5        # v5.3: global story w/o India angle or wide pickup
     return clusters
 
 
@@ -1067,19 +1286,24 @@ def select_article(clusters: list, state: dict, threshold: float):
             s -= 2.0
         return s
 
-    quals = [a for a in flat if effective(a) >= threshold and not _is_duplicate(a, state)]
+    def eligible(a: Article) -> bool:
+        # v5.3: India gate - a story with no India angle may only post if it
+        # is huge (3+ corroborating outlets); the page stays Indian tech news
+        return getattr(a, "india_ok", True) or a.corroborations >= 3
+
+    quals = [a for a in flat if effective(a) >= threshold and not _is_duplicate(a, state) and eligible(a)]
     if not quals:
         last = state.get("last_post_ts") or 0
         quiet_hrs = (time.time() - last) / 3600 if last else 999.0
         if quiet_hrs >= QUIET_HOURS:
             relaxed = max(4, int(threshold) - QUIET_RELAX_DROP)
-            quals = [a for a in flat if effective(a) >= relaxed and not _is_duplicate(a, state)]
+            quals = [a for a in flat if effective(a) >= relaxed and not _is_duplicate(a, state) and eligible(a)]
             if quals:
                 log.info("Page quiet for %.1fh - relaxing threshold %d -> %d",
                          quiet_hrs, int(threshold), relaxed)
     if not quals:
         return None
-    quals.sort(key=effective, reverse=True)
+    quals.sort(key=lambda a: (effective(a), a.corroborations), reverse=True)
     return quals[0]
 
 # ==========================================================================
@@ -1629,6 +1853,31 @@ def _draw_tracked(draw, xy, text, font, fill, tracking=1.15):
         x += draw.textlength(ch, font=font) * tracking
 
 
+def _txt(d, xy, text, font, fill=(255, 255, 255, 255), shadow=True):
+    """Text with a soft drop shadow - headline stays readable on ANY photo."""
+    if font is None:
+        return
+    if shadow:
+        off = max(2, int(getattr(font, "size", 24) / 26))
+        d.text((xy[0] + off, xy[1] + off), text, font=font, fill=(0, 0, 0, 150))
+    d.text(xy, text, font=font, fill=fill)
+
+
+def _vignette(size, strength=64):
+    """Cinematic corner darkening (RGBA overlay or None)."""
+    try:
+        if not hasattr(Image, "radial_gradient"):
+            return None
+        w, h = size
+        mask = Image.radial_gradient("L").resize((w, h), _RESAMPLE.BILINEAR)
+        mask = mask.point(lambda p: int(p * strength / 255))
+        vig = Image.new("RGBA", (w, h), (0, 0, 0, 255))
+        vig.putalpha(mask)
+        return vig
+    except Exception:
+        return None
+
+
 def _draw_chip(draw, x, y, text, accent, size, bengali=False):
     """Pill-shaped category chip: dark glass fill + accent outline + accent text."""
     if not text:
@@ -1670,6 +1919,18 @@ def _diag_gradient(w, h, c1, c2):
             t = (x + y) / 126.0
             px[x, y] = tuple(int(a + (b - a) * t) for a, b in zip(c1, c2))
     return base.resize((w, h), _RESAMPLE.BILINEAR)
+
+
+def _horizontal_gradient(size, rgb, a_start, a_end, curve=1.7):
+    w, h = size
+    g = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    d = ImageDraw.Draw(g)
+    for x in range(w):
+        t = x / max(1, w - 1)
+        a = int(a_start + (a_end - a_start) * (t ** curve))
+        a = max(0, min(255, a))
+        d.line([(x, 0), (x, h)], fill=rgb + (a,))
+    return g
 
 
 def _smart_crop(img, tw, th):
@@ -1769,11 +2030,13 @@ def _download_photo(p):
         return None
 
 
-def _pick_photo(art):
+def _pick_photo(art, avoid_ids=None):
     """Query ladder -> rank candidates -> download top 3 -> keep most vivid.
-    Returns (PIL.Image, photographer) or None."""
+    avoid_ids: Pexels photo ids used recently, so the feed never repeats a photo.
+    Returns (PIL.Image, photographer, photo_id) or None."""
     if not PIL_OK:
         return None
+    avoid = avoid_ids or set()
     target = CARD_W / CARD_H
     for query in _image_queries_for(art):
         photos = _pexels_search(query, "portrait")
@@ -1798,6 +2061,10 @@ def _pick_photo(art):
         if not ranked:
             continue
         ranked.sort(key=lambda x: x[0], reverse=True)
+        if avoid:
+            fresh = [rp for rp in ranked if rp[1].get("id") not in avoid]
+            if fresh:
+                ranked = fresh   # prefer unseen photos; reuse rather than fail
 
         cand = []
         with ThreadPoolExecutor(max_workers=3) as ex:
@@ -1808,7 +2075,8 @@ def _pick_photo(art):
                 except Exception:
                     img = None
                 if img is not None:
-                    cand.append((img, (futs[f].get("photographer") or "Pexels")))
+                    cand.append((img, (futs[f].get("photographer") or "Pexels"),
+                                 futs[f].get("id")))
         if not cand:
             continue
         cand.sort(key=lambda c: _vividness(c[0]), reverse=True)
@@ -1833,6 +2101,39 @@ def _card_headline(title):
     return t
 
 
+# ---- giant-stat extraction (feeds the stat_hero card layout) --------------
+_STAT_CURRENCY_RE = re.compile(
+    r"(\u20b9|\bRs\b\.?|\bUS\s*\$|\$)\s?(\d[\d,]*(?:\.\d+)?)\s*(billion|bn|crore|cr|lakh|million|mn|thousand|k)?\b", re.I)
+_STAT_BARE_RE = re.compile(r"\b(\d[\d,]*(?:\.\d+)?)\s+(million|billion|crore|lakh)\b", re.I)
+_STAT_PCT_RE = re.compile(r"\b(\d[\d,]*(?:\.\d+)?)\s?%")
+_STAT_MULT_RE = re.compile(r"\b(\d+(?:\.\d+)?)\s?[xX]\b")
+
+
+def _extract_stat(text):
+    """Pull the most eye-catching number out of a headline.
+    Returns (display, raw_span) or (None, None).
+    '\u20b952,000 crore profit' -> ('\u20b952,000 Cr', '\u20b952,000 crore')."""
+    t = text or ""
+    m = _STAT_CURRENCY_RE.search(t)
+    if m:
+        cur = "\u20b9" if ("\u20b9" in m.group(1) or m.group(1).lower().startswith("rs")) else "$"
+        units = {"billion": "B", "bn": "B", "crore": " Cr", "cr": " Cr",
+                 "lakh": " L", "million": "M", "mn": "M", "thousand": "K", "k": "K"}
+        u = units.get((m.group(3) or "").lower(), "")
+        return f"{cur}{m.group(2)}{u}", m.group(0)
+    m = _STAT_BARE_RE.search(t)
+    if m:
+        units = {"million": "M", "billion": "B", "crore": " Cr", "lakh": " L"}
+        return f"{m.group(1)}{units[m.group(2).lower()]}", m.group(0)
+    m = _STAT_PCT_RE.search(t)
+    if m:
+        return f"{m.group(1)}%", m.group(0)
+    m = _STAT_MULT_RE.search(t)
+    if m:
+        return f"{m.group(1)}X", m.group(0)
+    return None, None
+
+
 _BN_MONTHS = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন",
               "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"]
 
@@ -1845,15 +2146,18 @@ def _source_date_line(art, bengali=False):
     return f"{src} \u00b7 {now.strftime('%d %b')}"
 
 # ==========================================================================
-# CARD RENDERERS - 3 rotating layouts, 2x supersampled
+# CARD RENDERERS - 6 rotating layouts, 2x supersampled
 # ==========================================================================
-def _render_photo_card(photo, art, variant, headline, source_line, bengali=False):
-    """Stock photo + branded overlay. variant in CARD_VARIANTS."""
+def _render_photo_card(photo, art, variant, headline, source_line, bengali=False, stat=None, variant_idx=0):
+    """Stock photo + branded overlay. variant in CARD_VARIANTS; stat -> giant number poster."""
+    if variant == "stat_hero" and not stat:
+        variant = "full_bleed"                      # defensive fallback
     S = max(1, SUPERSAMPLE)
     W, H = CARD_W * S, CARD_H * S
     M = int(72 * S)
     theme = CATEGORY_THEME.get(art.category, CATEGORY_THEME["general"])
-    accent = theme["accent"]
+    # v5.3: two accent palettes per category, rotated per post
+    accent = theme["accent"] if variant_idx % 2 == 0 else theme.get("accent2", theme["accent"])
 
     # ---- base image
     if variant == "split_card":
@@ -1865,6 +2169,13 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         base.paste(top_img.convert("RGB"), (0, 0))
         fade = _vertical_gradient((W, int(90 * S)), panel, 0, 255, curve=2.2)
         base.alpha_composite(fade, (0, split - int(90 * S)))
+    elif variant == "magazine":
+        split_x = int(W * 0.56)
+        panel = tuple(int(c * 0.72) for c in theme["grad"][0])
+        base = Image.new("RGBA", (W, H), panel + (255,))
+        side_w = W - split_x
+        side = _smart_crop(photo, side_w, H).resize((side_w, H), _RESAMPLE.LANCZOS)
+        base.paste(_enhance_photo(side).convert("RGB"), (split_x, 0))
     else:
         base = _smart_crop(photo, W, H).resize((W, H), _RESAMPLE.LANCZOS)
         base = _enhance_photo(base).convert("RGBA")
@@ -1881,14 +2192,35 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         overlay.alpha_composite(_vertical_gradient((W, int(H * 0.66)), (8, 10, 18), 248, 0, curve=1.15), (0, 0))
         bh = int(H * 0.14)
         overlay.alpha_composite(_vertical_gradient((W, bh), (8, 10, 18), 0, 140), (0, H - bh))
-    else:  # split_card - small top scrim for chip/handle over the photo
+    elif variant == "split_card":
         overlay.alpha_composite(_vertical_gradient((W, int(H * 0.15)), (8, 10, 18), 140, 0), (0, 0))
+    elif variant == "full_bleed":
+        overlay.alpha_composite(_vertical_gradient((W, H), (8, 10, 18), 150, 215, curve=1.0), (0, 0))
+        overlay.alpha_composite(
+            _vertical_gradient((W, int(H * 0.18)), (8, 10, 18), 0, 175, curve=1.6),
+            (0, H - int(H * 0.18)))
+        vig = _vignette((W, H), 58)             # v5.3: cinematic corners
+        if vig is not None:
+            overlay.alpha_composite(vig)
+    elif variant == "magazine":
+        split_x = int(W * 0.56)
+        side_w = W - split_x
+        overlay.alpha_composite(
+            _vertical_gradient((side_w, int(H * 0.16)), (8, 10, 18), 120, 0), (split_x, 0))
+        overlay.alpha_composite(
+            _vertical_gradient((side_w, int(H * 0.16)), (8, 10, 18), 0, 130, curve=1.6),
+            (split_x, H - int(H * 0.16)))
+    else:  # stat_hero - heavy cinematic darken so the giant number pops
+        overlay.alpha_composite(_vertical_gradient((W, H), (8, 10, 18), 200, 240, curve=1.1), (0, 0))
+        vig = _vignette((W, H), 72)             # v5.3: poster-style corners
+        if vig is not None:
+            overlay.alpha_composite(vig)
 
     # ---- chip (top-left) + handle
     chip_size = int(25 * S)
     label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
     _, chip_h = _draw_chip(d, M, M, label, accent, chip_size, bengali)
-    if PAGE_HANDLE and variant != "top_banner":
+    if PAGE_HANDLE and variant not in ("top_banner", "stat_hero", "magazine"):
         hf = _font(int(25 * S), "semibold", bengali)
         if hf is not None:
             hw = _tracked_width(d, PAGE_HANDLE, hf, 1.12)
@@ -1910,8 +2242,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
             d, headline, "bold", W - 2 * M, 5, int(74 * S), int(42 * S), bengali)
         y = avail_bottom - th
         for ln in lines:
-            if font is not None:
-                d.text((M, y), ln, font=font, fill=(255, 255, 255, 255))
+            _txt(d, (M, y), ln, font)
             y += lh
 
     elif variant == "top_banner":
@@ -1920,8 +2251,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
             d, headline, "bold", W - 2 * M, 5, int(74 * S), int(42 * S), bengali)
         y = top
         for ln in lines:
-            if font is not None:
-                d.text((M, y), ln, font=font, fill=(255, 255, 255, 255))
+            _txt(d, (M, y), ln, font)
             y += lh
         y += int(28 * S)
         d.rounded_rectangle([M, y, M + int(96 * S), y + int(8 * S)],
@@ -1937,7 +2267,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
                 d.text((W - M - int(hw), H - M - int(34 * S)), PAGE_HANDLE,
                        font=hf, fill=(255, 255, 255, 215))
 
-    else:  # split_card
+    elif variant == "split_card":
         split = int(H * 0.54)
         d.rectangle([0, split - int(3 * S), W, split], fill=accent + (255,))
         top = split + int(44 * S)
@@ -1945,8 +2275,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
             d, headline, "bold", W - 2 * M, 5, int(66 * S), int(40 * S), bengali)
         y = top
         for ln in lines:
-            if font is not None:
-                d.text((M, y), ln, font=font, fill=(255, 255, 255, 255))
+            _txt(d, (M, y), ln, font)
             y += lh
         y += int(30 * S)
         d.rounded_rectangle([M, y, M + int(96 * S), y + int(8 * S)],
@@ -1955,59 +2284,193 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         if src_font is not None:
             d.text((M, H - M - int(36 * S)), source_line, font=src_font, fill=(255, 255, 255, 185))
 
+    elif variant == "full_bleed":
+        # editorial: accent bar ABOVE the headline, upper-third block, photo breathes
+        top = int(H * 0.34)
+        d.rounded_rectangle([M, top, M + int(96 * S), top + int(8 * S)],
+                            radius=int(4 * S), fill=accent + (255,))
+        y = top + int(42 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "bold", W - 2 * M, 5, int(78 * S), int(44 * S), bengali)
+        for ln in lines:
+            _txt(d, (M, y), ln, font)
+            y += lh
+        src_font = _font(int(27 * S), "medium", bengali)
+        if src_font is not None:
+            d.text((M, H - M - int(36 * S)), source_line, font=src_font, fill=(255, 255, 255, 200))
+
+    elif variant == "magazine":
+        # asymmetric editorial split: dark text panel left, full-height photo right
+        split_x = int(W * 0.56)
+        d.rectangle([split_x - int(3 * S), 0, split_x, H], fill=accent + (255,))
+        panel_w = split_x - M - int(28 * S)
+        top = M + chip_h + int(46 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "bold", panel_w, 7, int(56 * S), int(32 * S), bengali)
+        y = top
+        for ln in lines:
+            _txt(d, (M, y), ln, font)
+            y += lh
+        y += int(26 * S)
+        d.rounded_rectangle([M, y, M + int(88 * S), y + int(8 * S)],
+                            radius=int(4 * S), fill=accent + (255,))
+        src_font = _font(int(24 * S), "medium", bengali)
+        if src_font is not None:
+            d.text((M, H - M - int(34 * S)), source_line, font=src_font, fill=(255, 255, 255, 185))
+        if PAGE_HANDLE:
+            hf = _font(int(24 * S), "semibold", bengali)
+            if hf is not None:
+                hw = _tracked_width(d, PAGE_HANDLE, hf, 1.12)
+                d.text((split_x + int(24 * S), H - M - int(34 * S)), PAGE_HANDLE,
+                       font=hf, fill=(255, 255, 255, 200))
+
+    else:  # stat_hero - the scroll-stopper: giant number, poster symmetry
+        stat_font = None
+        size = int(240 * S)
+        while size >= int(96 * S):
+            f = _font(size, "bold", False)
+            if f is None:
+                break
+            if d.textlength(stat, font=f) <= W - 2 * M:
+                stat_font = f
+                break
+            size -= int(8 * S)
+        if stat_font is None:
+            stat_font = _font(int(96 * S), "bold", False)
+        cy = int(H * 0.36)
+        d.ellipse([W // 2 - int(360 * S), cy - int(210 * S),
+                   W // 2 + int(360 * S), cy + int(210 * S)], fill=accent + (30,))
+        d.ellipse([W // 2 - int(230 * S), cy - int(140 * S),
+                   W // 2 + int(230 * S), cy + int(140 * S)], fill=accent + (26,))
+        bbox = stat_font.getbbox(stat)
+        stat_h = bbox[3] - bbox[1]
+        tw = d.textlength(stat, font=stat_font)
+        sx = (W - tw) / 2 - bbox[0]
+        sy = cy - stat_h / 2 - bbox[1]
+        d.text((sx + int(5 * S), sy + int(5 * S)), stat,
+               font=stat_font, fill=accent + (110,))            # v5.3: accent glow
+        d.text((sx, sy), stat, font=stat_font, fill=(255, 255, 255, 255))
+        y = cy + stat_h // 2 + int(46 * S)
+        bar_w = min(int(tw * 0.7), int(320 * S))
+        d.rounded_rectangle([int((W - bar_w) / 2), y, int((W + bar_w) / 2), y + int(8 * S)],
+                            radius=int(4 * S), fill=accent + (255,))
+        y += int(48 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "semibold", W - 2 * M, 4, int(52 * S), int(34 * S), bengali)
+        for ln in lines:
+            if font is not None:
+                lw = d.textlength(ln, font=font)
+                _txt(d, ((W - lw) / 2, y), ln, font, (255, 255, 255, 245))
+            y += lh
+        src_font = _font(int(26 * S), "medium", bengali)
+        if src_font is not None:
+            sw = d.textlength(source_line, font=src_font)
+            d.text(((W - sw) / 2, H - M - int(36 * S)), source_line,
+                   font=src_font, fill=(255, 255, 255, 200))
+
     out = Image.alpha_composite(base, overlay).convert("RGB")
     return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
 
 
-def _render_designer_card(art, headline, source_line, bengali=False, variant_idx=0):
-    """No-photo fallback that still looks designed: duotone gradient, dot grid,
-    translucent rings, full typography system."""
+def _render_designer_card(art, headline, source_line, bengali=False, variant_idx=0, stat=None):
+    """No-photo fallback that still looks designed: duotone gradient + one of
+    four rotating background motifs + full typography system; optional giant stat."""
     S = max(1, SUPERSAMPLE)
     W, H = CARD_W * S, CARD_H * S
     M = int(76 * S)
     theme = CATEGORY_THEME.get(art.category, CATEGORY_THEME["general"])
-    accent = theme["accent"]
+    # v5.3: two accent palettes per category, rotated per post
+    accent = theme["accent"] if variant_idx % 2 == 0 else theme.get("accent2", theme["accent"])
     base = _diag_gradient(W, H, theme["grad"][0], theme["grad"][1]).convert("RGBA")
 
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
 
-    # dot grid texture
-    step = int(56 * S)
-    r = int(2 * S)
-    for gy in range(int(36 * S), H, step):
-        for gx in range(int(36 * S), W, step):
-            d.ellipse([gx, gy, gx + r, gy + r], fill=(255, 255, 255, 15))
-
-    # decorative rings (position rotates with variant_idx for feed variety)
-    if variant_idx % 3 == 0:
-        cx, cy = W - int(150 * S), int(120 * S)
-    elif variant_idx % 3 == 1:
-        cx, cy = int(150 * S), H - int(200 * S)
-    else:
-        cx, cy = W - int(180 * S), H - int(160 * S)
-    d.ellipse([cx - int(210 * S), cy - int(210 * S), cx + int(210 * S), cy + int(210 * S)],
-              outline=(255, 255, 255, 24), width=int(2 * S))
-    d.ellipse([cx - int(140 * S), cy - int(140 * S), cx + int(140 * S), cy + int(140 * S)],
-              fill=accent + (16,))
+    # ---- rotating background motif (feed variety even without photos)
+    m = variant_idx % 4
+    if m == 0:      # dot grid + rings
+        step = int(56 * S)
+        r = int(2 * S)
+        for gy in range(int(36 * S), H, step):
+            for gx in range(int(36 * S), W, step):
+                d.ellipse([gx, gy, gx + r, gy + r], fill=(255, 255, 255, 15))
+        cx, cy = (W - int(150 * S), int(120 * S)) if variant_idx % 8 < 4 \
+            else (int(150 * S), H - int(200 * S))
+        d.ellipse([cx - int(210 * S), cy - int(210 * S), cx + int(210 * S), cy + int(210 * S)],
+                  outline=(255, 255, 255, 24), width=int(2 * S))
+        d.ellipse([cx - int(140 * S), cy - int(140 * S), cx + int(140 * S), cy + int(140 * S)],
+                  fill=accent + (16,))
+    elif m == 1:    # diagonal pinstripes
+        for x0 in range(-H, W, int(84 * S)):
+            d.line([(x0, H), (x0 + H, 0)], fill=(255, 255, 255, 13), width=int(2 * S))
+    elif m == 2:    # halftone wave (dots grow downward)
+        step = int(74 * S)
+        for gy in range(int(30 * S), H, step):
+            t = gy / H
+            r = int((1.5 + 3.2 * t) * S)
+            for gx in range(int(30 * S), W, step):
+                d.ellipse([gx, gy, gx + r, gy + r], fill=(255, 255, 255, 17))
+    else:           # translucent circle cluster + corner ring
+        for (dx, dy, rr, aa) in ((-60, -40, 260, 22), (120, 60, 170, 18), (260, 180, 100, 14)):
+            d.ellipse([W - int(dx * S) - int(rr * S), H - int(dy * S) - int(rr * S),
+                       W - int(dx * S) + int(rr * S), H - int(dy * S) + int(rr * S)],
+                      fill=accent + (aa,))
+        d.ellipse([int(60 * S) - int(130 * S), int(80 * S) - int(130 * S),
+                   int(60 * S) + int(130 * S), int(80 * S) + int(130 * S)],
+                  outline=(255, 255, 255, 26), width=int(2 * S))
 
     # chip
     chip_size = int(25 * S)
     label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
     _draw_chip(d, M, M, label, accent, chip_size, bengali)
 
-    # headline
-    top = int(H * 0.30)
-    lines, font, lh, th, _ = _fit_headline(
-        d, headline, "bold", W - 2 * M, 6, int(84 * S), int(46 * S), bengali)
-    y = top
-    for ln in lines:
-        if font is not None:
-            d.text((M, y), ln, font=font, fill=(255, 255, 255, 252))
-        y += lh
-    y += int(30 * S)
-    d.rounded_rectangle([M, y, M + int(110 * S), y + int(9 * S)],
-                        radius=int(4 * S), fill=accent + (255,))
+    if stat:
+        # ---- giant stat poster
+        stat_font = None
+        size = int(230 * S)
+        while size >= int(90 * S):
+            f = _font(size, "bold", False)
+            if f is None:
+                break
+            if d.textlength(stat, font=f) <= W - 2 * M:
+                stat_font = f
+                break
+            size -= int(8 * S)
+        if stat_font is None:
+            stat_font = _font(int(90 * S), "bold", False)
+        cy = int(H * 0.35)
+        bbox = stat_font.getbbox(stat)
+        stat_h = bbox[3] - bbox[1]
+        tw = d.textlength(stat, font=stat_font)
+        d.ellipse([W // 2 - int(330 * S), cy - int(200 * S),
+                   W // 2 + int(330 * S), cy + int(200 * S)], fill=accent + (20,))
+        d.text(((W - tw) / 2 - bbox[0], cy - stat_h / 2 - bbox[1]), stat,
+               font=stat_font, fill=(255, 255, 255, 255))
+        y = cy + stat_h // 2 + int(44 * S)
+        bar_w = min(int(tw * 0.7), int(300 * S))
+        d.rounded_rectangle([int((W - bar_w) / 2), y, int((W + bar_w) / 2), y + int(8 * S)],
+                            radius=int(4 * S), fill=accent + (255,))
+        y += int(46 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "semibold", W - 2 * M, 4, int(50 * S), int(32 * S), bengali)
+        for ln in lines:
+            if font is not None:
+                lw = d.textlength(ln, font=font)
+                _txt(d, ((W - lw) / 2, y), ln, font, (255, 255, 255, 245))
+            y += lh
+    else:
+        # ---- standard headline block
+        top = int(H * 0.30)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "bold", W - 2 * M, 6, int(84 * S), int(46 * S), bengali)
+        y = top
+        for ln in lines:
+            if font is not None:
+                d.text((M, y), ln, font=font, fill=(255, 255, 255, 252))
+            y += lh
+        y += int(30 * S)
+        d.rounded_rectangle([M, y, M + int(110 * S), y + int(9 * S)],
+                            radius=int(4 * S), fill=accent + (255,))
 
     # source + handle
     src_font = _font(int(26 * S), "medium", bengali)
@@ -2033,32 +2496,57 @@ def render_card(art, state=None, bengali=False, card_headline=None):
     if card_headline is None:
         card_headline = _card_headline(art.title)
     src_line = _source_date_line(art, bengali)
-    variant_idx = (state or {}).get("post_counter", 0)
+    # Bengali companion always gets a DIFFERENT layout than its English sibling
+    variant_idx = (state or {}).get("post_counter", 0) + (1 if bengali else 0)
     variant = CARD_VARIANTS[variant_idx % len(CARD_VARIANTS)]
 
+    # giant-stat treatment (English cards; headline drops the number to avoid saying it twice)
+    stat = raw = None
+    if not bengali:
+        stat, raw = _extract_stat(card_headline)
+    if variant == "stat_hero":
+        if not stat:
+            variant = "magazine" if variant_idx % 2 else "full_bleed"
+        elif raw:
+            stripped = re.sub(r"\s{2,}", " ", card_headline.replace(raw, " ")).strip(" ,.:-\u2013\u2014|")
+            if len(stripped) >= 18:
+                card_headline = stripped
+    # editorial uppercase treatment for the two magazine-style layouts
+    if not bengali and variant in ("full_bleed", "magazine"):
+        card_headline = card_headline.upper()
+
     photo = None
+    avoid = set((state or {}).get("recent_photo_ids") or [])
     try:
-        photo = _pick_photo(art)
+        photo = _pick_photo(art, avoid)
     except Exception as e:
         log.debug("photo pick failed: %s", e)
 
+    # remember the photo so the next 10 cards never reuse it
+    if photo is not None and state is not None and photo[2]:
+        used = list(state.get("recent_photo_ids") or []) + [photo[2]]
+        state["recent_photo_ids"] = used[-10:]
+
     try:
         if photo is not None:
-            img = _render_photo_card(photo[0], art, variant, card_headline, src_line, bengali)
+            img = _render_photo_card(photo[0], art, variant, card_headline, src_line, bengali, stat, variant_idx)
             kind = "photo"
         else:
-            img = _render_designer_card(art, card_headline, src_line, bengali, variant_idx)
+            img = _render_designer_card(art, card_headline, src_line, bengali, variant_idx,
+                                        stat if variant == "stat_hero" else None)
             kind = "designer"
     except Exception as e:
         log.warning("card render failed (%s) - designer fallback", e)
-        img = _render_designer_card(art, card_headline, src_line, bengali, variant_idx)
+        img = _render_designer_card(art, card_headline, src_line, bengali, variant_idx,
+                                    stat if variant == "stat_hero" else None)
         kind = "designer"
 
     try:
         IMAGE_DIR.mkdir(parents=True, exist_ok=True)
         path = IMAGE_DIR / f"card_{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:8]}.jpg"
-        img.save(path, "JPEG", quality=88, optimize=True, progressive=True)
-        log.info("Card rendered: %s (%s / variant=%s)", path.name, kind, variant)
+        img.save(path, "JPEG", quality=90, optimize=True, progressive=True)
+        log.info("Card rendered: %s (%s / variant=%s%s)", path.name, kind, variant,
+                 f" / stat={stat}" if variant == "stat_hero" and stat else "")
         return path
     except Exception as e:
         log.error("card save failed: %s", e)
@@ -2232,8 +2720,12 @@ def run(args) -> int:
     clusters = score_articles(articles)
     flat = sorted([c[0] for c in clusters if c], key=lambda a: a.score, reverse=True)
     log.info("Scored %d stories -> %d unique clusters. Top candidates:", len(articles), len(clusters))
-    for a in flat[:5]:
-        log.info("   %5.1f  %-13s %s", a.score, a.category, a.title[:86])
+    for a in flat[:8]:
+        # v5.3.1: flag India-gate-blocked stories so the CI leaderboard never
+        # looks like a global wire story will post (it won't)
+        gate = "" if (getattr(a, "india_ok", True) or a.corroborations >= 3) \
+            else "  [gated: no India angle]"
+        log.info("   %5.1f  %-13s %s%s", a.score, a.category, a.title[:78], gate)
     threshold = args.threshold if (getattr(args, "threshold", None)) else MIN_ENGAGEMENT_SCORE_TO_POST
 
     # ---- 3. fast paths: --preview-image / --bengali-preview
@@ -2392,6 +2884,23 @@ def _self_test() -> int:
     if _card_headline("Big funding news | Inc42").endswith("Inc42"):
         failures.append("card_headline should strip '| SiteName'")
 
+    # stat extraction (feeds the stat_hero card)
+    stat_cases = [
+        ("Jio posts \u20b952,000 crore profit", "\u20b952,000 Cr"),
+        ("Sarvam raises $234 million", "$234M"),
+        ("Startup valued at $1.5 billion", "$1.5B"),
+        ("Ola raises Rs 16 crore", "\u20b916 Cr"),
+        ("Profit skyrockets 4X YoY", "4X"),
+        ("Users cross 500 million", "500M"),
+        ("Tariff hike of 25% announced", "25%"),
+    ]
+    for src, want in stat_cases:
+        got, _raw = _extract_stat(src)
+        if got != want:
+            failures.append(f"extract_stat({src!r}) -> {got!r}, want {want!r}")
+    if _extract_stat("New smartphone launched today")[0] is not None:
+        failures.append("extract_stat should find nothing in a stat-less headline")
+
     # scoring
     now = datetime.now(UTC)
     a1 = Article("Paytm parent One97 raises $1.1 billion ahead of IPO listing",
@@ -2407,6 +2916,29 @@ def _self_test() -> int:
         failures.append(f"junk leaked through: {a2.score}")
     if a3.score >= 4:
         failures.append(f"irrelevant scored too high: {a3.score}")
+
+    # v5.3: content-quality firewall - SEO listicles die, tier-1 wins
+    a4 = Article("Top 10 best 5G smartphones under \u20b920,000 to buy this week",
+                 "https://x.com/d", "T", "gadgetsnow.com", now)
+    a5 = Article("Top 10 best 5G smartphones under \u20b920,000 to buy this week",
+                 "https://x.com/e", "T", "economictimes.indiatimes.com", now)
+    a6 = Article("Reliance acquires Disney's India business for \u20b970,000 crore",
+                 "https://x.com/f", "T", "economictimes.indiatimes.com", now)
+    big = Article("Zeta raises $1.2 billion", "https://x.com/g", "T", "inc42.com", now)
+    small = Article("Zeta raises $5 million", "https://x.com/h", "T", "inc42.com", now)
+    score_articles([a4, a5, a6, big, small])
+    if a5.score >= 9:
+        failures.append(f"SEO listicle leaked through a tier-1 outlet: {a5.score}")
+    if a4.score >= 9:
+        failures.append(f"SEO listicle leaked through: {a4.score}")
+    if a6.score < 12:
+        failures.append(f"mega-deal scored too low: {a6.score}")
+    if big.score <= small.score:
+        failures.append(f"money magnitude not ranked: big={big.score} small={small.score}")
+    if _domain_authority("economictimes.indiatimes.com") <= 0:
+        failures.append("domain authority table broken")
+    if not _india_signal(a6):
+        failures.append("india signal detection broken")
 
     # dedup + selection safety valve
     st = _default_state()
@@ -2431,6 +2963,24 @@ def _self_test() -> int:
             img.save(out_dir / f"photo_card_{i + 1}_{v}.jpg", "JPEG", quality=90)
             if img.size != (CARD_W, CARD_H):
                 failures.append(f"photo card {v} size {img.size}")
+        # v5.3: accent rotation must actually change the render
+        imgA = _render_photo_card(photo, art, "split_card", "Accent rotation check",
+                                  "S", False, None, 0)
+        imgB = _render_photo_card(photo, art, "split_card", "Accent rotation check",
+                                  "S", False, None, 1)
+        if imgA.tobytes() == imgB.tobytes():
+            failures.append("accent rotation produced identical cards")
+
+        # giant-stat poster (photo + designer versions)
+        img = _render_photo_card(photo, art, "stat_hero",
+                                 "Jio posts record profit as users cross 500 million",
+                                 "TEST FEED \u00b7 TODAY", stat="\u20b952,000 Cr")
+        img.save(out_dir / "photo_card_stat_hero.jpg", "JPEG", quality=90)
+        if img.size != (CARD_W, CARD_H):
+            failures.append(f"stat hero card size {img.size}")
+        img = _render_designer_card(art, "Jio posts record profit as users cross 500 million",
+                                    "TEST FEED \u00b7 TODAY", False, 2, stat="\u20b952,000 Cr")
+        img.save(out_dir / "designer_card_stat.jpg", "JPEG", quality=90)
         if (FONT_DIR / "NotoSansBengali.ttf").exists():
             img = _render_designer_card(art, "জিও-র রেকর্ড লাভ, ৫০ কোটি ইউজার",
                                         "টেস্ট ফিড \u00b7 আজ", True, 1)
