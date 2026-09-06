@@ -22,7 +22,8 @@
   "fd00dd023bd25f5f49b55e087add5ffe",
   "515a6e4410f898195f8e3d9c90ffa7db",
   "304e0a793393b81a3e7e9ea266dce9b4",
-  "3ed315e5532af56b0e01068c9c44e350"
+  "3ed315e5532af56b0e01068c9c44e350",
+  "fc27224d2ec7fa867a6cc61551c9722b"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -47,37 +48,39 @@
   "slice valuation crash fintech unicorn s value plunges nearly 70 in 100 million down round as it transforms into small finance bank",
   "tcs hypervault to invest 70 000 cr to set up ai data centre in hyderabad",
   "rentomojo set to go public at rs 4 246 crore valuation set to raise rs 1 256 crore via ipo",
-  "unicorn nobroker aims to be profitable in 8 10 months fy26 revenue crosses rs 1 000 crore ceo"
+  "unicorn nobroker aims to be profitable in 8 10 months fy26 revenue crosses rs 1 000 crore ceo",
+  "ola electric clears rs 1 500 cr fund raise coo quits"
  ],
- "last_post_ts": 1788708987.3943784,
+ "last_post_ts": 1788719295.085209,
  "recent_categories": [
-  "regulatory",
   "unicorn",
   "funding",
   "ipo",
-  "ipo"
+  "ipo",
+  "layoffs"
  ],
  "recent_domains": [
-  "inc42.com",
   "economictimes.indiatimes.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "yourstory.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
   31735054,
   5843637,
   7887801,
-  7873549
+  7873549,
+  15260665
  ],
  "recent_personas": [
-  "riya",
-  "arjun"
+  "arjun",
+  "dev"
  ],
- "post_counter": 23,
+ "post_counter": 24,
  "bengali_date": "2026-09-06",
  "bengali_count": 1
 }
