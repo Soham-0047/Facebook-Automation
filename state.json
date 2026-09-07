@@ -24,7 +24,8 @@
   "304e0a793393b81a3e7e9ea266dce9b4",
   "3ed315e5532af56b0e01068c9c44e350",
   "fc27224d2ec7fa867a6cc61551c9722b",
-  "9a4dfc0aab651efa0d75d82e7dd243ab"
+  "9a4dfc0aab651efa0d75d82e7dd243ab",
+  "1a9288ff2bd142224ade3a53178439c2"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -51,25 +52,26 @@
   "rentomojo set to go public at rs 4 246 crore valuation set to raise rs 1 256 crore via ipo",
   "unicorn nobroker aims to be profitable in 8 10 months fy26 revenue crosses rs 1 000 crore ceo",
   "ola electric clears rs 1 500 cr fund raise coo quits",
-  "google backed indian space startup raises 100 million in latest funding round"
+  "google backed indian space startup raises 100 million in latest funding round",
+  "swiggy to sell lynk to udaan for 500 cr pick up 3 2 stake in b2b unicorn"
  ],
- "last_post_ts": 1788767788.8925235,
+ "last_post_ts": 1788803342.736672,
  "recent_categories": [
-  "funding",
   "ipo",
   "ipo",
   "layoffs",
-  "funding"
+  "funding",
+  "ma"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "yourstory.com",
-  "reuters"
+  "reuters",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "listicle",
   "contrarian",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_photo_ids": [
   31735054,
@@ -77,13 +79,14 @@
   7887801,
   7873549,
   15260665,
-  31862216
+  31862216,
+  27203168
  ],
  "recent_personas": [
-  "dev",
-  "riya"
+  "riya",
+  "arjun"
  ],
- "post_counter": 25,
+ "post_counter": 26,
  "bengali_date": "2026-09-07",
  "bengali_count": 0
 }
