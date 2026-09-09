@@ -27,7 +27,8 @@
   "9a4dfc0aab651efa0d75d82e7dd243ab",
   "1a9288ff2bd142224ade3a53178439c2",
   "bc9ec2fdcd266c6c2166e3b0763c38db",
-  "ce15f4323e786c276439e15d46bcd9f8"
+  "ce15f4323e786c276439e15d46bcd9f8",
+  "8aac570111ee1df5dcb2e520899c62e1"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -57,25 +58,26 @@
   "google backed indian space startup raises 100 million in latest funding round",
   "swiggy to sell lynk to udaan for 500 cr pick up 3 2 stake in b2b unicorn",
   "pixxel bags 100m in india s biggest spacetech fundraise food delivery app swish to raise rs 225 cr",
-  "ifci shares rally 6 turn multibagger as nse ipo gets sebi nod more upside ahead"
+  "ifci shares rally 6 turn multibagger as nse ipo gets sebi nod more upside ahead",
+  "adani enterprises shares jump as airport unit enters into 1 billion fundraising deal"
  ],
- "last_post_ts": 1788886035.193673,
+ "last_post_ts": 1788940394.5356705,
  "recent_categories": [
-  "layoffs",
   "funding",
   "ma",
   "ma",
-  "regulatory"
+  "regulatory",
+  "funding"
  ],
  "recent_domains": [
-  "inc42.com",
   "yourstory.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "cnbc"
  ],
  "recent_shapes": [
-  "question_hook",
   "mini_story",
-  "stat_first"
+  "stat_first",
+  "listicle"
  ],
  "recent_photo_ids": [
   31735054,
@@ -86,13 +88,14 @@
   31862216,
   27203168,
   13532885,
-  37832919
+  37832919,
+  1624694
  ],
  "recent_personas": [
-  "riya",
-  "meera"
+  "meera",
+  "kabir"
  ],
- "post_counter": 28,
- "bengali_date": "2026-09-08",
+ "post_counter": 29,
+ "bengali_date": "2026-09-09",
  "bengali_count": 0
 }
