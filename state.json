@@ -29,7 +29,8 @@
   "bc9ec2fdcd266c6c2166e3b0763c38db",
   "ce15f4323e786c276439e15d46bcd9f8",
   "8aac570111ee1df5dcb2e520899c62e1",
-  "d28608d148fe15f938a2178dd156ddbb"
+  "d28608d148fe15f938a2178dd156ddbb",
+  "c23c0a31a7c7c2bb79b2de791523a5fe"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -61,28 +62,28 @@
   "pixxel bags 100m in india s biggest spacetech fundraise food delivery app swish to raise rs 225 cr",
   "ifci shares rally 6 turn multibagger as nse ipo gets sebi nod more upside ahead",
   "adani enterprises shares jump as airport unit enters into 1 billion fundraising deal",
-  "bajaj finance picks up 5 stake in ai video startup truefan ai"
+  "bajaj finance picks up 5 stake in ai video startup truefan ai",
+  "upgrad bets on corporate upskilling advisory ahead of 2027 listing"
  ],
- "last_post_ts": 1788972553.3007357,
+ "last_post_ts": 1789026789.0433776,
  "recent_categories": [
-  "ma",
   "ma",
   "regulatory",
   "funding",
-  "ma"
+  "ma",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "cnbc",
-  "inc42.com"
+  "inc42.com",
+  "livemint.com"
  ],
  "recent_shapes": [
-  "stat_first",
   "listicle",
-  "contrarian"
+  "contrarian",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  5843637,
   7887801,
   7873549,
   15260665,
@@ -91,13 +92,14 @@
   13532885,
   37832919,
   1624694,
-  8070768
+  8070768,
+  13292119
  ],
  "recent_personas": [
-  "kabir",
-  "arjun"
+  "arjun",
+  "kabir"
  ],
- "post_counter": 30,
- "bengali_date": "2026-09-09",
+ "post_counter": 31,
+ "bengali_date": "2026-09-10",
  "bengali_count": 0
 }
