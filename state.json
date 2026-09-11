@@ -31,7 +31,8 @@
   "8aac570111ee1df5dcb2e520899c62e1",
   "d28608d148fe15f938a2178dd156ddbb",
   "c23c0a31a7c7c2bb79b2de791523a5fe",
-  "edb4f3a43b0d5a6c6835ee21e9731730"
+  "edb4f3a43b0d5a6c6835ee21e9731730",
+  "a49205c06d0f2611797d842599c634b0"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -65,28 +66,28 @@
   "adani enterprises shares jump as airport unit enters into 1 billion fundraising deal",
   "bajaj finance picks up 5 stake in ai video startup truefan ai",
   "upgrad bets on corporate upskilling advisory ahead of 2027 listing",
-  "uk deepens reliance on musk s spacex spending nearly 40 million on satellite services"
+  "uk deepens reliance on musk s spacex spending nearly 40 million on satellite services",
+  "apple s foldable iphone poses a 1 999 question who is it for"
  ],
- "last_post_ts": 1789058085.5609574,
+ "last_post_ts": 1789112927.708935,
  "recent_categories": [
-  "regulatory",
   "funding",
   "ma",
   "ipo",
-  "space"
+  "space",
+  "funding"
  ],
  "recent_domains": [
-  "inc42.com",
   "livemint.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "reuters"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  7873549,
   15260665,
   31862216,
   27203168,
@@ -95,13 +96,14 @@
   1624694,
   8070768,
   13292119,
-  11724287
+  11724287,
+  6650984
  ],
  "recent_personas": [
-  "kabir",
-  "riya"
+  "riya",
+  "ananya"
  ],
- "post_counter": 32,
- "bengali_date": "2026-09-10",
+ "post_counter": 33,
+ "bengali_date": "2026-09-11",
  "bengali_count": 0
 }
