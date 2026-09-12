@@ -34,7 +34,8 @@
   "edb4f3a43b0d5a6c6835ee21e9731730",
   "a49205c06d0f2611797d842599c634b0",
   "2c4d29eb93ff8e34e8973f848bd41c70",
-  "ce992961d808c5659e6f24b7f123ff51"
+  "ce992961d808c5659e6f24b7f123ff51",
+  "4fc02379e00f5f6063c4c07e98a68be8"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -71,28 +72,28 @@
   "uk deepens reliance on musk s spacex spending nearly 40 million on satellite services",
   "apple s foldable iphone poses a 1 999 question who is it for",
   "hidden goldmine how nse ipo will unlock rs 95 000 crore value for over 20 listed companies",
-  "nse ipo gmp at 12 as stock exchange announces price band key dates 10 things to know"
+  "nse ipo gmp at 12 as stock exchange announces price band key dates 10 things to know",
+  "rbi rejects tata sons application to surrender nbfc licence reports cnbc tv18"
  ],
- "last_post_ts": 1789198958.5293856,
+ "last_post_ts": 1789227699.1870525,
  "recent_categories": [
-  "ipo",
   "space",
   "funding",
   "ipo",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
-  "reuters",
   "theeconomictimes",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "moneycontrol.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  13532885,
   37832919,
   1624694,
   8070768,
@@ -101,13 +102,14 @@
   6650984,
   7887801,
   7873549,
-  7873563
+  7873563,
+  37376562
  ],
  "recent_personas": [
-  "riya",
-  "kabir"
+  "kabir",
+  "arjun"
  ],
- "post_counter": 35,
+ "post_counter": 36,
  "bengali_date": "2026-09-12",
  "bengali_count": 1
 }
