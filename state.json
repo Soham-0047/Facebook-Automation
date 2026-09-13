@@ -37,7 +37,8 @@
   "ce992961d808c5659e6f24b7f123ff51",
   "4fc02379e00f5f6063c4c07e98a68be8",
   "7d634a9ba3a78d4f6d48bfb855523612",
-  "c33f1151ec7af06aa35ae0f93839e04f"
+  "c33f1151ec7af06aa35ae0f93839e04f",
+  "ad93d74afc239390dd1766b3dbd9e0b0"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -77,28 +78,28 @@
   "nse ipo gmp at 12 as stock exchange announces price band key dates 10 things to know",
   "rbi rejects tata sons application to surrender nbfc licence reports cnbc tv18",
   "skyroot aerospace becomes india s first space tech unicorn with 60 mn funding round",
-  "india s central bank tells tata sons to take conglomerate public"
+  "india s central bank tells tata sons to take conglomerate public",
+  "nse ipo set to open for public on september 17 price band at 1 700 1 785"
  ],
- "last_post_ts": 1789286442.8607345,
+ "last_post_ts": 1789317159.7477596,
  "recent_categories": [
-  "ipo",
   "ipo",
   "regulatory",
   "unicorn",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "moneycontrol.com",
   "entrepreneur.economictimes.indiatimes.co",
-  "financialtimes"
+  "financialtimes",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  13292119,
   11724287,
   6650984,
   7887801,
@@ -107,13 +108,14 @@
   37376562,
   7213609,
   16014503,
-  39270650
+  39270650,
+  39076656
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "ananya"
  ],
- "post_counter": 38,
+ "post_counter": 39,
  "bengali_date": "2026-09-13",
  "bengali_count": 1
 }
