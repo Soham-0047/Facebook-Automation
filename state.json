@@ -39,7 +39,8 @@
   "7d634a9ba3a78d4f6d48bfb855523612",
   "c33f1151ec7af06aa35ae0f93839e04f",
   "ad93d74afc239390dd1766b3dbd9e0b0",
-  "58482af028b11852a96f8e384d3a8390"
+  "58482af028b11852a96f8e384d3a8390",
+  "a9bce2872c9a84aac6e75685afbe6967"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -81,28 +82,28 @@
   "skyroot aerospace becomes india s first space tech unicorn with 60 mn funding round",
   "india s central bank tells tata sons to take conglomerate public",
   "nse ipo set to open for public on september 17 price band at 1 700 1 785",
-  "indian startups raise 7 4 bn in h1 2026 as cred meta deal lifts funding"
+  "indian startups raise 7 4 bn in h1 2026 as cred meta deal lifts funding",
+  "moneyview cuts ipo size after sebi nod halves fresh issue component to 750 cr"
  ],
- "last_post_ts": 1789374846.222933,
+ "last_post_ts": 1789409293.9308274,
  "recent_categories": [
-  "regulatory",
   "unicorn",
   "regulatory",
   "ipo",
-  "funding"
+  "funding",
+  "regulatory"
  ],
  "recent_domains": [
-  "financialtimes",
   "economictimes.indiatimes.com",
-  "entrackr"
+  "entrackr",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "mini_story",
-  "stat_first"
+  "stat_first",
+  "listicle"
  ],
  "recent_photo_ids": [
-  7887801,
   7873549,
   7873563,
   37376562,
@@ -111,13 +112,14 @@
   39270650,
   39076656,
   6633642,
-  6633634
+  6633634,
+  38668771
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "riya"
  ],
- "post_counter": 40,
+ "post_counter": 41,
  "bengali_date": "2026-09-14",
  "bengali_count": 1
 }
