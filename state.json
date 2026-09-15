@@ -40,7 +40,8 @@
   "c33f1151ec7af06aa35ae0f93839e04f",
   "ad93d74afc239390dd1766b3dbd9e0b0",
   "58482af028b11852a96f8e384d3a8390",
-  "a9bce2872c9a84aac6e75685afbe6967"
+  "a9bce2872c9a84aac6e75685afbe6967",
+  "cb64ffd6bbb074f3409e1d76dad95ef3"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -83,28 +84,28 @@
   "india s central bank tells tata sons to take conglomerate public",
   "nse ipo set to open for public on september 17 price band at 1 700 1 785",
   "indian startups raise 7 4 bn in h1 2026 as cred meta deal lifts funding",
-  "moneyview cuts ipo size after sebi nod halves fresh issue component to 750 cr"
+  "moneyview cuts ipo size after sebi nod halves fresh issue component to 750 cr",
+  "reliance jio heads for record india ipo but it hasn t earned its internet platform tag yet"
  ],
- "last_post_ts": 1789409293.9308274,
+ "last_post_ts": 1789460638.4885437,
  "recent_categories": [
-  "unicorn",
   "regulatory",
   "ipo",
   "funding",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "entrackr",
-  "inc42.com"
+  "inc42.com",
+  "asiatechreview"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  7873549,
   7873563,
   37376562,
   7213609,
@@ -113,13 +114,14 @@
   39076656,
   6633642,
   6633634,
-  38668771
+  38668771,
+  16121423
  ],
  "recent_personas": [
-  "dev",
-  "riya"
+  "riya",
+  "arjun"
  ],
- "post_counter": 41,
- "bengali_date": "2026-09-14",
- "bengali_count": 1
+ "post_counter": 42,
+ "bengali_date": "2026-09-15",
+ "bengali_count": 0
 }
