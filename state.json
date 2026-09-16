@@ -43,7 +43,8 @@
   "a9bce2872c9a84aac6e75685afbe6967",
   "cb64ffd6bbb074f3409e1d76dad95ef3",
   "f3f765fd46e5daf055df7752965341ed",
-  "01d6fc2f6c561e4087e7d5ac8fb8b4e9"
+  "01d6fc2f6c561e4087e7d5ac8fb8b4e9",
+  "7ce4421eaaabc688781b90501d71cb38"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -89,28 +90,28 @@
   "moneyview cuts ipo size after sebi nod halves fresh issue component to 750 cr",
   "reliance jio heads for record india ipo but it hasn t earned its internet platform tag yet",
   "sebi greenlights lending tech startup fibe s 750 cr ipo",
-  "fibe gets sebi approval for rs 750 crore ipo"
+  "fibe gets sebi approval for rs 750 crore ipo",
+  "india s nse to launch ipo amid investor caution over derivatives fuelled growth"
  ],
- "last_post_ts": 1789546655.2212691,
+ "last_post_ts": 1789578706.2568004,
  "recent_categories": [
-  "funding",
   "regulatory",
   "ipo",
   "regulatory",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "asiatechreview",
   "inc42.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "reuters"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  7213609,
   16014503,
   39270650,
   39076656,
@@ -119,13 +120,14 @@
   38668771,
   16121423,
   11739938,
-  16228251
+  16228251,
+  7887801
  ],
  "recent_personas": [
-  "meera",
-  "arjun"
+  "arjun",
+  "dev"
  ],
- "post_counter": 44,
+ "post_counter": 45,
  "bengali_date": "2026-09-16",
  "bengali_count": 0
 }
