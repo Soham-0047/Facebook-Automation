@@ -46,7 +46,8 @@
   "01d6fc2f6c561e4087e7d5ac8fb8b4e9",
   "7ce4421eaaabc688781b90501d71cb38",
   "59890ded351c8d169c3f01c84a420935",
-  "b02f6cfbb1044cef766436f1a4dc856f"
+  "b02f6cfbb1044cef766436f1a4dc856f",
+  "cd85f16c2e97a720c0a916e997cb958c"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -95,28 +96,28 @@
   "fibe gets sebi approval for rs 750 crore ipo",
   "india s nse to launch ipo amid investor caution over derivatives fuelled growth",
   "nse raises rs 6 746 cr from anchor investors ahead of ipo",
-  "sebi greenlights kuku technologies 3 500 cr ipo"
+  "sebi greenlights kuku technologies 3 500 cr ipo",
+  "former infosys ceo vishal sikka s ai startup hang ten raises 53 million more in seed funding"
  ],
- "last_post_ts": 1789665085.7553618,
+ "last_post_ts": 1789718342.7133417,
  "recent_categories": [
   "regulatory",
+  "ipo",
+  "ipo",
   "regulatory",
-  "ipo",
-  "ipo",
-  "regulatory"
+  "funding"
  ],
  "recent_domains": [
-  "reuters",
   "yourstory.com",
-  "inc42.com"
+  "inc42.com",
+  "indiatoday.in"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  6633642,
   6633634,
   38668771,
   16121423,
@@ -125,13 +126,14 @@
   7887801,
   7873563,
   7873549,
-  16750823
+  16750823,
+  34642451
  ],
  "recent_personas": [
-  "riya",
-  "arjun"
+  "arjun",
+  "meera"
  ],
- "post_counter": 47,
- "bengali_date": "2026-09-17",
- "bengali_count": 1
+ "post_counter": 48,
+ "bengali_date": "2026-09-18",
+ "bengali_count": 0
 }
