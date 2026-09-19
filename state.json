@@ -50,7 +50,8 @@
   "cd85f16c2e97a720c0a916e997cb958c",
   "70dbe92b9d3023ca2422ab4e18b1bc29",
   "294deeacdb8fe8f2971cea3ede03bd6f",
-  "366966ae6669462f5bed0f344649371e"
+  "366966ae6669462f5bed0f344649371e",
+  "d53ba336b49c2c4f2ac5afff48e632d7"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -103,28 +104,28 @@
   "former infosys ceo vishal sikka s ai startup hang ten raises 53 million more in seed funding",
   "curefoods revenue grows 23 yoy rebel foods revenue up 20",
   "from flam to verifaix indian startups raised about 59 mn this week",
-  "bioscan research raises 1 million seed funding led by unicorn india ventures to advance ai powered brain injury detection"
+  "bioscan research raises 1 million seed funding led by unicorn india ventures to advance ai powered brain injury detection",
+  "stalwart people services india files preliminary papers with sebi to raise funds via ipo"
  ],
- "last_post_ts": 1789833592.500894,
+ "last_post_ts": 1789843284.0097837,
  "recent_categories": [
-  "regulatory",
   "funding",
   "ipo",
   "funding",
-  "unicorn"
+  "unicorn",
+  "regulatory"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "inc42.com",
-  "indianstartuptimes"
+  "indianstartuptimes",
+  "upstox"
  ],
  "recent_shapes": [
-  "hot_take",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  11739938,
   16228251,
   7887801,
   7873563,
@@ -133,13 +134,14 @@
   34642451,
   39076656,
   8067819,
-  7213609
+  7213609,
+  7948071
  ],
  "recent_personas": [
-  "ananya",
-  "arjun"
+  "arjun",
+  "dev"
  ],
- "post_counter": 51,
- "bengali_date": "2026-09-19",
+ "post_counter": 52,
+ "bengali_date": "2026-09-20",
  "bengali_count": 0
 }
