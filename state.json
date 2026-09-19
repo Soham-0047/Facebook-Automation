@@ -48,7 +48,8 @@
   "59890ded351c8d169c3f01c84a420935",
   "b02f6cfbb1044cef766436f1a4dc856f",
   "cd85f16c2e97a720c0a916e997cb958c",
-  "70dbe92b9d3023ca2422ab4e18b1bc29"
+  "70dbe92b9d3023ca2422ab4e18b1bc29",
+  "294deeacdb8fe8f2971cea3ede03bd6f"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -99,28 +100,28 @@
   "nse raises rs 6 746 cr from anchor investors ahead of ipo",
   "sebi greenlights kuku technologies 3 500 cr ipo",
   "former infosys ceo vishal sikka s ai startup hang ten raises 53 million more in seed funding",
-  "curefoods revenue grows 23 yoy rebel foods revenue up 20"
+  "curefoods revenue grows 23 yoy rebel foods revenue up 20",
+  "from flam to verifaix indian startups raised about 59 mn this week"
  ],
- "last_post_ts": 1789749404.1151755,
+ "last_post_ts": 1789804173.390338,
  "recent_categories": [
-  "ipo",
   "ipo",
   "regulatory",
   "funding",
-  "ipo"
+  "ipo",
+  "funding"
  ],
  "recent_domains": [
-  "inc42.com",
   "indiatoday.in",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "listicle",
   "contrarian",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  38668771,
   16121423,
   11739938,
   16228251,
@@ -129,13 +130,14 @@
   7873549,
   16750823,
   34642451,
-  39076656
+  39076656,
+  8067819
  ],
  "recent_personas": [
-  "meera",
-  "arjun"
+  "arjun",
+  "ananya"
  ],
- "post_counter": 49,
- "bengali_date": "2026-09-18",
+ "post_counter": 50,
+ "bengali_date": "2026-09-19",
  "bengali_count": 0
 }
