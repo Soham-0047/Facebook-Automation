@@ -52,7 +52,8 @@
   "294deeacdb8fe8f2971cea3ede03bd6f",
   "366966ae6669462f5bed0f344649371e",
   "d53ba336b49c2c4f2ac5afff48e632d7",
-  "4535c3bd098c45b1b3b862536c4e1278"
+  "4535c3bd098c45b1b3b862536c4e1278",
+  "f078a65c3be0fc7f1ed5a725d6838cfb"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -107,28 +108,28 @@
   "from flam to verifaix indian startups raised about 59 mn this week",
   "bioscan research raises 1 million seed funding led by unicorn india ventures to advance ai powered brain injury detection",
   "stalwart people services india files preliminary papers with sebi to raise funds via ipo",
-  "from an iit bombay lab to a rs 1 000 cr ipo"
+  "from an iit bombay lab to a rs 1 000 cr ipo",
+  "indian it s biggest buy coforge secures rbi nod for over 1 bn us ai firm acquisition deal check details"
  ],
- "last_post_ts": 1789892277.3577452,
+ "last_post_ts": 1789921276.8350089,
  "recent_categories": [
-  "ipo",
   "funding",
   "unicorn",
   "regulatory",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
-  "indianstartuptimes",
   "upstox",
-  "yourstory.com"
+  "yourstory.com",
+  "etnow"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  7887801,
   7873563,
   7873549,
   16750823,
@@ -137,13 +138,14 @@
   8067819,
   7213609,
   7948071,
-  7873564
+  7873564,
+  38668771
  ],
  "recent_personas": [
-  "dev",
-  "meera"
+  "meera",
+  "kabir"
  ],
- "post_counter": 53,
+ "post_counter": 54,
  "bengali_date": "2026-09-20",
  "bengali_count": 0
 }
