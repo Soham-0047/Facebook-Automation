@@ -54,7 +54,8 @@
   "d53ba336b49c2c4f2ac5afff48e632d7",
   "4535c3bd098c45b1b3b862536c4e1278",
   "f078a65c3be0fc7f1ed5a725d6838cfb",
-  "f19f6c443ac1a727cffdee9bbf02e651"
+  "f19f6c443ac1a727cffdee9bbf02e651",
+  "fba21618cdfa97250815d49a67d820bf"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -111,28 +112,28 @@
   "stalwart people services india files preliminary papers with sebi to raise funds via ipo",
   "from an iit bombay lab to a rs 1 000 cr ipo",
   "indian it s biggest buy coforge secures rbi nod for over 1 bn us ai firm acquisition deal check details",
-  "tech3 norges motilal oswal early investors in zepto ipo india ai set for a funding frenzy and more"
+  "tech3 norges motilal oswal early investors in zepto ipo india ai set for a funding frenzy and more",
+  "cci clears upgrad unacademy merger deal"
  ],
- "last_post_ts": 1789930602.450002,
+ "last_post_ts": 1789979746.0795105,
  "recent_categories": [
-  "unicorn",
   "regulatory",
   "ipo",
   "regulatory",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
-  "yourstory.com",
   "etnow",
-  "moneycontrol.com"
+  "moneycontrol.com",
+  "rediffmoneywiz"
  ],
  "recent_shapes": [
-  "listicle",
   "contrarian",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  7873549,
   16750823,
   34642451,
   39076656,
@@ -141,13 +142,14 @@
   7948071,
   7873564,
   38668771,
-  13532885
+  13532885,
+  13292119
  ],
  "recent_personas": [
-  "kabir",
-  "dev"
+  "dev",
+  "riya"
  ],
- "post_counter": 55,
+ "post_counter": 56,
  "bengali_date": "2026-09-21",
  "bengali_count": 0
 }
