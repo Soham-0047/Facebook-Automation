@@ -56,7 +56,8 @@
   "f078a65c3be0fc7f1ed5a725d6838cfb",
   "f19f6c443ac1a727cffdee9bbf02e651",
   "fba21618cdfa97250815d49a67d820bf",
-  "a620f0b8bcafe7fecc9313adb0ab3b48"
+  "a620f0b8bcafe7fecc9313adb0ab3b48",
+  "39fdfe9d9059d707f43dae7eca5987a5"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -115,28 +116,28 @@
   "indian it s biggest buy coforge secures rbi nod for over 1 bn us ai firm acquisition deal check details",
   "tech3 norges motilal oswal early investors in zepto ipo india ai set for a funding frenzy and more",
   "cci clears upgrad unacademy merger deal",
-  "india s nse ipo draws over 10 billion traders eye modest listing pop"
+  "india s nse ipo draws over 10 billion traders eye modest listing pop",
+  "spinny confidentially files ipo papers eyes up to 3 000 cr issue"
  ],
- "last_post_ts": 1790014551.844997,
+ "last_post_ts": 1790064933.9200785,
  "recent_categories": [
-  "ipo",
   "regulatory",
   "ipo",
   "regulatory",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
-  "moneycontrol.com",
   "rediffmoneywiz",
-  "reuters"
+  "reuters",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  34642451,
   39076656,
   8067819,
   7213609,
@@ -145,13 +146,14 @@
   38668771,
   13532885,
   13292119,
-  7887801
+  7887801,
+  11739938
  ],
  "recent_personas": [
-  "riya",
-  "arjun"
+  "arjun",
+  "kabir"
  ],
- "post_counter": 57,
- "bengali_date": "2026-09-21",
+ "post_counter": 58,
+ "bengali_date": "2026-09-22",
  "bengali_count": 0
 }
