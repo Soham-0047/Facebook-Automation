@@ -62,7 +62,8 @@
   "78f5791ee958571e4c0e125e9ea6649a",
   "0a07a02dc191453c9b5569d5994d13d7",
   "df290efed0df113f05f4bba678b3b6a3",
-  "27e3fe29e8418808dc3009b258ecee2c"
+  "27e3fe29e8418808dc3009b258ecee2c",
+  "ebdf928228364f3472647aac9476cff4"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -127,28 +128,28 @@
   "dmi finance secures rs 1 455 cr via listed ncds to drive lending growth",
   "ola electric to consider rights issue as it looks to raise fresh capital",
   "gautam adani relaims top spot on m3m hurun india rich list",
-  "ema raises 77 mn to scale its universal ai employee platform globally"
+  "ema raises 77 mn to scale its universal ai employee platform globally",
+  "assetgro fintech to file drhp with sebi for rs 2 000 2 500 cr ipo"
  ],
- "last_post_ts": 1790270736.9692304,
+ "last_post_ts": 1790325161.637429,
  "recent_categories": [
-  "ma",
   "funding",
   "regulatory",
   "ai",
-  "funding"
+  "funding",
+  "regulatory"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "yourstory.com",
-  "inc42.com"
+  "inc42.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  38668771,
   13532885,
   13292119,
   7887801,
@@ -157,13 +158,14 @@
   7180978,
   15260665,
   1624694,
-  8067819
+  8067819,
+  16228251
  ],
  "recent_personas": [
-  "meera",
-  "arjun"
+  "arjun",
+  "kabir"
  ],
- "post_counter": 63,
- "bengali_date": "2026-09-24",
+ "post_counter": 64,
+ "bengali_date": "2026-09-25",
  "bengali_count": 0
 }
