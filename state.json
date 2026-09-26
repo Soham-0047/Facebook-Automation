@@ -65,7 +65,8 @@
   "27e3fe29e8418808dc3009b258ecee2c",
   "ebdf928228364f3472647aac9476cff4",
   "df0d9bb97e9c7838dbd35c339cfd79d6",
-  "9377fbf8fc1be285eb0ae94ab7a864e9"
+  "9377fbf8fc1be285eb0ae94ab7a864e9",
+  "0ab95132f4e0f4071d4c8d800ac9d62b"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -133,28 +134,28 @@
   "ema raises 77 mn to scale its universal ai employee platform globally",
   "assetgro fintech to file drhp with sebi for rs 2 000 2 500 cr ipo",
   "ipo bound acevector nets 189 cr from anchor investors",
-  "big ai reset ahead chris wood doubts hyperscalers 990 bn capex estimates highlights india s reverse ai trade advantage"
+  "big ai reset ahead chris wood doubts hyperscalers 990 bn capex estimates highlights india s reverse ai trade advantage",
+  "iit madras unicorn india ventures mark first close of fund i at 450 cr"
  ],
- "last_post_ts": 1790410768.7623987,
+ "last_post_ts": 1790440470.6345155,
  "recent_categories": [
-  "ai",
   "funding",
   "regulatory",
   "ipo",
-  "funding"
+  "funding",
+  "unicorn"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "inc42.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "stat_first",
   "listicle",
-  "contrarian"
+  "contrarian",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  11739938,
   8070768,
   7180978,
   15260665,
@@ -163,13 +164,14 @@
   16228251,
   7873549,
   7464654,
-  7464420
+  7464420,
+  7213609
  ],
  "recent_personas": [
-  "meera",
-  "kabir"
+  "kabir",
+  "meera"
  ],
- "post_counter": 66,
+ "post_counter": 67,
  "bengali_date": "2026-09-26",
  "bengali_count": 1
 }
