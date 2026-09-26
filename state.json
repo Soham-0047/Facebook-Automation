@@ -64,7 +64,8 @@
   "df290efed0df113f05f4bba678b3b6a3",
   "27e3fe29e8418808dc3009b258ecee2c",
   "ebdf928228364f3472647aac9476cff4",
-  "df0d9bb97e9c7838dbd35c339cfd79d6"
+  "df0d9bb97e9c7838dbd35c339cfd79d6",
+  "9377fbf8fc1be285eb0ae94ab7a864e9"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -131,29 +132,28 @@
   "gautam adani relaims top spot on m3m hurun india rich list",
   "ema raises 77 mn to scale its universal ai employee platform globally",
   "assetgro fintech to file drhp with sebi for rs 2 000 2 500 cr ipo",
-  "ipo bound acevector nets 189 cr from anchor investors"
+  "ipo bound acevector nets 189 cr from anchor investors",
+  "big ai reset ahead chris wood doubts hyperscalers 990 bn capex estimates highlights india s reverse ai trade advantage"
  ],
- "last_post_ts": 1790357093.3497653,
+ "last_post_ts": 1790410768.7623987,
  "recent_categories": [
-  "regulatory",
   "ai",
   "funding",
   "regulatory",
-  "ipo"
+  "ipo",
+  "funding"
  ],
  "recent_domains": [
-  "inc42.com",
   "economictimes.indiatimes.com",
-  "inc42.com"
+  "inc42.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  13292119,
-  7887801,
   11739938,
   8070768,
   7180978,
@@ -161,13 +161,15 @@
   1624694,
   8067819,
   16228251,
-  7873549
+  7873549,
+  7464654,
+  7464420
  ],
  "recent_personas": [
-  "kabir",
-  "meera"
+  "meera",
+  "kabir"
  ],
- "post_counter": 65,
- "bengali_date": "2026-09-25",
- "bengali_count": 0
+ "post_counter": 66,
+ "bengali_date": "2026-09-26",
+ "bengali_count": 1
 }
