@@ -67,7 +67,8 @@
   "df0d9bb97e9c7838dbd35c339cfd79d6",
   "9377fbf8fc1be285eb0ae94ab7a864e9",
   "0ab95132f4e0f4071d4c8d800ac9d62b",
-  "a034aa69df439e11bce8139b5e07a5bd"
+  "a034aa69df439e11bce8139b5e07a5bd",
+  "ca381824cac6d68293bae39836400256"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -137,28 +138,28 @@
   "ipo bound acevector nets 189 cr from anchor investors",
   "big ai reset ahead chris wood doubts hyperscalers 990 bn capex estimates highlights india s reverse ai trade advantage",
   "iit madras unicorn india ventures mark first close of fund i at 450 cr",
-  "nse warns of regulatory tech and ai risks as ipo papers reveal reliance on derivatives business"
+  "nse warns of regulatory tech and ai risks as ipo papers reveal reliance on derivatives business",
+  "cars24 expects to be eligible to file drhp by apr cfo"
  ],
- "last_post_ts": 1790499440.5391533,
+ "last_post_ts": 1790528851.505007,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "funding",
   "unicorn",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "inc42.com",
-  "timesofindia.indiatimes.com"
+  "timesofindia.indiatimes.com",
+  "yourstory.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  7180978,
   15260665,
   1624694,
   8067819,
@@ -167,13 +168,14 @@
   7464654,
   7464420,
   7213609,
-  31180285
+  31180285,
+  7887801
  ],
  "recent_personas": [
-  "meera",
-  "arjun"
+  "arjun",
+  "meera"
  ],
- "post_counter": 68,
+ "post_counter": 69,
  "bengali_date": "2026-09-27",
  "bengali_count": 0
 }
