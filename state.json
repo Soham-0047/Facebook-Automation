@@ -69,7 +69,8 @@
   "0ab95132f4e0f4071d4c8d800ac9d62b",
   "a034aa69df439e11bce8139b5e07a5bd",
   "ca381824cac6d68293bae39836400256",
-  "8b671eca2a6c2348c997483bda5e7fe4"
+  "8b671eca2a6c2348c997483bda5e7fe4",
+  "9d4d4061c67ef60d04b70c0b729aa6b2"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -141,28 +142,28 @@
   "iit madras unicorn india ventures mark first close of fund i at 450 cr",
   "nse warns of regulatory tech and ai risks as ipo papers reveal reliance on derivatives business",
   "cars24 expects to be eligible to file drhp by apr cfo",
-  "beyond isro india s spy sat makers eye 100m each by 2029"
+  "beyond isro india s spy sat makers eye 100m each by 2029",
+  "hcltech software unit to acquire european firm robotiq ai for 9 million euros"
  ],
- "last_post_ts": 1790587364.6841931,
+ "last_post_ts": 1790624800.548788,
  "recent_categories": [
-  "funding",
   "unicorn",
   "regulatory",
   "ipo",
-  "space"
+  "space",
+  "ma"
  ],
  "recent_domains": [
-  "timesofindia.indiatimes.com",
   "yourstory.com",
-  "livemint.com"
+  "livemint.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "mini_story",
-  "stat_first"
+  "stat_first",
+  "listicle"
  ],
  "recent_photo_ids": [
-  8067819,
   16228251,
   7873549,
   7464654,
@@ -171,13 +172,14 @@
   31180285,
   7887801,
   3697824,
-  3697812
+  3697812,
+  3861959
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "riya"
  ],
- "post_counter": 70,
- "bengali_date": "2026-09-28",
- "bengali_count": 1
+ "post_counter": 71,
+ "bengali_date": "2026-09-29",
+ "bengali_count": 0
 }
