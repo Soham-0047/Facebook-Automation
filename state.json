@@ -71,7 +71,8 @@
   "ca381824cac6d68293bae39836400256",
   "8b671eca2a6c2348c997483bda5e7fe4",
   "9d4d4061c67ef60d04b70c0b729aa6b2",
-  "baa3bb26c8a8ac29e6078ab7312ec067"
+  "baa3bb26c8a8ac29e6078ab7312ec067",
+  "cf32bc88aedf6ca4e3a01f9202a62d59"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -145,29 +146,28 @@
   "cars24 expects to be eligible to file drhp by apr cfo",
   "beyond isro india s spy sat makers eye 100m each by 2029",
   "hcltech software unit to acquire european firm robotiq ai for 9 million euros",
-  "ola electric plans rs 1 000 cr rights issue appoints new compliance officer"
+  "ola electric plans rs 1 000 cr rights issue appoints new compliance officer",
+  "physical ai startup sima ai raises 150 million in series c funding at 1 45 billion valuation"
  ],
- "last_post_ts": 1790674131.6795447,
+ "last_post_ts": 1790705454.1386936,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "space",
   "ma",
+  "funding",
   "funding"
  ],
  "recent_domains": [
-  "livemint.com",
   "economictimes.indiatimes.com",
-  "yourstory.com"
+  "yourstory.com",
+  "indianstartupnews"
  ],
  "recent_shapes": [
-  "stat_first",
   "listicle",
-  "contrarian"
+  "contrarian",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  7873549,
-  7464654,
   7464420,
   7213609,
   31180285,
@@ -175,13 +175,15 @@
   3697824,
   3697812,
   3861959,
-  39554965
+  39554965,
+  8067819,
+  7180978
  ],
  "recent_personas": [
-  "riya",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 72,
+ "post_counter": 73,
  "bengali_date": "2026-09-29",
- "bengali_count": 0
+ "bengali_count": 1
 }
