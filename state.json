@@ -73,7 +73,8 @@
   "9d4d4061c67ef60d04b70c0b729aa6b2",
   "baa3bb26c8a8ac29e6078ab7312ec067",
   "cf32bc88aedf6ca4e3a01f9202a62d59",
-  "62ba862917b2fcc7cfbb46f158d2cafa"
+  "62ba862917b2fcc7cfbb46f158d2cafa",
+  "da8cbb556d867befebe6aeac7d68e318"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -149,28 +150,28 @@
   "hcltech software unit to acquire european firm robotiq ai for 9 million euros",
   "ola electric plans rs 1 000 cr rights issue appoints new compliance officer",
   "physical ai startup sima ai raises 150 million in series c funding at 1 45 billion valuation",
-  "indian quick commerce firm zepto to raise up to 837 million in ipo"
+  "indian quick commerce firm zepto to raise up to 837 million in ipo",
+  "cpp investments invests 3 000 cr in prestige hospitality ventures"
  ],
- "last_post_ts": 1790760004.8726974,
+ "last_post_ts": 1790791431.054606,
  "recent_categories": [
-  "space",
   "ma",
   "funding",
   "funding",
+  "ipo",
   "ipo"
  ],
  "recent_domains": [
-  "yourstory.com",
   "indianstartupnews",
-  "reuters"
+  "reuters",
+  "livemint.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "hot_take",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  7213609,
   31180285,
   7887801,
   3697824,
@@ -179,13 +180,14 @@
   39554965,
   8067819,
   7180978,
-  13532885
+  13532885,
+  7873549
  ],
  "recent_personas": [
-  "dev",
-  "kabir"
+  "kabir",
+  "arjun"
  ],
- "post_counter": 74,
+ "post_counter": 75,
  "bengali_date": "2026-09-30",
  "bengali_count": 0
 }
