@@ -72,7 +72,8 @@
   "8b671eca2a6c2348c997483bda5e7fe4",
   "9d4d4061c67ef60d04b70c0b729aa6b2",
   "baa3bb26c8a8ac29e6078ab7312ec067",
-  "cf32bc88aedf6ca4e3a01f9202a62d59"
+  "cf32bc88aedf6ca4e3a01f9202a62d59",
+  "62ba862917b2fcc7cfbb46f158d2cafa"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -147,28 +148,28 @@
   "beyond isro india s spy sat makers eye 100m each by 2029",
   "hcltech software unit to acquire european firm robotiq ai for 9 million euros",
   "ola electric plans rs 1 000 cr rights issue appoints new compliance officer",
-  "physical ai startup sima ai raises 150 million in series c funding at 1 45 billion valuation"
+  "physical ai startup sima ai raises 150 million in series c funding at 1 45 billion valuation",
+  "indian quick commerce firm zepto to raise up to 837 million in ipo"
  ],
- "last_post_ts": 1790705454.1386936,
+ "last_post_ts": 1790760004.8726974,
  "recent_categories": [
-  "ipo",
   "space",
   "ma",
   "funding",
-  "funding"
+  "funding",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "yourstory.com",
-  "indianstartupnews"
+  "indianstartupnews",
+  "reuters"
  ],
  "recent_shapes": [
-  "listicle",
   "contrarian",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  7464420,
   7213609,
   31180285,
   7887801,
@@ -177,13 +178,14 @@
   3861959,
   39554965,
   8067819,
-  7180978
+  7180978,
+  13532885
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 73,
- "bengali_date": "2026-09-29",
- "bengali_count": 1
+ "post_counter": 74,
+ "bengali_date": "2026-09-30",
+ "bengali_count": 0
 }
