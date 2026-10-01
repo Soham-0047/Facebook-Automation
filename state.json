@@ -74,7 +74,8 @@
   "baa3bb26c8a8ac29e6078ab7312ec067",
   "cf32bc88aedf6ca4e3a01f9202a62d59",
   "62ba862917b2fcc7cfbb46f158d2cafa",
-  "da8cbb556d867befebe6aeac7d68e318"
+  "da8cbb556d867befebe6aeac7d68e318",
+  "f48663fe295495f2f26e6a06383adcae"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -151,28 +152,28 @@
   "ola electric plans rs 1 000 cr rights issue appoints new compliance officer",
   "physical ai startup sima ai raises 150 million in series c funding at 1 45 billion valuation",
   "indian quick commerce firm zepto to raise up to 837 million in ipo",
-  "cpp investments invests 3 000 cr in prestige hospitality ventures"
+  "cpp investments invests 3 000 cr in prestige hospitality ventures",
+  "simple energy raises 180 million in largest funding round eyes top five ev two wheeler spot"
  ],
- "last_post_ts": 1790791431.054606,
+ "last_post_ts": 1790848020.714884,
  "recent_categories": [
-  "ma",
   "funding",
   "funding",
   "ipo",
-  "ipo"
+  "ipo",
+  "funding"
  ],
  "recent_domains": [
-  "indianstartupnews",
   "reuters",
-  "livemint.com"
+  "livemint.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  31180285,
   7887801,
   3697824,
   3697812,
@@ -181,13 +182,14 @@
   8067819,
   7180978,
   13532885,
-  7873549
+  7873549,
+  8370424
  ],
  "recent_personas": [
-  "kabir",
-  "arjun"
+  "arjun",
+  "kabir"
  ],
- "post_counter": 75,
- "bengali_date": "2026-09-30",
+ "post_counter": 76,
+ "bengali_date": "2026-10-01",
  "bengali_count": 0
 }
