@@ -32,7 +32,7 @@ print("scrim adjustment logic OK (+bright / -dark / 0 mid)")
 bright = Image.new("RGB", (1600, 2000), (250, 248, 245))
 dark = Image.new("RGB", (1600, 2000), (16, 18, 24))
 head = "Sarvam becomes India's newest AI unicorn with $234 million round"
-out = Path("/home/z/my-project/download/preview")
+out = Path(__file__).resolve().parent.parent / "preview"
 out.mkdir(parents=True, exist_ok=True)
 results = {}
 for name, ph in (("bright", bright), ("dark", dark)):
