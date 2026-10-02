@@ -77,7 +77,8 @@
   "da8cbb556d867befebe6aeac7d68e318",
   "f48663fe295495f2f26e6a06383adcae",
   "e0f9a1fb3fd51aa3dc9d44f442557134",
-  "043b21e48a084ea83ce97612ace94773"
+  "043b21e48a084ea83ce97612ace94773",
+  "25bf85721df4e1a6db9e60009a63a531"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -157,29 +158,28 @@
   "cpp investments invests 3 000 cr in prestige hospitality ventures",
   "simple energy raises 180 million in largest funding round eyes top five ev two wheeler spot",
   "jio ipo nears launch drhp filed sebi clears path",
-  "anarock property consultants files draft papers for 1 000 crore ipo"
+  "anarock property consultants files draft papers for 1 000 crore ipo",
+  "sbi mutual fund doubles down on swiggy buys stock worth 300 cr"
  ],
- "last_post_ts": 1790932946.9281597,
+ "last_post_ts": 1790963861.963056,
  "recent_categories": [
-  "ipo",
   "ipo",
   "funding",
   "regulatory",
-  "regulatory"
+  "regulatory",
+  "ma"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "yourstory.com",
-  "business-standard.com"
+  "business-standard.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "stat_first",
   "listicle",
-  "contrarian"
+  "contrarian",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  3697812,
-  3861959,
   39554965,
   8067819,
   7180978,
@@ -187,13 +187,20 @@
   7873549,
   8370424,
   16121423,
-  11739938
+  11739938,
+  27203168,
+  8988542
  ],
  "recent_personas": [
-  "arjun",
-  "meera"
+  "meera",
+  "riya"
  ],
- "post_counter": 78,
+ "post_counter": 79,
+ "category_days": {
+  "2026-10-02": {
+   "ma": 1
+  }
+ },
  "bengali_date": "2026-10-02",
- "bengali_count": 0
+ "bengali_count": 1
 }
