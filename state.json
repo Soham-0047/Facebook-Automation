@@ -76,7 +76,8 @@
   "62ba862917b2fcc7cfbb46f158d2cafa",
   "da8cbb556d867befebe6aeac7d68e318",
   "f48663fe295495f2f26e6a06383adcae",
-  "e0f9a1fb3fd51aa3dc9d44f442557134"
+  "e0f9a1fb3fd51aa3dc9d44f442557134",
+  "043b21e48a084ea83ce97612ace94773"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -155,28 +156,28 @@
   "indian quick commerce firm zepto to raise up to 837 million in ipo",
   "cpp investments invests 3 000 cr in prestige hospitality ventures",
   "simple energy raises 180 million in largest funding round eyes top five ev two wheeler spot",
-  "jio ipo nears launch drhp filed sebi clears path"
+  "jio ipo nears launch drhp filed sebi clears path",
+  "anarock property consultants files draft papers for 1 000 crore ipo"
  ],
- "last_post_ts": 1790879434.0004506,
+ "last_post_ts": 1790932946.9281597,
  "recent_categories": [
-  "funding",
   "ipo",
   "ipo",
   "funding",
+  "regulatory",
   "regulatory"
  ],
  "recent_domains": [
-  "livemint.com",
   "economictimes.indiatimes.com",
-  "yourstory.com"
+  "yourstory.com",
+  "business-standard.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "stat_first",
-  "listicle"
+  "listicle",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  3697824,
   3697812,
   3861959,
   39554965,
@@ -185,13 +186,14 @@
   13532885,
   7873549,
   8370424,
-  16121423
+  16121423,
+  11739938
  ],
  "recent_personas": [
-  "kabir",
-  "arjun"
+  "arjun",
+  "meera"
  ],
- "post_counter": 77,
+ "post_counter": 78,
  "bengali_date": "2026-10-02",
  "bengali_count": 0
 }
