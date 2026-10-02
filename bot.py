@@ -1906,16 +1906,34 @@ def _wrap_text(draw, text, font, max_width):
     return lines
 
 
-def _fit_headline(draw, text, weight, max_width, max_lines, start, min_size, bengali=False):
-    """Shrink-to-fit headline. Returns (lines, font, line_height, total_h, size)."""
-    size = start
+def _auto_headline_size(text, start, min_size):
+    """v5.4: dynamic typography - short punchy headlines earn bigger type
+    (scroll-stopping in the feed), long ones start smaller so they wrap
+    gracefully instead of smashing into max-lines at full size."""
+    n = len(text or "")
+    if n <= 34:
+        return start + 14          # poster mode: "Jio posts record profit"
+    if n <= 46:
+        return start + 8
+    if n <= 62:
+        return start
+    if n <= 84:
+        return max(min_size, start - 6)
+    return max(min_size, start - 12)
+
+
+def _fit_headline(draw, text, weight, max_width, max_lines, start, min_size,
+                  bengali=False, budget=None):
+    """Shrink-to-fit headline (v5.4: auto-sized start + optional height budget).
+    Returns (lines, font, line_height, total_h, size)."""
+    size = _auto_headline_size(text, start, min_size)
     while size >= min_size:
         font = _font(size, weight, bengali)
         if font is None:
             break
         lines = _wrap_text(draw, text, font, max_width)
         lh = int(size * 1.22)
-        if len(lines) <= max_lines:
+        if len(lines) <= max_lines and (budget is None or lh * len(lines) <= budget):
             return lines, font, lh, lh * len(lines), size
         size -= 3
     font = _font(min_size, weight, bengali)
@@ -2016,17 +2034,83 @@ def _horizontal_gradient(size, rgb, a_start, a_end, curve=1.7):
     return g
 
 
+def _entropy_profile(small):
+    """Edge-energy per column and per row of a small grayscale image.
+    Detail-rich regions (faces, logos, skylines, products) score high so
+    they survive the crop; flat walls/sky score ~0."""
+    w, h = small.size
+    px = list(small.getdata())
+    col = [0.0] * w
+    row = [0.0] * h
+    for y in range(h):
+        base = y * w
+        above = px[base] if y == 0 else px[base - w]
+        for x in range(w):
+            p = px[base + x]
+            if x + 1 < w:
+                col[x] += abs(px[base + x + 1] - p)
+            row[y] += abs(p - above)
+    return col, row
+
+
+def _best_window(energy, win, center_bias=0.15, center=0.5):
+    """Sliding-window argmax over energy with a soft pull toward `center`
+    (0..1 of the movable range) so busy edges never slam the crop to a side.
+    Returns the window start index in energy-array coordinates."""
+    n = len(energy)
+    if win >= n:
+        return 0
+    pre = [0.0]
+    for e in energy:
+        pre.append(pre[-1] + e)
+    cpos = center * (n - win)
+    best, best_score = 0, -1.0
+    for s in range(0, n - win + 1):
+        wsum = pre[s + win] - pre[s]
+        score = (wsum / win) * (1.0 - center_bias * abs(s - cpos) / max(1.0, cpos))
+        if score > best_score:
+            best, best_score = s, score
+    return best
+
+
 def _smart_crop(img, tw, th):
-    """Aspect crop with a slight top bias (subjects usually sit high)."""
+    """v5.4: entropy-aware crop. Instead of blind center + top-bias, we measure
+    edge energy on a downscaled grayscale and keep the busiest region, with a
+    soft center pull for stability. Falls back to the v5.3 crop on any error."""
     w, h = img.size
     target = tw / th
-    if w / h > target:
-        nw = int(round(h * target))
-        x0 = (w - nw) // 2
-        return img.crop((x0, 0, x0 + nw, h))
-    nh = int(round(w / target))
-    y0 = int((h - nh) * 0.28)
-    return img.crop((0, y0, w, y0 + nh))
+    try:
+        work_w = 160
+        work_h = max(8, int(round(h * work_w / w)))
+        small = img.convert("L").resize((work_w, work_h))
+        col, row = _entropy_profile(small)
+        if w / h > target:          # too wide -> best x window
+            nw = int(round(h * target))
+            if nw >= w:
+                return img
+            win = max(1, int(round(work_h * target)))
+            s = _best_window(col, win, center_bias=0.15, center=0.5)
+            x0 = int(round(s * w / work_w))
+            x0 = max(0, min(w - nw, x0))
+            return img.crop((x0, 0, x0 + nw, h))
+        if w / h < target:          # too tall -> best y window, upper-middle lean
+            nh = int(round(w / target))
+            if nh >= h:
+                return img
+            win = max(1, int(round(work_w / target)))
+            s = _best_window(row, win, center_bias=0.25, center=0.38)
+            y0 = int(round(s * h / work_h))
+            y0 = max(0, min(h - nh, y0))
+            return img.crop((0, y0, w, y0 + nh))
+        return img
+    except Exception:
+        if w / h > target:
+            nw = int(round(h * target))
+            x0 = (w - nw) // 2
+            return img.crop((x0, 0, x0 + nw, h))
+        nh = int(round(w / target))
+        y0 = int((h - nh) * 0.28)
+        return img.crop((0, y0, w, y0 + nh))
 
 
 def _enhance_photo(img):
@@ -2363,7 +2447,8 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         avail_bottom = bar_y - int(30 * S)
         avail_top = int(H * 0.44)
         lines, font, lh, th, _ = _fit_headline(
-            d, headline, "bold", W - 2 * M, 5, int(74 * S), int(42 * S), bengali)
+            d, headline, "bold", W - 2 * M, 5, int(74 * S), int(42 * S), bengali,
+            budget=avail_bottom - avail_top)   # v5.4: never creep above mid-card
         y = avail_bottom - th
         for ln in lines:
             _txt(d, (M, y), ln, font)
@@ -3107,6 +3192,21 @@ def _self_test() -> int:
     # image pipeline (offline: synthetic photo, no Pexels)
     if PIL_OK:
         _ensure_fonts()
+        # v5.4: entropy crop must KEEP detail and DROP the flat side.
+        # Build a photo with a noisy left half and a flat right half.
+        busy = Image.effect_noise((1600, 2000), 92).convert("RGB")
+        flat = Image.new("RGB", (1600, 2000), (20, 20, 20))
+        wide = Image.new("RGB", (3200, 2000))
+        wide.paste(busy, (0, 0))
+        wide.paste(flat, (1600, 0))
+        cropped = _smart_crop(wide, 1080, 1350)     # portrait target from landscape
+        mid = cropped.convert("L").resize((16, 20))
+        if sum(mid.getdata()) < 128 * 16 * 20 * 0.7:
+            failures.append("entropy crop kept the flat half of the photo")
+        # v5.4: auto headline sizing - short punch gets bigger type than long
+        if _auto_headline_size("Jio posts record profit", 74, 42) <= \
+           _auto_headline_size("Reliance Industries completes acquisition of Disney India assets today", 74, 42):
+            failures.append("auto headline size not length-aware")
         out_dir = PREVIEW_DIR / "selftest"
         out_dir.mkdir(parents=True, exist_ok=True)
         art = Article("Reliance Jio posts record \u20b952,000 crore profit as users cross 500 million",
