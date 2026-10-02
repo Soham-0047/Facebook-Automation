@@ -103,7 +103,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.3.1"
+VERSION = "5.4"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -143,6 +143,12 @@ QUIET_RELAX_DROP = _env_int("QUIET_RELAX_DROP", 3)   # how much to relax it
 # v5.2: tuned down - 0.5/2 felt spammy on the feed (user feedback)
 BENGALI_PROBABILITY = _env_float("BENGALI_PROBABILITY", 0.18)
 BENGALI_MAX_PER_DAY = _env_int("BENGALI_MAX_PER_DAY", 1)
+# v5.4: hard daily topic diversity - the 4 daily posts should cover 4 beats,
+# not 4 funding roundups of the same flavour
+MAX_PER_CATEGORY_PER_DAY = _env_int("MAX_PER_CATEGORY_PER_DAY", 2)
+# v5.4: deterministic hashtag safety net - when the LLM writes a post with ZERO
+# hashtags, append up to 2 clean topical tags (category + company) for reach
+SMART_TAGS = _env_bool("SMART_TAGS", True)
 POST_LINK_AS_FIRST_COMMENT = _env_bool("POST_LINK_AS_FIRST_COMMENT", False)
 PAGE_HANDLE = os.getenv("PAGE_HANDLE", "").strip()   # e.g. "@indiatechdaily"
 FB_API_VERSION = os.getenv("FB_API_VERSION", "v21.0")
@@ -630,6 +636,7 @@ def _default_state() -> dict:
         "recent_photo_ids": [],   # last 10 Pexels photo ids (feed never repeats a photo)
         "recent_personas": [],    # last persona id
         "post_counter": 0,        # drives shape / card-variant rotation
+        "category_days": {},      # v5.4: {"2026-09-10": {"funding": 2, ...}} daily topic counts
         "bengali_date": "",       # IST date string for the daily Bengali cap
         "bengali_count": 0,
     }
@@ -1058,6 +1065,11 @@ _COMPILED_ENTITIES = {
     name: (pts, cat, re.compile(r"\b" + re.escape(name) + r"\b", re.I))
     for name, (pts, cat) in _ENTITIES.items()
 }
+# v5.4: cheap-clickbait hooks that real newsroom headlines never carry
+_CLICKBAIT_RE = re.compile(
+    r"\b(?:you won'?t believe|here'?s why|here'?s what happened|what happens next|"
+    r"this is why|shocking(?:ly)?|jaw[- ]dropping|gone (?:wrong|viral)|"
+    r"breaking:|must (?:read|watch)|mind[- ]blowing|wait for it)\b", re.I)
 
 
 # v5.3: magnitude-aware money scoring - a $1.2B round outranks a $5M one.
@@ -1183,6 +1195,17 @@ def _score_one(a: Article, now: datetime):
         pen -= 2.0
     if a.title.rstrip().endswith("?") and len(a.title.split()) < 9:
         pen -= 1.5
+    # v5.4: cheap-clickbait tells - shout-words, punctuation spam, bait hooks.
+    # Real newsroom headlines (ET/Inc42/Reuters style) never use these.
+    shout_words = [w for w in a.title.split() if len(w) >= 4 and w.isupper()
+                   and not w.isdigit()]
+    if len(shout_words) >= 3:
+        pen -= 2.5                      # THIS ONE WORD JUST DID SHOCKING...
+    bangs = a.title.count("!") + a.title.count("?")
+    if bangs >= 2:
+        pen -= 1.5                      # !!! clickbait punctuation
+    if _CLICKBAIT_RE.search(a.title):
+        pen -= 2.0                      # "you won't believe" family
 
     base = (sum(min(v, 8.0) for v in cat_pts.values()) + ent_pts + money + rec
             + spec + pen + _domain_authority(a.domain))   # v5.3: outlet tier
@@ -1271,6 +1294,12 @@ def score_articles(articles: list) -> list:
 # ==========================================================================
 # SELECTION (threshold + diversity + quiet-page safety valve)
 # ==========================================================================
+def _today_category_counts(state: dict) -> dict:
+    """v5.4: per-day category counters ("today" in IST) for the hard cap."""
+    days = state.get("category_days") or {}
+    return dict(days.get(_today_ist_str()) or {})
+
+
 def select_article(clusters: list, state: dict, threshold: float):
     flat = [c[0] for c in clusters if c]
 
@@ -1291,7 +1320,22 @@ def select_article(clusters: list, state: dict, threshold: float):
         # is huge (3+ corroborating outlets); the page stays Indian tech news
         return getattr(a, "india_ok", True) or a.corroborations >= 3
 
-    quals = [a for a in flat if effective(a) >= threshold and not _is_duplicate(a, state) and eligible(a)]
+    def diverse(a: Article) -> bool:
+        # v5.4: HARD daily diversity - max 2 posts per category per day and
+        # never back-to-back with the same category (soft penalties stay on
+        # top so the page covers 4 different beats across its 4 daily posts)
+        if today_counts.get(a.category, 0) >= MAX_PER_CATEGORY_PER_DAY:
+            return False
+        return a.category != last_cat
+
+    today_counts = _today_category_counts(state)
+    rc_list = state.get("recent_categories") or []
+    last_cat = rc_list[-1] if rc_list else None
+
+    quals = [a for a in flat if effective(a) >= threshold and not _is_duplicate(a, state)
+             and eligible(a) and diverse(a)]
+    if not quals:   # fall back to soft-penalties-only before touching the bar
+        quals = [a for a in flat if effective(a) >= threshold and not _is_duplicate(a, state) and eligible(a)]
     if not quals:
         last = state.get("last_post_ts") or 0
         quiet_hrs = (time.time() - last) / 3600 if last else 999.0
@@ -1606,6 +1650,45 @@ def generate_commentary(art, shape, persona, grounding="", wiki=""):
         log.warning("attempt %d/3: LLM output rejected (%s) - retrying with a new persona",
                     i + 1, _reject_reason(text, bengali=False))
     return None, {}
+
+
+# ------------------------------------------------------------------ hashtags
+# v5.4: deterministic hashtag engine - clean, topical, never spammy.
+# Fires ONLY when the LLM post ships zero hashtags (safety net, not overlay).
+CATEGORY_TAGS = {
+    "funding": "#StartupFunding", "ipo": "#IPO", "ai": "#AI", "telecom": "#Telecom",
+    "fintech": "#Fintech", "ev": "#EVIndia", "semiconductor": "#Semiconductors",
+    "layoffs": "#TechLayoffs", "gigaeconomy": "#TechJobs", "policy": "#TechPolicy",
+    "earnings": "#Earnings", "smartphone": "#Smartphones", "gaming": "#Gaming",
+    "space": "#SpaceTech", "defense": "#DefenceTech", "biotech": "#Biotech",
+    "cybersecurity": "#CyberSecurity", "robotics": "#Robotics",
+}
+_TAG_STOPWORDS = {
+    "The", "This", "That", "Here", "There", "Now", "New", "Why", "How", "What",
+    "India", "Indian", "After", "Before", "Amid", "Over", "From", "With", "Will",
+    "Just", "Says", "Said", "Gets", "Set", "May", "Can", "And", "For", "All",
+    "Big", "Top", "First", "Best", "Record", "Report", "Reports", "Updates",
+}
+
+
+def _smart_tags(art, text=""):
+    """Up to 2 clean tags: one category tag + one company handle-ish tag."""
+    have = {t.lower() for t in re.findall(r"#[\w]+", text or "")}
+    tags = []
+    cat = CATEGORY_TAGS.get(art.category)
+    if cat and cat.lower() not in have:
+        tags.append(cat)
+        have.add(cat.lower())
+    # company/entity: longest capitalised token in the headline that isn't a stopword
+    words = re.findall(r"\b([A-Z][A-Za-z0-9&]{2,15})\b", art.title or "")
+    for w in sorted(words, key=len, reverse=True):
+        if w in _TAG_STOPWORDS:
+            continue
+        t = "#" + w
+        if t.lower() not in have:
+            tags.append(t)
+            break
+    return tags[:2]
 
 
 # ------------------------------------------------------------------ Bengali
@@ -1969,6 +2052,31 @@ def _vividness(img):
         return 0.5
 
 
+def _zone_luma(img, y0f=0.55, y1f=0.95) -> float:
+    """v5.4: mean luminance (0-255) of a horizontal band of the photo.
+    Used to strengthen the scrim when the text zone is bright and soften it
+    when the photo is already dark (so cards never look like night shots)."""
+    try:
+        w, h = img.size
+        band = img.convert("L").crop((0, int(h * y0f), w, int(h * y1f)))
+        band = band.resize((min(64, band.width) or 1, min(64, band.height) or 1))
+        px = list(band.getdata())
+        return sum(px) / max(1, len(px))
+    except Exception:
+        return 128.0
+
+
+def _scrim_adj(luma: float) -> int:
+    """v5.4: scrim alpha adjustment from headline-zone brightness."""
+    if luma > 158:
+        return 45      # bright/busy background - much stronger scrim
+    if luma > 126:
+        return 26      # moderately bright - moderate boost
+    if luma < 58:
+        return -16     # already dark - let the photo breathe a little
+    return 0
+
+
 # ------------------------------------------------------------------ Pexels
 def _pexels_search(query, orientation="portrait", per_page=12):
     key = _get_secret("PEXELS_API_KEY")
@@ -2184,12 +2292,26 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
     d = ImageDraw.Draw(overlay)
 
     # ---- scrims (text legibility on ANY photo)
+    # v5.4: contrast-aware - measure the actual luminance under the headline
+    # zone and scale the scrim strength to it (bright photo -> stronger scrim,
+    # dark photo -> gentler so the card doesn't look like a night shot)
+    _TEXT_ZONE = {"bottom_sheet": (0.55, 0.95), "top_banner": (0.08, 0.55),
+                  "full_bleed": (0.55, 0.95), "stat_hero": (0.30, 0.72)}
+    if variant in _TEXT_ZONE:
+        adj = _scrim_adj(_zone_luma(base, *_TEXT_ZONE[variant]))
+    else:                       # split/magazine put text on a solid panel
+        adj = 0
+    log.debug("scrim adj=%d (variant=%s)", adj, variant)
+
     if variant == "bottom_sheet":
         y0 = int(H * 0.40)
-        overlay.alpha_composite(_vertical_gradient((W, H - y0), (8, 10, 18), 0, 247, curve=1.9), (0, y0))
+        a_start = max(0, adj) // 2            # v5.4: bright photos ramp from a lifted floor
+        a_peak = min(255, 247 + adj)
+        a_curve = 1.9 - (0.6 if adj >= 45 else 0.35 if adj >= 26 else 0.0)
+        overlay.alpha_composite(_vertical_gradient((W, H - y0), (8, 10, 18), a_start, a_peak, curve=a_curve), (0, y0))
         overlay.alpha_composite(_vertical_gradient((W, int(H * 0.15)), (8, 10, 18), 150, 0), (0, 0))
     elif variant == "top_banner":
-        overlay.alpha_composite(_vertical_gradient((W, int(H * 0.66)), (8, 10, 18), 248, 0, curve=1.15), (0, 0))
+        overlay.alpha_composite(_vertical_gradient((W, int(H * 0.66)), (8, 10, 18), min(255, 248 + adj), max(0, adj) // 4, curve=1.15), (0, 0))
         bh = int(H * 0.14)
         overlay.alpha_composite(_vertical_gradient((W, bh), (8, 10, 18), 0, 140), (0, H - bh))
     elif variant == "split_card":
@@ -2197,7 +2319,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
     elif variant == "full_bleed":
         overlay.alpha_composite(_vertical_gradient((W, H), (8, 10, 18), 150, 215, curve=1.0), (0, 0))
         overlay.alpha_composite(
-            _vertical_gradient((W, int(H * 0.18)), (8, 10, 18), 0, 175, curve=1.6),
+            _vertical_gradient((W, int(H * 0.18)), (8, 10, 18), max(0, adj) // 2, min(255, 175 + adj), curve=1.6),
             (0, H - int(H * 0.18)))
         vig = _vignette((W, H), 58)             # v5.3: cinematic corners
         if vig is not None:
@@ -2211,7 +2333,9 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
             _vertical_gradient((side_w, int(H * 0.16)), (8, 10, 18), 0, 130, curve=1.6),
             (split_x, H - int(H * 0.16)))
     else:  # stat_hero - heavy cinematic darken so the giant number pops
-        overlay.alpha_composite(_vertical_gradient((W, H), (8, 10, 18), 200, 240, curve=1.1), (0, 0))
+        # never soften stat_hero's stage; only strengthen on bright photos
+        sadj = max(0, adj)
+        overlay.alpha_composite(_vertical_gradient((W, H), (8, 10, 18), 200 + sadj // 2, min(255, 240 + sadj), curve=1.1), (0, 0))
         vig = _vignette((W, H), 72)             # v5.3: poster-style corners
         if vig is not None:
             overlay.alpha_composite(vig)
@@ -2670,6 +2794,13 @@ def _update_state_after_post(state, art, shape_id, persona_id):
         lst.append(val)
         state[key] = lst[-cap:]
     state["post_counter"] = (state.get("post_counter", 0) or 0) + 1
+    # v5.4: hard daily topic diversity bookkeeping (keep last 7 days only)
+    today = _today_ist_str()
+    days = dict(state.get("category_days") or {})
+    todays = dict(days.get(today) or {})
+    todays[art.category] = todays.get(art.category, 0) + 1
+    days[today] = todays
+    state["category_days"] = dict(sorted(days.items())[-7:])
 
 
 def _should_post_bengali(state):
@@ -2784,6 +2915,12 @@ def run(args) -> int:
         return 1
     log.info("Commentary ready (provider=%s, shape=%s, persona=%s):\n%s",
              meta.get("provider"), shape["id"], meta.get("persona"), commentary)
+    # v5.4: hashtag safety net - LLM shipped zero tags -> add up to 2 clean ones
+    if SMART_TAGS and not re.search(r"#[\w]", commentary):
+        tags = _smart_tags(art, commentary)
+        if tags:
+            commentary = commentary.rstrip() + "\n\n" + " ".join(tags)
+            log.info("Smart tags appended: %s", " ".join(tags))
 
     # ---- 6. image
     image_path = None
@@ -2939,6 +3076,27 @@ def _self_test() -> int:
         failures.append("domain authority table broken")
     if not _india_signal(a6):
         failures.append("india signal detection broken")
+
+    # v5.4: clickbait firewall - bait hooks die even on a tier-1 outlet
+    bait = Article("You won't believe what this SHOCKING chip startup just did!!!",
+                   "https://x.com/i", "T", "economictimes.indiatimes.com", now)
+    clean = Article("Tata Electronics begins chip production at Assam plant",
+                    "https://x.com/j", "T", "economictimes.indiatimes.com", now)
+    score_articles([bait, clean])
+    if bait.score >= clean.score:
+        failures.append(f"clickbait outranked clean news: {bait.score} vs {clean.score}")
+
+    # v5.4: smart hashtag engine
+    tag_art = Article("Zomato acquires stake in quick-commerce firm Blinkit",
+                      "https://x.com/k", "T", "t.com", now, category="funding")
+    tags = _smart_tags(tag_art, "plain post text without any tags")
+    if tags and tags[0] != "#StartupFunding":
+        failures.append(f"category tag wrong: {tags}")
+    if "Blinkit" not in (tags[1] if len(tags) > 1 else ""):
+        failures.append(f"entity tag missing/poor: {tags}")
+    dupes = [t.lower() for t in _smart_tags(tag_art, "already tagged #StartupFunding here")]
+    if "#startupfunding" in dupes:
+        failures.append("smart tags duplicated an existing tag")
 
     # dedup + selection safety valve
     st = _default_state()
