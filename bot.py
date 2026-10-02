@@ -1,37 +1,42 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-INDIA TECH NEWS - FACEBOOK PAGE BOT  .  v5.3
+INDIA TECH NEWS - FACEBOOK PAGE BOT  .  v5.4
 =============================================
 Single-file bot: fetches Indian tech news from many free sources, scores it,
 writes a human-sounding post (English + optional Bengali companion), renders a
 designed 1080x1350 image card, and publishes to a Facebook Page.
 
-WHAT'S NEW IN v5.3 (top-rated content + sharper images)
-  CONTENT QUALITY
-    * Source-authority tiers: ET / Moneycontrol / Mint / Inc42 / YourStory ...
-      get a quality bonus; gadget-deal SEO farms (gadgetsnow, 91mobiles,
-      smartprix ...) get penalised - the same story from a better outlet wins.
-    * SEO-junk firewall: "Top 10 / best under Rs X / deals / buying guide /
-      unboxing / roundup / newsletter" listicles, viral-bait and digest
-      headlines are heavily penalised - the page posts NEWS, not filler.
-    * Money-magnitude scoring: amounts normalised to USD-millions, so a
-      $1.2B round outranks a $5M one ("500 million users" no longer
-      masquerades as money).
-    * Freshness decay after 24h (stale stories sink), undated-article
-      penalty, ALL-CAPS tabloid + empty-question headline penalties, and
-      non-India global stories need 3+ corroborating outlets.
-    * Google News India-edition topic feeds (Business + Technology top
-      stories) joined the fan-out - genuinely top-ranked news gets
-      corroborated and rises naturally.
-    * Default posting bar raised 8 -> 9 (env: MIN_ENGAGEMENT_SCORE_TO_POST).
+WHAT'S NEW IN v5.4 (topic variety + smarter crops + crash-safe automation)
+  CONTENT
+    * Hard daily topic diversity: max 2 posts per category per day and never
+      the same category back-to-back - the 4 daily posts cover 4 different
+      beats instead of 4 funding roundups (env: MAX_PER_CATEGORY_PER_DAY).
+    * Clickbait firewall: shout-words, punctuation spam and "you won't
+      believe" bait hooks now sink below clean newsroom headlines.
+    * Smart-tag safety net: LLM posts with zero hashtags get up to 2 clean
+      topical tags (category + company) for reach (env: SMART_TAGS).
   IMAGES
-    * Two accent palettes per category, rotated per post - the same topic
-      never looks identical on back-to-back cards.
-    * Soft drop shadows behind every photo-card headline, cinematic vignette
-      on full-bleed / giant-stat posters, accent glow behind the big number.
-  Earlier: v5.2 (6 layouts, stat posters, photo anti-repeat, calmer Bengali),
-  v5.1 (Groq model-line migration), v5.0 (multi-source fan-out + scoring).
+    * Entropy-aware crop: edge energy decides which window of the photo
+      survives - faces, logos and skylines stay in frame instead of a blind
+      center + top-bias crop.
+    * Dynamic headline sizing: short punchy headlines render up to +14pt
+      (poster mode); long ones start smaller and wrap gracefully.
+    * Contrast-aware scrims: the scrim under the headline measures the actual
+      photo luminance there and adapts - bright photos get a stronger scrim,
+      dark photos keep breathing.
+  AUTOMATION
+    * Crash-safe by construction: the selected story's dedup key is marked
+      BEFORE the upload, so a mid-run timeout/kill/retry can never double-post.
+    * .run_ok completion sentinel: the workflow retries once ONLY on a real
+      crash (clean skips and clean failures are left alone).
+    * Engagement tracker (--insights + dedicated cron job): pulls reactions /
+      comments / shares for recent posts into state.json, logs a weekly
+      leaderboard and the best-performing IST hour.
+  Earlier: v5.3 (source-authority tiers, money-magnitude, SEO firewall,
+  India-gate, recap/social-aggregator penalties), v5.2 (6 layouts, stat
+  posters, photo anti-repeat, calmer Bengali), v5.1 (Groq model-line
+  migration), v5.0 (multi-source fan-out + scoring).
   IMAGES carry-over
     * 1080x1350 portrait cards, 6 rotating layouts; entity-aware Pexels
       search, vividness-ranked multi-candidate pick, auto enhancement,
@@ -51,6 +56,7 @@ USAGE
     python bot.py --preview-image    # render today's best card (no LLM, no post)
     python bot.py --no-image         # text-only post
     python bot.py --self-test        # offline checks + sample cards
+    python bot.py --insights         # engagement stats -> state.json + leaderboard
     python bot.py --verbose          # debug logging
 
 ENV / SECRETS  (Google Colab userdata OR environment; GitHub Actions secrets)
@@ -2834,6 +2840,85 @@ def _sync_state_from_facebook(state):
              len(posts), quiet_h, state.get("bengali_count", 0))
 
 
+def fb_fetch_post_stats(limit=25):
+    """v5.4: engagement snapshot for recent page posts via the Graph API
+    (reactions + comments summary + shares; needs a valid page token)."""
+    tok, pid = _fb_creds()
+    if not tok or not pid:
+        return []
+    fields = ("id,created_time,message,permalink_url"
+              ",reactions.summary(true).limit(0)"
+              ",comments.summary(true).limit(0)"
+              ",shares")
+    r = _http_get(f"{_fb_base()}/{pid}/posts",
+                  params={"fields": fields, "limit": limit, "access_token": tok},
+                  timeout=25, retries=1)
+    if r is None:
+        return []
+    try:
+        return r.json().get("data", [])
+    except Exception:
+        return []
+
+
+def _parse_post_stats(posts, state):
+    """v5.4: merge engagement numbers into state['post_stats'] (capped at 150
+    freshest) and accumulate a best-hour-of-day histogram (IST)."""
+    stats = dict(state.get("post_stats") or {})
+    hours = dict(state.get("hour_eng") or {})
+    for p in posts:
+        pid = (p.get("id") or "").strip()
+        if not pid:
+            continue
+        try:
+            ts = datetime.strptime(p.get("created_time", ""),
+                                   "%Y-%m-%dT%H:%M:%S%z").timestamp()
+        except Exception:
+            continue
+        rx = ((p.get("reactions") or {}).get("summary") or {}).get("total_count", 0)
+        cm = ((p.get("comments") or {}).get("summary") or {}).get("total_count", 0)
+        sh = ((p.get("shares") or {}).get("count", 0)) if isinstance(p.get("shares"), dict) else 0
+        eng = int(rx) + int(cm) + 2 * int(sh)
+        prev = stats.get(pid) or {}
+        stats[pid] = {"ts": int(ts), "rx": int(rx), "cm": int(cm), "sh": int(sh),
+                      "eng": max(eng, prev.get("eng", 0))}
+        h = str(datetime.fromtimestamp(ts, IST).hour)
+        hours[h] = hours.get(h, 0) + max(0, eng - int(prev.get("eng", 0)))
+    state["post_stats"] = dict(sorted(stats.items(),
+                                      key=lambda kv: -kv[1]["ts"])[:150])
+    state["hour_eng"] = dict(sorted(hours.items(), key=lambda kv: int(kv[0])))
+    return stats
+
+
+def run_insights(limit=25) -> int:
+    """v5.4: standalone engagement tracker (cron job): pulls reactions /
+    comments / shares for the latest posts into state.json and logs a
+    leaderboard so the posting schedule can be tuned on data, not vibes."""
+    log.info("=== Insights tracker v%s | %s ===", VERSION,
+             _now_ist().strftime("%d %b %Y, %H:%M IST"))
+    state = _load_state()
+    posts = fb_fetch_post_stats(limit)
+    if not posts:
+        log.warning("No posts/engagement data (token missing or FB API unavailable) - nothing to do")
+        return 1
+    stats = _parse_post_stats(posts, state)
+    _save_state(state)
+    week = time.time() - 7 * 86400
+    top = sorted((s for s in stats.values() if s["ts"] >= week),
+                 key=lambda s: -s["eng"])[:5]
+    log.info("Engagement leaderboard (last 7 days):")
+    for i, s in enumerate(top, 1):
+        log.info("   %d. %4d eng  (%d reactions / %d comments / %d shares, %.1f days old)",
+                 i, s["eng"], s["rx"], s["cm"], s["sh"], (time.time() - s["ts"]) / 86400)
+    hours = state.get("hour_eng") or {}
+    if hours:
+        best_h, best_e = max(hours.items(), key=lambda kv: kv[1])
+        log.info("Best IST posting hour so far: %s:00 (cumulative engagement %d) - "
+                 "consider shifting the cron toward it", best_h, best_e)
+    log.info("Insights complete - %d posts tracked", len(state.get("post_stats") or {}))
+    return 0
+
+
 def publish_photo_post(image_path, message):
     tok, pid = _fb_creds()
     if not tok or not pid:
@@ -2868,8 +2953,12 @@ def publish_comment(post_id, text):
 # ORCHESTRATION
 # ==========================================================================
 def _update_state_after_post(state, art, shape_id, persona_id):
-    state["posted_keys"] = (state.get("posted_keys") or []) + [_dedup_key(art)]
-    state["posted_titles"] = (state.get("posted_titles") or []) + [_normalize_title(art.title)]
+    key = _dedup_key(art)
+    if key not in (state.get("posted_keys") or []):        # v5.4: idempotent
+        state["posted_keys"] = (state.get("posted_keys") or []) + [key]
+    nt = _normalize_title(art.title)
+    if nt not in (state.get("posted_titles") or []):       # v5.4: idempotent
+        state["posted_titles"] = (state.get("posted_titles") or []) + [nt]
     state["last_post_ts"] = time.time()
     for key, val, cap in (("recent_categories", art.category, 5),
                           ("recent_domains", art.domain, 3),
@@ -2886,6 +2975,25 @@ def _update_state_after_post(state, art, shape_id, persona_id):
     todays[art.category] = todays.get(art.category, 0) + 1
     days[today] = todays
     state["category_days"] = dict(sorted(days.items())[-7:])
+
+
+def _mark_in_flight(state, art):
+    """v5.4: consume the story's dedup key BEFORE the upload starts. If the
+    workflow dies mid-upload (timeout kill, crash, network hiccup), the
+    retry pass can never double-post the same story. Worst case we lose one
+    candidate; best case we avoid an embarrassing duplicate on the page."""
+    keys = state.setdefault("posted_keys", [])
+    key = _dedup_key(art)
+    if key not in keys:
+        keys.append(key)
+    titles = state.setdefault("posted_titles", [])
+    nt = _normalize_title(art.title)
+    if nt not in titles:
+        titles.append(nt)
+    try:
+        _save_state(state)
+    except Exception as e:
+        log.warning("could not persist in-flight mark: %s", e)
 
 
 def _should_post_bengali(state):
@@ -3033,11 +3141,15 @@ def run(args) -> int:
         log.info("DRY RUN complete - nothing published.")
         return 0
 
+    # v5.4: mark the story consumed BEFORE uploading - a timeout/crash/retry
+    # can never re-select it, so double-posting is structurally impossible
+    _mark_in_flight(state, art)
+
     try:
         post_id = publish_photo_post(image_path, commentary) if image_path else publish_text_post(commentary)
         log.info("Published post id=%s", post_id)
     except Exception as e:
-        log.error("Publish failed: %s - state NOT updated (will retry next run)", e)
+        log.error("Publish failed: %s - story stays marked (no double-post risk on retry)", e)
         _save_state(state)
         return 1
 
@@ -3183,6 +3295,25 @@ def _self_test() -> int:
     if "#startupfunding" in dupes:
         failures.append("smart tags duplicated an existing tag")
 
+    # v5.4: insights parser - Graph-API-shaped payload in, leaderboard out
+    st2 = _default_state()
+    ct = datetime.now(IST).strftime("%Y-%m-%dT%H:%M:%S%z")
+    fake_posts = [
+        {"id": "p1", "created_time": ct,
+         "reactions": {"summary": {"total_count": 40}},
+         "comments": {"summary": {"total_count": 5}},
+         "shares": {"count": 2}},
+        {"id": "p2", "created_time": ct,
+         "reactions": {"summary": {"total_count": 10}},
+         "comments": {"summary": {"total_count": 1}}, "shares": None},
+    ]
+    _parse_post_stats(fake_posts, st2)
+    if st2["post_stats"]["p1"]["eng"] != 49 or st2["post_stats"]["p2"]["eng"] != 11:
+        failures.append(f"insights engagement math wrong: {st2['post_stats']}")
+    _parse_post_stats(fake_posts, st2)     # re-run must be idempotent (no double count)
+    if st2["post_stats"]["p1"]["eng"] != 49:
+        failures.append("insights parser double-counts on re-runs")
+
     # dedup + selection safety valve
     st = _default_state()
     st["posted_titles"] = [_normalize_title(a1.title)]
@@ -3265,13 +3396,25 @@ def main() -> int:
     ap.add_argument("--preview-image", action="store_true", help="render the best card only (no LLM, no post)")
     ap.add_argument("--no-image", action="store_true", help="publish text-only post")
     ap.add_argument("--self-test", action="store_true", help="offline checks + sample cards")
+    ap.add_argument("--insights", action="store_true",
+                    help="pull engagement stats for recent posts into state.json + log leaderboard (no posting)")
     ap.add_argument("--threshold", type=int, default=None, help="override MIN_ENGAGEMENT_SCORE_TO_POST")
     ap.add_argument("--verbose", action="store_true", help="debug logging")
     args = ap.parse_args()
     _setup_logging(args.verbose)
     if args.self_test:
         return _self_test()
-    return run(args)
+    if args.insights:
+        return run_insights()
+    rc = run(args)
+    # v5.4: completion sentinel - the GitHub Actions retry step fires ONLY
+    # when this file is missing (process crashed / was killed mid-run).
+    # Clean skips and clean failures complete without crashing -> no retry.
+    try:
+        Path(".run_ok").write_text(f"v{VERSION} {int(time.time())}\n", encoding="utf-8")
+    except Exception:
+        pass
+    return rc
 
 
 if __name__ == "__main__":

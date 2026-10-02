@@ -30,7 +30,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Run bot
+      - name: Run bot (safe retry - only if the process crashed mid-run)
         env:
           FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
@@ -42,9 +42,37 @@ jobs:
           PAGE_HANDLE: ${{ vars.PAGE_HANDLE }}
           # optional reach trick: set repo variable to "true" to enable
           POST_LINK_AS_FIRST_COMMENT: ${{ vars.POST_LINK_AS_FIRST_COMMENT }}
-        run: python bot.py
+          # v5.4: hard topic diversity (0 = off, default max 2 per category/day)
+          MAX_PER_CATEGORY_PER_DAY: ${{ vars.MAX_PER_CATEGORY_PER_DAY }}
+        run: |
+          rm -f .run_ok
+          python bot.py
+          if [ ! -f .run_ok ]; then
+            echo "::warning::bot crashed mid-run (no completion sentinel) - one retry after 90s"
+            sleep 90
+            python bot.py
+          fi
+
+      - name: Alert on failure (auto GitHub issue, so you get an email)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="Bot run failed - needs attention"
+          OPEN=$(gh issue list --state open --search "in:title $TITLE" --json number --jq 'length' 2>/dev/null || echo 0)
+          if [ "$OPEN" = "0" ]; then
+            gh issue create --title "$TITLE" --body "The scheduled post run failed on $(date -u '+%Y-%m-%d %H:%M UTC').
+
+          Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+          Usual suspects:
+          - expired FB_PAGE_ACCESS_TOKEN (regenerate + update the repo secret)
+          - Groq free tier exhausted / model renamed (check the WARNING lines in the log)
+          - Facebook Graph API hiccup (usually self-heals next run)" || true
+          fi
 
       - name: Persist state.json (dedup memory across runs)
+        if: always()
         run: |
           if [ -f state.json ]; then
             git config user.name  "page-bot"

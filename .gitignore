@@ -2,3 +2,10 @@
 __pycache__/
 *.pyc
 /tmp/
+
+# v5.4: bot runtime artifacts (never commit)
+.run_ok
+preview/
+news_bot.log
+*.log
+card_*.jpg

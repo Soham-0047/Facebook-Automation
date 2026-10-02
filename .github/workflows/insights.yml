@@ -1,0 +1,50 @@
+name: Insights Tracker
+
+on:
+  schedule:
+    # 16:00 and 23:45 IST daily (UTC 10:30, 18:15) - pulls engagement
+    # a few hours after each post lands, when reactions have accumulated
+    - cron: "30 10 * * *"
+    - cron: "15 18 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # commits state.json (post_stats + hour histogram)
+
+concurrency:
+  group: news-bot-insights
+  cancel-in-progress: false
+
+jobs:
+  insights:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Pull engagement stats (no posting)
+        env:
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+        run: python bot.py --insights
+
+      - name: Persist state.json (skip if unchanged)
+        if: always()
+        run: |
+          if [ -f state.json ] && git status --porcelain state.json | grep -q .; then
+            git config user.name  "page-bot"
+            git config user.email "page-bot@users.noreply.github.com"
+            git add state.json
+            git commit -m "chore: insights update [skip ci]" || echo "commit skipped"
+            git push || echo "state push skipped (non-fatal)"
+          else
+            echo "state.json unchanged or missing - nothing to commit"
+          fi
