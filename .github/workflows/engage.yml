@@ -1,0 +1,60 @@
+name: Engagement (Comment Replies)
+
+# v5.5: the page talks back. Every ~4 hours this reads fresh comments on the
+# latest posts, replies to the best ones in the page's voice (Groq/Gemini),
+# and likes a handful more. Replies boost Facebook's comment-ranking signal,
+# which feeds directly back into post reach.
+
+on:
+  schedule:
+    # IST 07:00, 13:00, 19:00, 01:00 (UTC 01:30, 07:30, 13:30, 19:30)
+    - cron: "30 1 * * *"
+    - cron: "30 7 * * *"
+    - cron: "30 13 * * *"
+    - cron: "30 19 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write   # commits state.json (replied/liked comment memory)
+
+concurrency:
+  group: news-bot-engage
+  cancel-in-progress: false
+
+jobs:
+  engage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Reply to comments + like fan comments
+        env:
+          FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ENGAGE_MAX_REPLIES: ${{ vars.ENGAGE_MAX_REPLIES || '4' }}
+          ENGAGE_LIKE_COMMENTS: ${{ vars.ENGAGE_LIKE_COMMENTS || '6' }}
+        run: python bot.py --engage
+
+      - name: Persist state.json (skip if unchanged)
+        if: always()
+        run: |
+          if [ -f state.json ] && git status --porcelain state.json | grep -q .; then
+            git config user.name  "page-bot"
+            git config user.email "page-bot@users.noreply.github.com"
+            git add state.json
+            git commit -m "chore: engage update [skip ci]" || echo "commit skipped"
+            git push || echo "state push skipped (non-fatal)"
+          else
+            echo "state.json unchanged or missing - nothing to commit"
+          fi

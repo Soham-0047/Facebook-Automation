@@ -40,5 +40,8 @@ jobs:
       - name: LLM call-path mock tests (20 cases)
         run: python tests/test_llm_mock.py
 
+      - name: Engagement mode mock tests (v5.5, 26 cases)
+        run: python tests/test_engage.py
+
       - name: Contrast-aware scrim tests
         run: python tests/test_scrim.py

@@ -109,7 +109,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.4"
+VERSION = "5.5"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -155,17 +155,62 @@ MAX_PER_CATEGORY_PER_DAY = _env_int("MAX_PER_CATEGORY_PER_DAY", 2)
 # v5.4: deterministic hashtag safety net - when the LLM writes a post with ZERO
 # hashtags, append up to 2 clean topical tags (category + company) for reach
 SMART_TAGS = _env_bool("SMART_TAGS", True)
+# v5.5: interaction hooks - poll-style CTAs appended to most (not all) posts.
+# This is what commercial pages do: every post invites a cheap action.
+ENGAGE_HOOK_PROBABILITY = _env_float("ENGAGE_HOOK_PROBABILITY", 0.75)
+# v5.5: occasional text-only hot takes (no image card) - the feed stops
+# looking like a wall of identical branded cards; ~1 in 7 posts
+TEXT_POST_PROBABILITY = _env_float("TEXT_POST_PROBABILITY", 0.15)
+# v5.5: --engage run - reply to fresh comments + like a few more (page feels alive)
+ENGAGE_MAX_REPLIES = _env_int("ENGAGE_MAX_REPLIES", 4)
+ENGAGE_LIKE_COMMENTS = _env_int("ENGAGE_LIKE_COMMENTS", 6)
+ENGAGE_COMMENTS_PER_POST = _env_int("ENGAGE_COMMENTS_PER_POST", 20)
 POST_LINK_AS_FIRST_COMMENT = _env_bool("POST_LINK_AS_FIRST_COMMENT", False)
 PAGE_HANDLE = os.getenv("PAGE_HANDLE", "").strip()   # e.g. "@indiatechdaily"
 FB_API_VERSION = os.getenv("FB_API_VERSION", "v21.0")
 HTTP_TIMEOUT = _env_int("HTTP_TIMEOUT", 25)
 
-# card geometry (final output is always 1080x1350; rendered at 2x internally)
+# card geometry (portrait 1080x1350 default; v5.5 also mixes 1080x1080 squares
+# so the feed stops looking like a wall of identical-format cards)
 CARD_W, CARD_H = 1080, 1350
+SQUARE_CARD_PROBABILITY = _env_float("SQUARE_CARD_PROBABILITY", 0.35)
 SUPERSAMPLE = _env_int("SUPERSAMPLE", 2)
-# 6 rotating layouts - structural variety beats colour tweaks in the feed
+# 8 rotating layouts - structural variety beats colour tweaks in the feed
 CARD_VARIANTS = ["bottom_sheet", "top_banner", "split_card",
-                 "full_bleed", "stat_hero", "magazine"]
+                 "full_bleed", "stat_hero", "magazine", "ticker", "quote"]
+
+
+def _set_card_format(square: bool):
+    """v5.5: switch the render canvas between portrait and square. The two
+    render functions read CARD_W/CARD_H at call time, so setting the globals
+    before dispatch is enough."""
+    global CARD_W, CARD_H
+    CARD_W, CARD_H = (1080, 1080) if square else (1080, 1350)
+
+
+def _apply_grain(img, strength=8):
+    """v5.5: subtle film grain. 'Too clean' flat gradients are the #1 visual
+    tell of AI-generated cards - real design files carry sensor/paper noise."""
+    try:
+        noise = Image.effect_noise(img.size, 24).convert("L")
+        noise_rgb = Image.merge("RGB", (noise, noise, noise))
+        return Image.blend(img, noise_rgb, min(0.06, strength / 255.0))
+    except Exception:
+        return img
+
+
+def _duotone(img, dark=(12, 14, 24), light=(120, 200, 255)):
+    """v5.5: map the photo's luminance through a dark->accent ramp. Editorial
+    magazines duotone their feature photos; it also makes photo + typography
+    feel like ONE designed object instead of text slapped on stock."""
+    try:
+        g = img.convert("L")
+        lut = []
+        for ch in range(3):
+            lut.extend(int(dark[ch] + (light[ch] - dark[ch]) * i / 255.0) for i in range(256))
+        return g.convert("RGB").point(lut)
+    except Exception:
+        return img.convert("RGB")
 
 # ==========================================================================
 # SCORING CONFIG - keyword rules (ALL word-boundary safe, case-insensitive)
@@ -1402,6 +1447,15 @@ POST_SHAPES = [
      "scaffold": "Line 1: state the popular take plainly, then disagree in the same breath (e.g. \"Everyone's calling this the future of Indian retail. Honestly? No.\")\n"
                  "Then 2-3 sentences of counter-argument grounded in a fact from the story.\n"
                  "Last: concede ONE fair point to the other side, in a few words."},
+    {"id": "receipts", "name": "RECEIPTS",
+     "scaffold": "No opinion, no question, just receipts.\n"
+                 "Line 1: a two-word framing like 'Just the numbers:' or 'The facts:'\n"
+                 "Then EXACTLY 3 dash lines ('- ...'), each ONE hard fact or number from the story, under 14 words.\n"
+                 "No closing line. Nothing else. Facts only - let them do the talking."},
+    {"id": "cold_open", "name": "COLD OPEN",
+     "scaffold": "Start mid-conversation, as if the reader walked in on you talking: 'So...' / 'Okay so' / 'Right, so' followed immediately by the event.\n"
+                 "Then 2-3 sentences of what just happened, with the key number.\n"
+                 "End with one sentence of consequence for the reader - no question mark."},
 ]
 
 BANNED_EN_PHRASES = [
@@ -1413,6 +1467,12 @@ BANNED_EN_PHRASES = [
     "delve", "navigate the landscape", "landscape of", "must-watch", "eye-opening",
     "wake-up call", "double-edged sword", "tip of the iceberg", "in conclusion", "to sum up",
     "as an ai", "cutting-edge", "state-of-the-art", "unprecedented", "in the realm of",
+    # v5.5: the new generation of AI tells
+    "let's unpack", "let us unpack", "here's the kicker", "the kicker", "plot twist",
+    "big if true", "read that again", "let that sink in", "chef's kiss", "nail in the coffin",
+    "writing on the wall", "isn't just", "is not just", "it's not just", "more than just",
+    "the math is mathing", "we love to see it", "and that's the tea", "no notes",
+    "under the radar", "quietly shipped", "quietly launched", "picture this", "imagine this",
 ]
 
 BANNED_BN_PHRASES = [
@@ -1546,10 +1606,12 @@ Style rules:
 - Plain conversational Indian English is welcome ("honestly", "no joke", "worth noting").
 - Facts over adjectives. If a number exists, use it.
 - Never invent facts. Only use what's in the story you're given.
-- No markdown, no bold, no links, no emoji spam (0-1 emoji max).
-- Max 2 hashtags, only if they feel natural.
+- No markdown, no bold, no links.
+- Emoji: use 0-3, only as visual anchors (a chart emoji before a number line, a fire on a big raise). Never decorate every line. Never use emoji in the first line.
+- Max 2 hashtags, only if they feel natural. Do NOT end the post with hashtags.
 - Don't start with the headline - the image card already shows it.
 - At most one em dash in the whole post.
+- Sentence fragments are fine. Starting a line with 'And' or 'But' is fine.
 
 BANNED (never use, in any form): {", ".join(BANNED_EN_PHRASES)}
 
@@ -1697,6 +1759,81 @@ def _smart_tags(art, text=""):
     return tags[:2]
 
 
+# ------------------------------------------------- v5.5 interaction hooks
+# Commercial pages end most posts with ONE cheap action the reader can take in
+# two seconds. This is the single biggest "real page vs AI page" tell. The hook
+# is appended AFTER the post body (never inside it), rotates with memory so the
+# same CTA never repeats back-to-back, and is skipped entirely ~25% of the time
+# (pages that ask on every single post feel like bots).
+ENGAGEMENT_HOOKS = [
+    {"id": "vote_emoji",    "text": "Your one-word take: {rx} or {dw}?"},
+    {"id": "vote_fire",     "text": "Agree? Drop a {fire} | Disagree? Tell me why {down}"},
+    {"id": "scale",         "text": "On a scale of 1-10, how big is this for India?"},
+    {"id": "tag_friend",    "text": "Tag someone who needs to see this."},
+    {"id": "predict",       "text": "Where does this company end up in 2 years? I'm reading replies."},
+    {"id": "fill_blank",    "text": "Fill in the blank: this changes {___} for good."},
+    {"id": "poll_choice",   "text": "Quick poll: excited, worried, or don't care?"},
+    {"id": "hot_or_not",    "text": "Smart move or hype? Pick a side."},
+    {"id": "first_comment", "text": "First thought in comments - unfiltered."},
+    {"id": "desi_verdict",  "text": "Bharat verdict: {up} for bold, {dw} for bust."},
+    {"id": "followup",      "text": "Want the follow-up when the numbers land? Say 'yes' below."},
+    {"id": "disagree_ok",   "text": "Think I'm wrong? Good - comment and argue."},
+]
+_HOOK_EMOJI = {"rx": "\U0001F44D", "dw": "\U0001F44E", "fire": "\U0001F525",
+               "down": "\U0001F447", "___": "_____", "up": "\U0001F60A"}
+_HOOK_CATEGORIES = {
+    "funding": ["vote_emoji", "predict", "hot_or_not", "desi_verdict", "scale", "followup"],
+    "ipo": ["vote_emoji", "predict", "scale", "followup", "hot_or_not"],
+    "ai": ["scale", "poll_choice", "first_comment", "fill_blank", "disagree_ok"],
+    "layoffs": ["disagree_ok", "poll_choice", "first_comment", "tag_friend"],
+}
+
+
+def _pick_hook(art, state, shape_id=""):
+    """Choose one interaction hook, or None. Skips hooks used in the last 4
+    posts, honours ENGAGE_HOOK_PROBABILITY, and never doubles up on shapes
+    that already end with a question (question_hook ends with an ask)."""
+    if shape_id in ("question_hook",):
+        return None
+    if random.random() > ENGAGE_HOOK_PROBABILITY:
+        return None
+    recent = set((state.get("recent_hooks") or [])[-4:])
+    preferred = _HOOK_CATEGORIES.get(art.category) or [
+        h["id"] for h in ENGAGEMENT_HOOKS if h["id"] not in recent]
+    pool = [h for h in ENGAGEMENT_HOOKS
+            if h["id"] in preferred and h["id"] not in recent] or \
+           [h for h in ENGAGEMENT_HOOKS if h["id"] not in recent] or ENGAGEMENT_HOOKS
+    hook = random.choice(pool)
+    state.setdefault("recent_hooks", []).append(hook["id"])
+    state["recent_hooks"] = state["recent_hooks"][-8:]
+    text = hook["text"]
+    for k, v in _HOOK_EMOJI.items():
+        text = text.replace("{" + k + "}", v)
+    return text
+
+
+def _apply_interaction_layer(text, art, state, shape_id=""):
+    """v5.5: append the engagement hook + reorder hashtags so posts stop
+    ending identically (body -> hook line -> tags). Returns final post text."""
+    if not text:
+        return text
+    body = text.rstrip()
+    # pull existing trailing hashtags off, re-attach AFTER the hook
+    m = re.search(r"(\n+)((?:#[\w]+\s*)+)$", body)
+    tags = ""
+    if m:
+        tags = m.group(2).strip()
+        body = body[: m.start()].rstrip()
+    hook = _pick_hook(art, state, shape_id)
+    parts = [body]
+    if hook:
+        parts.append(hook)
+    if tags:
+        parts.append(tags)
+    out = "\n\n".join(parts)
+    return out.rstrip() + "\n"
+
+
 # ------------------------------------------------------------------ Bengali
 def _bengali_system_prompt(persona):
     return f"""তুমি একটা ভারতীয় টেক-নিউজ ফেসবুক পেজের হয়ে বাংলায় পোস্ট লেখো। পাঠক: বাংলাভাষী তরুণ-তরুণী, প্রযুক্তি আর স্টার্টআপে আগ্রহী।
@@ -1780,11 +1917,13 @@ def generate_bengali_post(art, grounding=""):
 
 
 def _pick_shape(state):
-    last = (state.get("recent_shapes") or [""])[-1]
-    idx = state.get("post_counter", 0) % len(POST_SHAPES)
-    if POST_SHAPES[idx]["id"] == last:
-        idx = (idx + 1) % len(POST_SHAPES)
-    return POST_SHAPES[idx]
+    # v5.5: weighted random over shapes NOT used in the last 3 posts -
+    # deterministic modulo rotation made the feed pattern-readable
+    recent = set((state.get("recent_shapes") or [""])[-3:])
+    pool = [s for s in POST_SHAPES if s["id"] not in recent] or POST_SHAPES
+    # receipts + cold_open are the freshest shapes - slight extra weight
+    weights = [1.15 if s["id"] in ("receipts", "cold_open") else 1.0 for s in pool]
+    return random.choices(pool, weights=weights, k=1)[0]
 
 
 def _pick_persona(state):
@@ -1804,6 +1943,8 @@ _FONT_FILES = {
     "Poppins-Medium.ttf": "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Medium.ttf",
     "Poppins-Regular.ttf": "https://github.com/google/fonts/raw/main/ofl/poppins/Poppins-Regular.ttf",
     "NotoSansBengali.ttf": "https://github.com/google/fonts/raw/main/ofl/notosansbengali/NotoSansBengali%5Bwdth%2Cwght%5D.ttf",
+    # v5.5: editorial serif for the quote layout (bundled in the repo; if a
+    # clone somehow lacks it, system DejaVu Serif is the fallback)
 }
 _fonts_ready = False
 _FONT_CACHE = {}
@@ -1862,7 +2003,8 @@ def _font(size, weight="regular", bengali=False):
                 font = None
     else:
         names = {"bold": "Poppins-Bold.ttf", "semibold": "Poppins-SemiBold.ttf",
-                 "medium": "Poppins-Medium.ttf", "regular": "Poppins-Regular.ttf"}
+                 "medium": "Poppins-Medium.ttf", "regular": "Poppins-Regular.ttf",
+                 "serif": "DejaVuSerif.ttf", "serif_bold": "DejaVuSerif-Bold.ttf"}
         p = FONT_DIR / names.get(weight, "Poppins-Regular.ttf")
         if p.exists():
             try:
@@ -1878,6 +2020,8 @@ def _font(size, weight="regular", bengali=False):
             "semibold": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
             "medium": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
             "regular": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "serif": "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
+            "serif_bold": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
         }.get(weight, "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
         for c in candidates:
             if c and os.path.exists(c):
@@ -2373,10 +2517,24 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         base = Image.new("RGBA", (W, H), panel + (255,))
         side_w = W - split_x
         side = _smart_crop(photo, side_w, H).resize((side_w, H), _RESAMPLE.LANCZOS)
-        base.paste(_enhance_photo(side).convert("RGB"), (split_x, 0))
+        side = _enhance_photo(side)
+        if variant_idx % 4 == 3:                       # v5.5: periodic duotone
+            side = _duotone(side, (16, 18, 28), accent)
+        base.paste(side.convert("RGB"), (split_x, 0))
+    elif variant == "quote":
+        # v5.5: editorial pull-quote - duotone photo on top, cream paper below
+        paper = (247, 244, 238)
+        photo_h = int(H * 0.52)
+        base = Image.new("RGBA", (W, H), paper + (255,))
+        ph = _smart_crop(photo, W, photo_h).resize((W, photo_h), _RESAMPLE.LANCZOS)
+        ph = _enhance_photo(ph)
+        ph = _duotone(ph, (18, 20, 32), accent)
+        base.paste(ph.convert("RGB"), (0, 0))
     else:
         base = _smart_crop(photo, W, H).resize((W, H), _RESAMPLE.LANCZOS)
         base = _enhance_photo(base).convert("RGBA")
+        if variant == "full_bleed" and variant_idx % 4 == 3:   # v5.5: duotone
+            base = _duotone(base, (14, 16, 26), accent).convert("RGBA")
 
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
@@ -2386,10 +2544,11 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
     # zone and scale the scrim strength to it (bright photo -> stronger scrim,
     # dark photo -> gentler so the card doesn't look like a night shot)
     _TEXT_ZONE = {"bottom_sheet": (0.55, 0.95), "top_banner": (0.08, 0.55),
-                  "full_bleed": (0.55, 0.95), "stat_hero": (0.30, 0.72)}
+                  "full_bleed": (0.55, 0.95), "stat_hero": (0.30, 0.72),
+                  "ticker": (0.20, 0.80)}
     if variant in _TEXT_ZONE:
         adj = _scrim_adj(_zone_luma(base, *_TEXT_ZONE[variant]))
-    else:                       # split/magazine put text on a solid panel
+    else:                       # split/magazine/quote put text on a solid panel
         adj = 0
     log.debug("scrim adj=%d (variant=%s)", adj, variant)
 
@@ -2422,6 +2581,12 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         overlay.alpha_composite(
             _vertical_gradient((side_w, int(H * 0.16)), (8, 10, 18), 0, 130, curve=1.6),
             (split_x, H - int(H * 0.16)))
+    elif variant == "ticker":
+        # v5.5: broadcast-style center scrim - the bands carry the branding
+        overlay.alpha_composite(_vertical_gradient((W, H), (8, 10, 18),
+                                                   max(0, adj) // 2, min(255, 150 + adj), curve=1.0), (0, 0))
+    elif variant == "quote":
+        pass                    # ink sits on cream paper - no scrim at all
     else:  # stat_hero - heavy cinematic darken so the giant number pops
         # never soften stat_hero's stage; only strengthen on bright photos
         sadj = max(0, adj)
@@ -2433,8 +2598,11 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
     # ---- chip (top-left) + handle
     chip_size = int(25 * S)
     label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
-    _, chip_h = _draw_chip(d, M, M, label, accent, chip_size, bengali)
-    if PAGE_HANDLE and variant not in ("top_banner", "stat_hero", "magazine"):
+    if variant == "ticker":
+        chip_h = int(50 * S)      # the accent band IS the slug - no chip pill
+    else:
+        _, chip_h = _draw_chip(d, M, M, label, accent, chip_size, bengali)
+    if PAGE_HANDLE and variant not in ("top_banner", "stat_hero", "magazine", "ticker", "quote"):
         hf = _font(int(25 * S), "semibold", bengali)
         if hf is not None:
             hw = _tracked_width(d, PAGE_HANDLE, hf, 1.12)
@@ -2539,6 +2707,78 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
                 d.text((split_x + int(24 * S), H - M - int(34 * S)), PAGE_HANDLE,
                        font=hf, fill=(255, 255, 255, 200))
 
+    elif variant == "ticker":
+        # v5.5: broadcast banner - accent band top with pulsing-dot label,
+        # heavy centered headline, dark strip bottom. Loudest layout we have.
+        band_h = int(H * 0.16)
+        d.rectangle([0, 0, W, band_h], fill=accent + (255,))
+        dot_r = int(13 * S)
+        dcy = band_h // 2
+        d.ellipse([M - int(8 * S), dcy - dot_r, M - int(8 * S) + 2 * dot_r, dcy + dot_r],
+                  fill=(255, 255, 255, 255))
+        lab = label.upper() if not bengali else label
+        lf = _font(int(42 * S), "bold", bengali)
+        if lf is not None:
+            d.text((M + int(30 * S), dcy - int(24 * S)), lab, font=lf, fill=(10, 12, 20, 255))
+        df = _font(int(24 * S), "semibold", bengali)
+        if df is not None:
+            dstr = _now_ist().strftime("%d %b %Y")
+            if bengali:
+                dstr = _bn_digits(dstr)
+            dw = d.textlength(dstr, font=df)
+            d.text((W - M - int(dw), dcy - int(14 * S)), dstr, font=df,
+                   fill=(10, 12, 20, 210))
+        strip_h = int(104 * S)
+        d.rectangle([0, H - strip_h, W, H], fill=(10, 12, 20, 250))
+        sf = _font(int(27 * S), "medium", bengali)
+        if sf is not None:
+            d.text((M, H - strip_h + int(34 * S)), source_line, font=sf,
+                   fill=(255, 255, 255, 225))
+        if PAGE_HANDLE:
+            hf = _font(int(25 * S), "semibold", bengali)
+            if hf is not None:
+                hw = d.textlength(PAGE_HANDLE, font=hf)
+                d.text((W - M - int(hw), H - strip_h + int(34 * S)), PAGE_HANDLE,
+                       font=hf, fill=accent + (255,))
+        mid_top = band_h + int(64 * S)
+        mid_bot = H - strip_h - int(56 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "bold", W - 2 * M, 5, int(78 * S), int(44 * S), bengali,
+            budget=mid_bot - mid_top)
+        y = mid_top + max(0, (mid_bot - mid_top - th) // 2)
+        for ln in lines:
+            _txt(d, (M, y), ln, font)
+            y += lh
+
+    elif variant == "quote":
+        # v5.5: editorial pull-quote - giant serif quote mark on cream paper,
+        # serif headline, hairline rule. The quietest, most 'magazine' layout.
+        ink = (30, 32, 40, 255)
+        photo_h = int(H * 0.52)
+        qf = _font(int(170 * S), "serif_bold", bengali)
+        if qf is not None:
+            d.text((M - int(14 * S), photo_h - int(150 * S)), "\u201C",
+                   font=qf, fill=accent + (235,))
+        top = photo_h + int(34 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "serif_bold", W - 2 * M, 6, int(64 * S), int(38 * S), bengali)
+        y = top
+        for ln in lines:
+            if font is not None:
+                d.text((M, y), ln, font=font, fill=ink)
+            y += lh
+        y += int(34 * S)
+        d.line([M, y, M + int(190 * S), y], fill=ink[:3] + (110,), width=max(2, int(2 * S)))
+        y += int(26 * S)
+        sf = _font(int(28 * S), "serif", bengali)
+        if sf is not None:
+            d.text((M, y), source_line, font=sf, fill=ink[:3] + (215,))
+        if PAGE_HANDLE:
+            hf = _font(int(26 * S), "serif", bengali)
+            if hf is not None:
+                hw = d.textlength(PAGE_HANDLE, font=hf)
+                d.text((W - M - int(hw), y), PAGE_HANDLE, font=hf, fill=ink[:3] + (215,))
+
     else:  # stat_hero - the scroll-stopper: giant number, poster symmetry
         stat_font = None
         size = int(240 * S)
@@ -2584,6 +2824,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
                    font=src_font, fill=(255, 255, 255, 200))
 
     out = Image.alpha_composite(base, overlay).convert("RGB")
+    out = _apply_grain(out)                    # v5.5: kill the too-clean AI look
     return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
 
 
@@ -2596,7 +2837,12 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
     theme = CATEGORY_THEME.get(art.category, CATEGORY_THEME["general"])
     # v5.3: two accent palettes per category, rotated per post
     accent = theme["accent"] if variant_idx % 2 == 0 else theme.get("accent2", theme["accent"])
-    base = _diag_gradient(W, H, theme["grad"][0], theme["grad"][1]).convert("RGBA")
+    variant = CARD_VARIANTS[variant_idx % len(CARD_VARIANTS)]
+    if variant == "quote":
+        # v5.5: full editorial paper card - the no-photo twin of the quote layout
+        base = Image.new("RGBA", (W, H), (247, 244, 238, 255))
+    else:
+        base = _diag_gradient(W, H, theme["grad"][0], theme["grad"][1]).convert("RGBA")
 
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
@@ -2637,9 +2883,10 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
     # chip
     chip_size = int(25 * S)
     label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
-    _draw_chip(d, M, M, label, accent, chip_size, bengali)
+    if variant not in ("ticker",):
+        _draw_chip(d, M, M, label, accent, chip_size, bengali)
 
-    if stat:
+    if stat and variant not in ("quote", "ticker"):
         # ---- giant stat poster
         stat_font = None
         size = int(230 * S)
@@ -2673,6 +2920,68 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
                 lw = d.textlength(ln, font=font)
                 _txt(d, ((W - lw) / 2, y), ln, font, (255, 255, 255, 245))
             y += lh
+    elif variant == "ticker":
+        # v5.5: broadcast banner on the gradient + motif background
+        band_h = int(H * 0.16)
+        d.rectangle([0, 0, W, band_h], fill=accent + (255,))
+        dot_r = int(13 * S)
+        dcy = band_h // 2
+        d.ellipse([M - int(8 * S), dcy - dot_r, M - int(8 * S) + 2 * dot_r, dcy + dot_r],
+                  fill=(255, 255, 255, 255))
+        lab = label.upper() if not bengali else label
+        lf = _font(int(42 * S), "bold", bengali)
+        if lf is not None:
+            d.text((M + int(30 * S), dcy - int(24 * S)), lab, font=lf, fill=(10, 12, 20, 255))
+        strip_h = int(104 * S)
+        d.rectangle([0, H - strip_h, W, H], fill=(10, 12, 20, 250))
+        sf = _font(int(27 * S), "medium", bengali)
+        if sf is not None:
+            d.text((M, H - strip_h + int(34 * S)), source_line, font=sf,
+                   fill=(255, 255, 255, 225))
+        if PAGE_HANDLE:
+            hf = _font(int(25 * S), "semibold", bengali)
+            if hf is not None:
+                hw = d.textlength(PAGE_HANDLE, font=hf)
+                d.text((W - M - int(hw), H - strip_h + int(34 * S)), PAGE_HANDLE,
+                       font=hf, fill=accent + (255,))
+        mid_top = band_h + int(64 * S)
+        mid_bot = H - strip_h - int(56 * S)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "bold", W - 2 * M, 5, int(78 * S), int(44 * S), bengali,
+            budget=mid_bot - mid_top)
+        y = mid_top + max(0, (mid_bot - mid_top - th) // 2)
+        for ln in lines:
+            if font is not None:
+                lw = d.textlength(ln, font=font)
+                _txt(d, ((W - lw) / 2, y), ln, font)
+            y += lh
+
+    elif variant == "quote":
+        # v5.5: serif pull-quote on cream paper - quiet, editorial, zero-photo
+        ink = (30, 32, 40, 255)
+        qf = _font(int(170 * S), "serif_bold", bengali)
+        if qf is not None:
+            d.text((M - int(14 * S), int(70 * S)), "\u201C", font=qf, fill=accent + (235,))
+        top = int(H * 0.24)
+        lines, font, lh, th, _ = _fit_headline(
+            d, headline, "serif_bold", W - 2 * M, 6, int(64 * S), int(38 * S), bengali)
+        y = top
+        for ln in lines:
+            if font is not None:
+                d.text((M, y), ln, font=font, fill=ink)
+            y += lh
+        y += int(34 * S)
+        d.line([M, y, M + int(190 * S), y], fill=ink[:3] + (110,), width=max(2, int(2 * S)))
+        y += int(26 * S)
+        sf = _font(int(28 * S), "serif", bengali)
+        if sf is not None:
+            d.text((M, y), source_line, font=sf, fill=ink[:3] + (215,))
+        if PAGE_HANDLE:
+            hf = _font(int(26 * S), "serif", bengali)
+            if hf is not None:
+                hw = d.textlength(PAGE_HANDLE, font=hf)
+                d.text((W - M - int(hw), y), PAGE_HANDLE, font=hf, fill=ink[:3] + (215,))
+
     else:
         # ---- standard headline block
         top = int(H * 0.30)
@@ -2687,18 +2996,20 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
         d.rounded_rectangle([M, y, M + int(110 * S), y + int(9 * S)],
                             radius=int(4 * S), fill=accent + (255,))
 
-    # source + handle
-    src_font = _font(int(26 * S), "medium", bengali)
-    if src_font is not None:
-        d.text((M, H - M - int(34 * S)), source_line, font=src_font, fill=(255, 255, 255, 190))
-    if PAGE_HANDLE:
-        hf = _font(int(25 * S), "semibold", bengali)
-        if hf is not None:
-            hw = _tracked_width(d, PAGE_HANDLE, hf, 1.12)
-            d.text((W - M - int(hw), H - M - int(34 * S)), PAGE_HANDLE,
-                   font=hf, fill=(255, 255, 255, 205))
+    # source + handle (quote/ticker variants draw their own source strip)
+    if variant not in ("quote", "ticker"):
+        src_font = _font(int(26 * S), "medium", bengali)
+        if src_font is not None:
+            d.text((M, H - M - int(34 * S)), source_line, font=src_font, fill=(255, 255, 255, 190))
+        if PAGE_HANDLE:
+            hf = _font(int(25 * S), "semibold", bengali)
+            if hf is not None:
+                hw = _tracked_width(d, PAGE_HANDLE, hf, 1.12)
+                d.text((W - M - int(hw), H - M - int(34 * S)), PAGE_HANDLE,
+                       font=hf, fill=(255, 255, 255, 205))
 
     out = Image.alpha_composite(base, overlay).convert("RGB")
+    out = _apply_grain(out)                    # v5.5: kill the too-clean AI look
     return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
 
 
@@ -2711,6 +3022,16 @@ def render_card(art, state=None, bengali=False, card_headline=None):
     if card_headline is None:
         card_headline = _card_headline(art.title)
     src_line = _source_date_line(art, bengali)
+
+    # v5.5: square/portrait mixing - a feed of only 4:5 cards reads as a
+    # template; ~35% squares (never two in a row) reads like a real page
+    fmts = list((state or {}).get("recent_formats") or [])
+    square = (fmts[-1:] != ["square"]) and (random.random() < SQUARE_CARD_PROBABILITY)
+    _set_card_format(square)
+    if state is not None:
+        state["recent_formats"] = (fmts + ["square" if square else "portrait"])[-6:]
+    log.info("Card format: %s", "1080x1080 square" if square else "1080x1350 portrait")
+
     # Bengali companion always gets a DIFFERENT layout than its English sibling
     variant_idx = (state or {}).get("post_counter", 0) + (1 if bengali else 0)
     variant = CARD_VARIANTS[variant_idx % len(CARD_VARIANTS)]
@@ -2861,6 +3182,40 @@ def fb_fetch_post_stats(limit=25):
         return []
 
 
+def fb_fetch_comments(post_id, limit=20):
+    """v5.5: top-level comments on a page post (filter=stream + parent check
+    client-side; Graph returns replies nested flat in stream mode)."""
+    tok, _ = _fb_creds()
+    if not tok:
+        return []
+    r = _http_get(f"{_fb_base()}/{post_id}/comments",
+                  params={"fields": "id,from,message,created_time,like_count,parent",
+                          "filter": "stream", "limit": limit,
+                          "access_token": tok},
+                  timeout=20, retries=1)
+    if r is None:
+        return []
+    try:
+        return r.json().get("data", [])
+    except Exception:
+        return []
+
+
+def fb_like_comment(comment_id):
+    """v5.5: page likes a fan comment - the cheapest 'this page is alive'
+    signal; returns True on success (already-liked counts as success too)."""
+    tok, _ = _fb_creds()
+    if not tok:
+        return False
+    try:
+        j = _fb_post_once(f"{_fb_base()}/{comment_id}/likes",
+                          data={"access_token": tok}, timeout=20)
+        return bool(j is not None and (j == {} or j.get("success", True)))
+    except Exception as e:
+        log.debug("comment like failed (%s): %s", comment_id, e)
+        return False
+
+
 def _parse_post_stats(posts, state):
     """v5.4: merge engagement numbers into state['post_stats'] (capped at 150
     freshest) and accumulate a best-hour-of-day histogram (IST)."""
@@ -2899,8 +3254,10 @@ def run_insights(limit=25) -> int:
     state = _load_state()
     posts = fb_fetch_post_stats(limit)
     if not posts:
-        log.warning("No posts/engagement data (token missing or FB API unavailable) - nothing to do")
-        return 1
+        # v5.5: a quiet page / rotated token / FB hiccup is "nothing to do",
+        # NOT a failure - exit 0 so the scheduled workflow stays green
+        log.info("No posts/engagement data yet (token missing or FB API unavailable) - nothing to do")
+        return 0
     stats = _parse_post_stats(posts, state)
     _save_state(state)
     week = time.time() - 7 * 86400
@@ -2916,6 +3273,150 @@ def run_insights(limit=25) -> int:
         log.info("Best IST posting hour so far: %s:00 (cumulative engagement %d) - "
                  "consider shifting the cron toward it", best_h, best_e)
     log.info("Insights complete - %d posts tracked", len(state.get("post_stats") or {}))
+    return 0
+
+
+# ---------------------------------------------------------------- engage mode
+def _engage_reply_system():
+    return """You reply to comments on an Indian tech-news Facebook page. You are the
+voice of the page: warm, sharp, a little playful - the admin who actually
+reads the comments.
+
+Hard rules:
+- 40 words MAX. One short paragraph, no line breaks.
+- Reply to WHAT THEY SAID specifically - never a generic "thanks for commenting".
+- Agree, add one small insight or push back gently if they're off the mark.
+- If they state something wrong that the post itself contradicts, correct it kindly.
+- Contractions everywhere. 0-2 emoji max, only if natural.
+- NEVER invent numbers or facts that aren't in the post. Stay vague if unsure.
+- No links, no hashtags, no questions that sound like customer support.
+- Never mention being an AI or a bot. Never discuss religion or party politics.
+- If the comment is pure abuse or spam, output exactly: SKIP
+
+Output only the reply text."""
+
+
+def _validate_reply(text):
+    if not text:
+        return None
+    t = text.strip().strip('"')
+    if t.upper() == "SKIP":
+        return None
+    t = t.replace("**", "")
+    words = t.split()
+    if not (3 <= len(words) <= 55):
+        return None
+    if "http" in t or "#" in t or "@" in t:
+        return None
+    low = t.lower()
+    if re.search(r"\b(as an ai|language model|i am a bot)\b", low):
+        return None
+    if t.count("\n") > 1:
+        t = " ".join(t.split())
+    return t
+
+
+def run_engage(max_posts=10) -> int:
+    """v5.5: the page talks back. Every few hours: read fresh comments on the
+    latest posts, reply to the best ones in the page's voice (LLM), and like
+    a handful more. This is the single biggest 'real page vs bot page' signal
+    - Facebook's ranking also rewards comment replies with extra reach."""
+    log.info("=== Engagement mode v%s | %s ===", VERSION,
+             _now_ist().strftime("%d %b %Y, %H:%M IST"))
+    state = _load_state()
+    tok, pid = _fb_creds()
+    if not tok or not pid:
+        log.info("FB token/page missing - engagement pass skipped (nothing to do)")
+        return 0
+
+    posts = fb_get_recent_posts(max_posts)
+    if not posts:
+        log.info("No recent posts to engage with - nothing to do")
+        return 0
+
+    replied = list(state.get("replied_comment_ids") or [])
+    liked = list(state.get("liked_comment_ids") or [])
+    replied_set, liked_set = set(replied), set(liked)
+    cutoff = time.time() - 48 * 3600
+    candidates = []
+    now = time.time()
+    for p in posts:
+        pmsg = (p.get("message") or "")[:700]
+        try:
+            p_ts = datetime.strptime(p.get("created_time", ""),
+                                     "%Y-%m-%dT%H:%M:%S%z").timestamp()
+        except Exception:
+            continue
+        if now - p_ts > 72 * 3600:            # only work recent posts
+            continue
+        for c in fb_fetch_comments(p.get("id"), ENGAGE_COMMENTS_PER_POST):
+            cid = (c.get("id") or "").strip()
+            msg = (c.get("message") or "").strip()
+            author = ((c.get("from") or {}).get("id") or "")
+            if not cid or not msg:
+                continue
+            if c.get("parent"):               # threaded reply, not top-level
+                continue
+            if author == pid:                 # never reply to ourselves
+                continue
+            if cid in replied_set:
+                continue
+            if len(msg) < 3 or len(msg) > 400:
+                continue
+            try:
+                c_ts = datetime.strptime(c.get("created_time", ""),
+                                         "%Y-%m-%dT%H:%M:%S%z").timestamp()
+            except Exception:
+                c_ts = now
+            if c_ts < cutoff:                 # stale comment, skip
+                continue
+            # rank: liked comments first, then freshest
+            candidates.append((int(c.get("like_count") or 0) + (now - c_ts) / -86400.0,
+                               p.get("id"), pmsg, cid, msg))
+    candidates.sort(key=lambda t: -t[0])
+    log.info("Engagement scan: %d fresh top-level comments on %d posts",
+             len(candidates), len(posts))
+
+    # ---- 1. reply to the best N comments
+    n_replies = 0
+    for rank, post_id, pmsg, cid, cmsg in candidates[:ENGAGE_MAX_REPLIES]:
+        user = (f"THE POST (excerpt):\n{pmsg or '(image-only post)'}\n\n"
+                f"THE COMMENT:\n{cmsg}\n\nWrite the page's reply.")
+        reply, provider = _llm_complete(_engage_reply_system(), user,
+                                        temperature=0.9, max_tokens=450)
+        reply = _validate_reply(reply)
+        if not reply:
+            log.info("no valid reply for comment %s (LLM skipped or rejected) - moving on", cid[:18])
+            replied.append(cid)               # don't retry the same comment
+            replied_set.add(cid)
+            continue
+        try:
+            publish_comment(post_id, reply)
+            replied.append(cid)
+            replied_set.add(cid)
+            n_replies += 1
+            log.info("Replied to comment %s (%s): %s", cid[:18], provider, reply)
+        except Exception as e:
+            log.warning("reply publish failed (non-fatal): %s", e)
+
+    # ---- 2. like a handful of comments (cheap aliveness signal; real admins
+    # like the comment they just replied to, so replied-this-run ones count)
+    n_likes = 0
+    for rank, post_id, pmsg, cid, cmsg in candidates:
+        if n_likes >= ENGAGE_LIKE_COMMENTS:
+            break
+        if cid in liked_set:
+            continue
+        if fb_like_comment(cid):
+            liked.append(cid)
+            liked_set.add(cid)
+            n_likes += 1
+
+    state["replied_comment_ids"] = replied[-400:]
+    state["liked_comment_ids"] = liked[-600:]
+    state["engage_last_ts"] = int(time.time())
+    _save_state(state)
+    log.info("Engagement pass done: %d replies, %d comment likes", n_replies, n_likes)
     return 0
 
 
@@ -3114,10 +3615,20 @@ def run(args) -> int:
         if tags:
             commentary = commentary.rstrip() + "\n\n" + " ".join(tags)
             log.info("Smart tags appended: %s", " ".join(tags))
+    # v5.5: interaction layer - hook CTA + hashtag reordering (user interaction)
+    before_len = len(commentary)
+    commentary = _apply_interaction_layer(commentary, art, state, shape["id"])
+    if len(commentary) != before_len:
+        log.info("Interaction layer applied (hook + tag reorder)")
 
     # ---- 6. image
     image_path = None
-    if not getattr(args, "no_image", False) and PIL_OK:
+    conversational = shape["id"] in ("hot_take", "question_hook", "cold_open", "contrarian")
+    text_only = (conversational and random.random() < TEXT_POST_PROBABILITY) \
+        or getattr(args, "no_image", False)
+    if text_only and not getattr(args, "no_image", False):
+        log.info("Text-only hot take (v5.5 feed variety) - no image card this post")
+    if not text_only and PIL_OK:
         try:
             image_path = render_card(art, state=state)
         except Exception as e:
@@ -3295,6 +3806,52 @@ def _self_test() -> int:
     if "#startupfunding" in dupes:
         failures.append("smart tags duplicated an existing tag")
 
+    # v5.5: interaction hooks - deterministic tests (probability forced to 1)
+    global ENGAGE_HOOK_PROBABILITY
+    _saved_hook_p = ENGAGE_HOOK_PROBABILITY
+    ENGAGE_HOOK_PROBABILITY = 1.0
+    hook_art = Article("Sarvam AI raises $234 million, becomes India's newest AI unicorn",
+                       "https://x.com/h1", "T", "t.com", now, category="funding")
+    hs = _default_state()
+    prev = None
+    for _ in range(25):
+        h = _pick_hook(hook_art, hs, "stat_first")
+        if h is None:
+            failures.append("hook picker returned None with probability 1")
+            break
+        if "{" in h:
+            failures.append(f"hook placeholder unfilled: {h}")
+        if h == prev:
+            failures.append("hook repeated back-to-back (rotation memory broken)")
+        prev = h
+    for _ in range(20):
+        if _pick_hook(hook_art, _default_state(), "question_hook") is not None:
+            failures.append("question_hook shape must never get an extra hook")
+            break
+    post = _apply_interaction_layer("Body line one.\nBody line two.", hook_art,
+                                    _default_state(), "hot_take")
+    blocks = [b for b in post.strip().split("\n\n") if b.strip()]
+    if not (2 <= len(blocks) <= 2) or "Body line one" not in blocks[0]:
+        failures.append(f"interaction layer mangled the body: {post!r}")
+    post_t = _apply_interaction_layer("Body text here.\n\n#TagOne #TagTwo", hook_art,
+                                     _default_state(), "contrarian")
+    blocks_t = [b for b in post_t.strip().split("\n\n") if b.strip()]
+    if len(blocks_t) < 2 or not blocks_t[-1].startswith("#TagOne"):
+        failures.append(f"tags must move AFTER the hook line: {post_t!r}")
+    ENGAGE_HOOK_PROBABILITY = _saved_hook_p
+
+    # v5.5: engage reply validation
+    if _validate_reply("SKIP") is not None:
+        failures.append("SKIP reply must be rejected")
+    if _validate_reply("Honestly fair point, the burn math does look scary.") is None:
+        failures.append("valid reply rejected")
+    if _validate_reply("As an AI language model I cannot predict that.") is not None:
+        failures.append("AI self-outing reply must be rejected")
+    if _validate_reply("see https://spam.example") is not None:
+        failures.append("link-carrying reply must be rejected")
+    if _validate_reply("word " * 60) is not None:
+        failures.append("over-long reply must be rejected")
+
     # v5.4: insights parser - Graph-API-shaped payload in, leaderboard out
     st2 = _default_state()
     ct = datetime.now(IST).strftime("%Y-%m-%dT%H:%M:%S%z")
@@ -3376,6 +3933,21 @@ def _self_test() -> int:
             img.save(out_dir / "designer_card_bengali.jpg", "JPEG", quality=90)
         else:
             log.info("Bengali font not downloaded - skipping BN card test")
+        # v5.5: square format mixing
+        _set_card_format(True)
+        img = _render_designer_card(art, "Square format sanity check", "S \u00b7 TODAY", False, 4)
+        img.save(out_dir / "designer_card_square.jpg", "JPEG", quality=90)
+        if img.size != (1080, 1080):
+            failures.append(f"square card size {img.size}")
+        img = _render_photo_card(photo, art, "ticker", "Square ticker sanity check", "S \u00b7 TODAY")
+        img.save(out_dir / "photo_card_square_ticker.jpg", "JPEG", quality=90)
+        if img.size != (1080, 1080):
+            failures.append(f"square photo card size {img.size}")
+        _set_card_format(False)
+        # v5.5: film grain must actually perturb pixels (de-AI the clean renders)
+        plain = Image.new("RGB", (300, 300), (40, 60, 90))
+        if plain.tobytes() == _apply_grain(plain).tobytes():
+            failures.append("grain is a no-op")
         log.info("Sample cards written to %s", out_dir)
     else:
         log.warning("Pillow missing - image tests skipped")
@@ -3398,6 +3970,8 @@ def main() -> int:
     ap.add_argument("--self-test", action="store_true", help="offline checks + sample cards")
     ap.add_argument("--insights", action="store_true",
                     help="pull engagement stats for recent posts into state.json + log leaderboard (no posting)")
+    ap.add_argument("--engage", action="store_true",
+                    help="v5.5: reply to fresh comments + like fan comments (the page talks back)")
     ap.add_argument("--threshold", type=int, default=None, help="override MIN_ENGAGEMENT_SCORE_TO_POST")
     ap.add_argument("--verbose", action="store_true", help="debug logging")
     args = ap.parse_args()
@@ -3406,6 +3980,8 @@ def main() -> int:
         return _self_test()
     if args.insights:
         return run_insights()
+    if args.engage:
+        return run_engage()
     rc = run(args)
     # v5.4: completion sentinel - the GitHub Actions retry step fires ONLY
     # when this file is missing (process crashed / was killed mid-run).
