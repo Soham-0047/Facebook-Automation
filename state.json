@@ -78,7 +78,8 @@
   "f48663fe295495f2f26e6a06383adcae",
   "e0f9a1fb3fd51aa3dc9d44f442557134",
   "043b21e48a084ea83ce97612ace94773",
-  "25bf85721df4e1a6db9e60009a63a531"
+  "25bf85721df4e1a6db9e60009a63a531",
+  "a36915eeba3615b7070b53708d082443"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -159,28 +160,28 @@
   "simple energy raises 180 million in largest funding round eyes top five ev two wheeler spot",
   "jio ipo nears launch drhp filed sebi clears path",
   "anarock property consultants files draft papers for 1 000 crore ipo",
-  "sbi mutual fund doubles down on swiggy buys stock worth 300 cr"
+  "sbi mutual fund doubles down on swiggy buys stock worth 300 cr",
+  "indian ai startup sarvam has become a unicorn after raising 234 million in the first close of a 300 million series b funding round led by hcltech valuing the company at 1 5 billion the round was led by hcltech as a strategic investor with bessemer ven"
  ],
- "last_post_ts": 1790963861.963056,
+ "last_post_ts": 1791017556.1867666,
  "recent_categories": [
-  "ipo",
   "funding",
   "regulatory",
   "regulatory",
-  "ma"
+  "ma",
+  "unicorn"
  ],
  "recent_domains": [
-  "yourstory.com",
   "business-standard.com",
-  "inc42.com"
+  "inc42.com",
+  "instagram.com"
  ],
  "recent_shapes": [
-  "listicle",
   "contrarian",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  39554965,
   8067819,
   7180978,
   13532885,
@@ -189,18 +190,22 @@
   16121423,
   11739938,
   27203168,
-  8988542
+  8988542,
+  3861959
  ],
  "recent_personas": [
-  "meera",
-  "riya"
+  "riya",
+  "ananya"
  ],
- "post_counter": 79,
+ "post_counter": 80,
  "category_days": {
   "2026-10-02": {
    "ma": 1
+  },
+  "2026-10-03": {
+   "unicorn": 1
   }
  },
- "bengali_date": "2026-10-02",
- "bengali_count": 1
+ "bengali_date": "2026-10-03",
+ "bengali_count": 0
 }
