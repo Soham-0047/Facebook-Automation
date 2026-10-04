@@ -80,7 +80,8 @@
   "043b21e48a084ea83ce97612ace94773",
   "25bf85721df4e1a6db9e60009a63a531",
   "a36915eeba3615b7070b53708d082443",
-  "ee95c7ca007a1e2c1dcdb7822be378d2"
+  "ee95c7ca007a1e2c1dcdb7822be378d2",
+  "722944e8cc1656874b4603c976a9dacd"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -163,28 +164,28 @@
   "anarock property consultants files draft papers for 1 000 crore ipo",
   "sbi mutual fund doubles down on swiggy buys stock worth 300 cr",
   "indian ai startup sarvam has become a unicorn after raising 234 million in the first close of a 300 million series b funding round led by hcltech valuing the company at 1 5 billion the round was led by hcltech as a strategic investor with bessemer ven",
-  "indian start ups being acquired 2x faster as incumbents look to buy capabilities"
+  "indian start ups being acquired 2x faster as incumbents look to buy capabilities",
+  "ed probes betting apps using ai firms to move rs 2 000 crore abroad"
  ],
- "last_post_ts": 1791045287.651518,
+ "last_post_ts": 1791105683.866717,
  "recent_categories": [
-  "regulatory",
   "regulatory",
   "ma",
   "unicorn",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
-  "inc42.com",
   "instagram.com",
-  "thehindubusinessline.com"
+  "thehindubusinessline.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  7180978,
   13532885,
   7873549,
   8370424,
@@ -193,13 +194,14 @@
   27203168,
   8988542,
   3861959,
-  7887801
+  7887801,
+  16228251
  ],
  "recent_personas": [
-  "ananya",
-  "riya"
+  "riya",
+  "meera"
  ],
- "post_counter": 81,
+ "post_counter": 82,
  "category_days": {
   "2026-10-02": {
    "ma": 1
@@ -207,11 +209,17 @@
   "2026-10-03": {
    "unicorn": 1,
    "ipo": 1
+  },
+  "2026-10-04": {
+   "regulatory": 1
   }
  },
- "bengali_date": "2026-10-03",
+ "bengali_date": "2026-10-04",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791097339
+ "recent_hooks": [
+  "fill_blank"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
