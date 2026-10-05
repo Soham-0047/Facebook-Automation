@@ -82,7 +82,8 @@
   "a36915eeba3615b7070b53708d082443",
   "ee95c7ca007a1e2c1dcdb7822be378d2",
   "722944e8cc1656874b4603c976a9dacd",
-  "0af88ad0f99ec032142422ae55c16b24"
+  "0af88ad0f99ec032142422ae55c16b24",
+  "3e5327962a091f76a5efab6bab1179c1"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -167,28 +168,28 @@
   "indian ai startup sarvam has become a unicorn after raising 234 million in the first close of a 300 million series b funding round led by hcltech valuing the company at 1 5 billion the round was led by hcltech as a strategic investor with bessemer ven",
   "indian start ups being acquired 2x faster as incumbents look to buy capabilities",
   "ed probes betting apps using ai firms to move rs 2 000 crore abroad",
-  "reliance jio ipo update in october 2026 one month away"
+  "reliance jio ipo update in october 2026 one month away",
+  "bhavish aggarwal pledges 4 32 stake to back ola electric s rs 1 000 cr rights issue"
  ],
- "last_post_ts": 1791132954.1872225,
+ "last_post_ts": 1791194507.7327073,
  "recent_categories": [
-  "ma",
   "unicorn",
   "ipo",
   "regulatory",
-  "ipo"
+  "ipo",
+  "ma"
  ],
  "recent_domains": [
-  "thehindubusinessline.com",
   "economictimes.indiatimes.com",
-  "telecomtalk"
+  "telecomtalk",
+  "yourstory.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "contrarian",
-  "listicle"
+  "listicle",
+  "receipts"
  ],
  "recent_photo_ids": [
-  7873549,
   8370424,
   16121423,
   11739938,
@@ -197,13 +198,14 @@
   3861959,
   7887801,
   16228251,
-  16726135
+  16726135,
+  39554965
  ],
  "recent_personas": [
-  "meera",
-  "dev"
+  "dev",
+  "meera"
  ],
- "post_counter": 83,
+ "post_counter": 84,
  "category_days": {
   "2026-10-02": {
    "ma": 1
@@ -215,11 +217,17 @@
   "2026-10-04": {
    "regulatory": 1,
    "ipo": 1
+  },
+  "2026-10-05": {
+   "ma": 1
   }
  },
- "bengali_date": "2026-10-04",
+ "bengali_date": "2026-10-05",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791184431
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
