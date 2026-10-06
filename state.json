@@ -83,7 +83,8 @@
   "ee95c7ca007a1e2c1dcdb7822be378d2",
   "722944e8cc1656874b4603c976a9dacd",
   "0af88ad0f99ec032142422ae55c16b24",
-  "3e5327962a091f76a5efab6bab1179c1"
+  "3e5327962a091f76a5efab6bab1179c1",
+  "245d8fd22a5d325a2d4daf3aba6315ed"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -169,28 +170,28 @@
   "indian start ups being acquired 2x faster as incumbents look to buy capabilities",
   "ed probes betting apps using ai firms to move rs 2 000 crore abroad",
   "reliance jio ipo update in october 2026 one month away",
-  "bhavish aggarwal pledges 4 32 stake to back ola electric s rs 1 000 cr rights issue"
+  "bhavish aggarwal pledges 4 32 stake to back ola electric s rs 1 000 cr rights issue",
+  "razorpay partners with openai to help indian brands advertise on chatgpt"
  ],
- "last_post_ts": 1791194507.7327073,
+ "last_post_ts": 1791280036.8183637,
  "recent_categories": [
-  "unicorn",
   "ipo",
   "regulatory",
   "ipo",
-  "ma"
+  "ma",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "telecomtalk",
-  "yourstory.com"
+  "yourstory.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "listicle",
-  "receipts"
+  "receipts",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  8370424,
   16121423,
   11739938,
   27203168,
@@ -199,13 +200,14 @@
   7887801,
   16228251,
   16726135,
-  39554965
+  39554965,
+  7620627
  ],
  "recent_personas": [
-  "dev",
-  "meera"
+  "meera",
+  "kabir"
  ],
- "post_counter": 84,
+ "post_counter": 85,
  "category_days": {
   "2026-10-02": {
    "ma": 1
@@ -220,11 +222,17 @@
   },
   "2026-10-05": {
    "ma": 1
+  },
+  "2026-10-06": {
+   "ipo": 1
   }
  },
- "bengali_date": "2026-10-05",
+ "bengali_date": "2026-10-06",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791272398
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
