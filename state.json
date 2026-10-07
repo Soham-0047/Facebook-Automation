@@ -85,7 +85,8 @@
   "0af88ad0f99ec032142422ae55c16b24",
   "3e5327962a091f76a5efab6bab1179c1",
   "245d8fd22a5d325a2d4daf3aba6315ed",
-  "8db3c28878917f96157d0a0d0195d6b9"
+  "8db3c28878917f96157d0a0d0195d6b9",
+  "2ca9e1d498b83c73d6ffcc9a2b8471e2"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -173,25 +174,26 @@
   "reliance jio ipo update in october 2026 one month away",
   "bhavish aggarwal pledges 4 32 stake to back ola electric s rs 1 000 cr rights issue",
   "razorpay partners with openai to help indian brands advertise on chatgpt",
-  "flipkart big billion days sale begins on oct 9 myntra cleartrip announce similar sales"
+  "flipkart big billion days sale begins on oct 9 myntra cleartrip announce similar sales",
+  "swara baby products secures sebi nod for 1 000 cr ipo"
  ],
- "last_post_ts": 1791311516.050859,
+ "last_post_ts": 1791366576.2163448,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "ma",
   "ipo",
-  "ecommerce"
+  "ecommerce",
+  "regulatory"
  ],
  "recent_domains": [
-  "yourstory.com",
   "inc42.com",
-  "yourstory.com"
+  "yourstory.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "receipts",
   "hot_take",
-  "contrarian"
+  "contrarian",
+  "cold_open"
  ],
  "recent_photo_ids": [
   11739938,
@@ -206,10 +208,10 @@
   7843990
  ],
  "recent_personas": [
-  "kabir",
-  "dev"
+  "dev",
+  "arjun"
  ],
- "post_counter": 86,
+ "post_counter": 87,
  "category_days": {
   "2026-10-02": {
    "ma": 1
@@ -229,12 +231,10 @@
    "ipo": 1
   },
   "2026-10-07": {
-   "ecommerce": 1
+   "ecommerce": 1,
+   "regulatory": 1
   }
  },
  "bengali_date": "2026-10-07",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791357633
+ "bengali_count": 0
 }
