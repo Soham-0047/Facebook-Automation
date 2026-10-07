@@ -86,7 +86,8 @@
   "3e5327962a091f76a5efab6bab1179c1",
   "245d8fd22a5d325a2d4daf3aba6315ed",
   "8db3c28878917f96157d0a0d0195d6b9",
-  "2ca9e1d498b83c73d6ffcc9a2b8471e2"
+  "2ca9e1d498b83c73d6ffcc9a2b8471e2",
+  "b811371a5aa6a6981fa6561f2ec30ddf"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -175,28 +176,28 @@
   "bhavish aggarwal pledges 4 32 stake to back ola electric s rs 1 000 cr rights issue",
   "razorpay partners with openai to help indian brands advertise on chatgpt",
   "flipkart big billion days sale begins on oct 9 myntra cleartrip announce similar sales",
-  "swara baby products secures sebi nod for 1 000 cr ipo"
+  "swara baby products secures sebi nod for 1 000 cr ipo",
+  "sachin bansal s navi in talks to raise 40 million from elevation two months after prosus 100 million"
  ],
- "last_post_ts": 1791366576.2163448,
+ "last_post_ts": 1791399708.7464914,
  "recent_categories": [
-  "ipo",
   "ma",
   "ipo",
   "ecommerce",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "inc42.com",
   "yourstory.com",
-  "inc42.com"
+  "inc42.com",
+  "moneycontrol.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "contrarian",
-  "cold_open"
+  "cold_open",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  11739938,
   27203168,
   8988542,
   3861959,
@@ -205,13 +206,14 @@
   16726135,
   39554965,
   7620627,
-  7843990
+  7843990,
+  7464380
  ],
  "recent_personas": [
-  "dev",
-  "arjun"
+  "arjun",
+  "meera"
  ],
- "post_counter": 87,
+ "post_counter": 88,
  "category_days": {
   "2026-10-02": {
    "ma": 1
@@ -233,11 +235,17 @@
   "2026-10-07": {
    "ecommerce": 1,
    "regulatory": 1
+  },
+  "2026-10-08": {
+   "ipo": 1
   }
  },
- "bengali_date": "2026-10-07",
+ "bengali_date": "2026-10-08",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791383818
+ "recent_hooks": [
+  "followup"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
