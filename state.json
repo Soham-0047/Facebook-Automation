@@ -87,7 +87,8 @@
   "245d8fd22a5d325a2d4daf3aba6315ed",
   "8db3c28878917f96157d0a0d0195d6b9",
   "2ca9e1d498b83c73d6ffcc9a2b8471e2",
-  "b811371a5aa6a6981fa6561f2ec30ddf"
+  "b811371a5aa6a6981fa6561f2ec30ddf",
+  "23f57d0825b04f1841396e040c5550f8"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -177,28 +178,28 @@
   "razorpay partners with openai to help indian brands advertise on chatgpt",
   "flipkart big billion days sale begins on oct 9 myntra cleartrip announce similar sales",
   "swara baby products secures sebi nod for 1 000 cr ipo",
-  "sachin bansal s navi in talks to raise 40 million from elevation two months after prosus 100 million"
+  "sachin bansal s navi in talks to raise 40 million from elevation two months after prosus 100 million",
+  "amazon layoffs e commerce giant cuts jobs in stores business amid ai spending push"
  ],
- "last_post_ts": 1791399708.7464914,
+ "last_post_ts": 1791453624.993271,
  "recent_categories": [
-  "ma",
   "ipo",
   "ecommerce",
   "regulatory",
-  "ipo"
+  "ipo",
+  "layoffs"
  ],
  "recent_domains": [
-  "yourstory.com",
   "inc42.com",
-  "moneycontrol.com"
+  "moneycontrol.com",
+  "theindianexpress"
  ],
  "recent_shapes": [
-  "contrarian",
   "cold_open",
-  "stat_first"
+  "stat_first",
+  "receipts"
  ],
  "recent_photo_ids": [
-  27203168,
   8988542,
   3861959,
   7887801,
@@ -207,13 +208,14 @@
   39554965,
   7620627,
   7843990,
-  7464380
+  7464380,
+  7464654
  ],
  "recent_personas": [
-  "arjun",
-  "meera"
+  "meera",
+  "riya"
  ],
- "post_counter": 88,
+ "post_counter": 89,
  "category_days": {
   "2026-10-02": {
    "ma": 1
@@ -237,12 +239,16 @@
    "regulatory": 1
   },
   "2026-10-08": {
-   "ipo": 1
+   "ipo": 1,
+   "layoffs": 1
   }
  },
  "bengali_date": "2026-10-08",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791444872
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
