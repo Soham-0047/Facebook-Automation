@@ -88,7 +88,8 @@
   "8db3c28878917f96157d0a0d0195d6b9",
   "2ca9e1d498b83c73d6ffcc9a2b8471e2",
   "b811371a5aa6a6981fa6561f2ec30ddf",
-  "23f57d0825b04f1841396e040c5550f8"
+  "23f57d0825b04f1841396e040c5550f8",
+  "1c570e28ad2c4844053006680e4e8f8c"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -179,28 +180,28 @@
   "flipkart big billion days sale begins on oct 9 myntra cleartrip announce similar sales",
   "swara baby products secures sebi nod for 1 000 cr ipo",
   "sachin bansal s navi in talks to raise 40 million from elevation two months after prosus 100 million",
-  "amazon layoffs e commerce giant cuts jobs in stores business amid ai spending push"
+  "amazon layoffs e commerce giant cuts jobs in stores business amid ai spending push",
+  "tcs q2 results highlights tcs q2 con pat up 15 y o y gm breweries sink post results"
  ],
- "last_post_ts": 1791453624.993271,
+ "last_post_ts": 1791485829.025447,
  "recent_categories": [
-  "ipo",
   "ecommerce",
   "regulatory",
   "ipo",
-  "layoffs"
+  "layoffs",
+  "ai"
  ],
  "recent_domains": [
-  "inc42.com",
   "moneycontrol.com",
-  "theindianexpress"
+  "theindianexpress",
+  "businessline"
  ],
  "recent_shapes": [
-  "cold_open",
   "stat_first",
-  "receipts"
+  "receipts",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  8988542,
   3861959,
   7887801,
   16228251,
@@ -209,17 +210,15 @@
   7620627,
   7843990,
   7464380,
-  7464654
+  7464654,
+  31735054
  ],
  "recent_personas": [
-  "meera",
-  "riya"
+  "riya",
+  "dev"
  ],
- "post_counter": 89,
+ "post_counter": 90,
  "category_days": {
-  "2026-10-02": {
-   "ma": 1
-  },
   "2026-10-03": {
    "unicorn": 1,
    "ipo": 1
@@ -241,11 +240,14 @@
   "2026-10-08": {
    "ipo": 1,
    "layoffs": 1
+  },
+  "2026-10-09": {
+   "ai": 1
   }
  },
- "bengali_date": "2026-10-08",
+ "bengali_date": "2026-10-09",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791470573
+ "recent_formats": [
+  "portrait"
+ ]
 }
