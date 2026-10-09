@@ -89,7 +89,8 @@
   "2ca9e1d498b83c73d6ffcc9a2b8471e2",
   "b811371a5aa6a6981fa6561f2ec30ddf",
   "23f57d0825b04f1841396e040c5550f8",
-  "1c570e28ad2c4844053006680e4e8f8c"
+  "1c570e28ad2c4844053006680e4e8f8c",
+  "8eb9b44226a711d0120e3a2f54ec272b"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -181,28 +182,28 @@
   "swara baby products secures sebi nod for 1 000 cr ipo",
   "sachin bansal s navi in talks to raise 40 million from elevation two months after prosus 100 million",
   "amazon layoffs e commerce giant cuts jobs in stores business amid ai spending push",
-  "tcs q2 results highlights tcs q2 con pat up 15 y o y gm breweries sink post results"
+  "tcs q2 results highlights tcs q2 con pat up 15 y o y gm breweries sink post results",
+  "starlink row scindia says india will let customers choose their satellite internet provider"
  ],
- "last_post_ts": 1791485829.025447,
+ "last_post_ts": 1791540235.3690414,
  "recent_categories": [
-  "ecommerce",
   "regulatory",
   "ipo",
   "layoffs",
-  "ai"
+  "ai",
+  "regulatory"
  ],
  "recent_domains": [
-  "moneycontrol.com",
   "theindianexpress",
-  "businessline"
+  "businessline",
+  "livemint.com"
  ],
  "recent_shapes": [
-  "stat_first",
   "receipts",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  3861959,
   7887801,
   16228251,
   16726135,
@@ -211,13 +212,14 @@
   7843990,
   7464380,
   7464654,
-  31735054
+  31735054,
+  16121423
  ],
  "recent_personas": [
-  "riya",
-  "dev"
+  "dev",
+  "riya"
  ],
- "post_counter": 90,
+ "post_counter": 91,
  "category_days": {
   "2026-10-03": {
    "unicorn": 1,
@@ -242,12 +244,16 @@
    "layoffs": 1
   },
   "2026-10-09": {
-   "ai": 1
+   "ai": 1,
+   "regulatory": 1
   }
  },
  "bengali_date": "2026-10-09",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791531070
+ "recent_hooks": [
+  "hot_or_not"
+ ],
+ "recent_formats": [
+  "square"
+ ]
 }
