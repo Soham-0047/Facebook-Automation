@@ -90,7 +90,8 @@
   "b811371a5aa6a6981fa6561f2ec30ddf",
   "23f57d0825b04f1841396e040c5550f8",
   "1c570e28ad2c4844053006680e4e8f8c",
-  "8eb9b44226a711d0120e3a2f54ec272b"
+  "8eb9b44226a711d0120e3a2f54ec272b",
+  "ac74a761a07dcf3a8429d9c2f3fe4d43"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -183,28 +184,28 @@
   "sachin bansal s navi in talks to raise 40 million from elevation two months after prosus 100 million",
   "amazon layoffs e commerce giant cuts jobs in stores business amid ai spending push",
   "tcs q2 results highlights tcs q2 con pat up 15 y o y gm breweries sink post results",
-  "starlink row scindia says india will let customers choose their satellite internet provider"
+  "starlink row scindia says india will let customers choose their satellite internet provider",
+  "ambani s jio said to set ipo price band at 1 065 1 119 rupees"
  ],
- "last_post_ts": 1791540235.3690414,
+ "last_post_ts": 1791570464.2814429,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "layoffs",
   "ai",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "theindianexpress",
   "businessline",
-  "livemint.com"
+  "livemint.com",
+  "bloomberg.com"
  ],
  "recent_shapes": [
-  "receipts",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  7887801,
   16228251,
   16726135,
   39554965,
@@ -213,13 +214,14 @@
   7464380,
   7464654,
   31735054,
-  16121423
+  16121423,
+  4828818
  ],
  "recent_personas": [
-  "dev",
-  "riya"
+  "riya",
+  "meera"
  ],
- "post_counter": 91,
+ "post_counter": 92,
  "category_days": {
   "2026-10-03": {
    "unicorn": 1,
@@ -245,12 +247,13 @@
   },
   "2026-10-09": {
    "ai": 1,
-   "regulatory": 1
+   "regulatory": 1,
+   "ipo": 1
   }
  },
  "bengali_date": "2026-10-09",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791556032
+ "recent_formats": [
+  "portrait"
+ ]
 }
