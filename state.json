@@ -92,7 +92,8 @@
   "1c570e28ad2c4844053006680e4e8f8c",
   "8eb9b44226a711d0120e3a2f54ec272b",
   "ac74a761a07dcf3a8429d9c2f3fe4d43",
-  "4b3ba30bd7a44afd57c5b61792cd8888"
+  "4b3ba30bd7a44afd57c5b61792cd8888",
+  "a6f569f4a7b0bf9f94b7d63d0e8781a6"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -187,28 +188,28 @@
   "tcs q2 results highlights tcs q2 con pat up 15 y o y gm breweries sink post results",
   "starlink row scindia says india will let customers choose their satellite internet provider",
   "ambani s jio said to set ipo price band at 1 065 1 119 rupees",
-  "amazon flipkart see strong start to 2026 festive sales"
+  "amazon flipkart see strong start to 2026 festive sales",
+  "etsa 2026 meesho groww ceos on how life changes after an ipo"
  ],
- "last_post_ts": 1791624299.9863477,
+ "last_post_ts": 1791653127.1359262,
  "recent_categories": [
-  "layoffs",
   "ai",
   "regulatory",
   "ipo",
-  "ecommerce"
+  "ecommerce",
+  "ipo"
  ],
  "recent_domains": [
-  "livemint.com",
   "bloomberg.com",
-  "yourstory.com"
+  "yourstory.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "hot_take",
-  "contrarian"
+  "contrarian",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  16726135,
   39554965,
   7620627,
   7843990,
@@ -217,13 +218,14 @@
   31735054,
   16121423,
   4828818,
-  7464372
+  7464372,
+  7621385
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "meera"
  ],
- "post_counter": 93,
+ "post_counter": 94,
  "category_days": {
   "2026-10-04": {
    "regulatory": 1,
@@ -249,12 +251,16 @@
    "ipo": 1
   },
   "2026-10-10": {
-   "ecommerce": 1
+   "ecommerce": 1,
+   "ipo": 1
   }
  },
  "bengali_date": "2026-10-10",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791640374
+ "recent_hooks": [
+  "followup"
+ ],
+ "recent_formats": [
+  "square"
+ ]
 }
