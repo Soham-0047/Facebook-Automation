@@ -94,7 +94,8 @@
   "ac74a761a07dcf3a8429d9c2f3fe4d43",
   "4b3ba30bd7a44afd57c5b61792cd8888",
   "a6f569f4a7b0bf9f94b7d63d0e8781a6",
-  "c2be9bf501f8dae7559ec8d1e4692c9f"
+  "c2be9bf501f8dae7559ec8d1e4692c9f",
+  "f1f66b3db59b7b1f1fb899d06f087b89"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -191,28 +192,28 @@
   "ambani s jio said to set ipo price band at 1 065 1 119 rupees",
   "amazon flipkart see strong start to 2026 festive sales",
   "etsa 2026 meesho groww ceos on how life changes after an ipo",
-  "ambani s record india ipo of jio delayed by regulatory limbo"
+  "ambani s record india ipo of jio delayed by regulatory limbo",
+  "flipkart esop tussle over 1 000 former employees seek fair treatment from walmart"
  ],
- "last_post_ts": 1791711671.0576062,
+ "last_post_ts": 1791740683.3368168,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "ecommerce",
   "ipo",
-  "regulatory"
+  "regulatory",
+  "ipo"
  ],
  "recent_domains": [
-  "yourstory.com",
   "economictimes.indiatimes.com",
-  "bloomberg.com"
+  "bloomberg.com",
+  "moneycontrol.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "cold_open",
-  "receipts"
+  "receipts",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  7620627,
   7843990,
   7464380,
   7464654,
@@ -221,13 +222,14 @@
   4828818,
   7464372,
   7621385,
-  16726135
+  16726135,
+  6170398
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "riya"
  ],
- "post_counter": 95,
+ "post_counter": 96,
  "category_days": {
   "2026-10-05": {
    "ma": 1
@@ -253,12 +255,16 @@
    "ipo": 1
   },
   "2026-10-11": {
-   "regulatory": 1
+   "regulatory": 1,
+   "ipo": 1
   }
  },
  "bengali_date": "2026-10-11",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791727975
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "square"
+ ]
 }
