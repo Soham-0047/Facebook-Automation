@@ -93,7 +93,8 @@
   "8eb9b44226a711d0120e3a2f54ec272b",
   "ac74a761a07dcf3a8429d9c2f3fe4d43",
   "4b3ba30bd7a44afd57c5b61792cd8888",
-  "a6f569f4a7b0bf9f94b7d63d0e8781a6"
+  "a6f569f4a7b0bf9f94b7d63d0e8781a6",
+  "c2be9bf501f8dae7559ec8d1e4692c9f"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -189,28 +190,28 @@
   "starlink row scindia says india will let customers choose their satellite internet provider",
   "ambani s jio said to set ipo price band at 1 065 1 119 rupees",
   "amazon flipkart see strong start to 2026 festive sales",
-  "etsa 2026 meesho groww ceos on how life changes after an ipo"
+  "etsa 2026 meesho groww ceos on how life changes after an ipo",
+  "ambani s record india ipo of jio delayed by regulatory limbo"
  ],
- "last_post_ts": 1791653127.1359262,
+ "last_post_ts": 1791711671.0576062,
  "recent_categories": [
-  "ai",
   "regulatory",
   "ipo",
   "ecommerce",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
-  "bloomberg.com",
   "yourstory.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "bloomberg.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "contrarian",
-  "cold_open"
+  "cold_open",
+  "receipts"
  ],
  "recent_photo_ids": [
-  39554965,
   7620627,
   7843990,
   7464380,
@@ -219,18 +220,15 @@
   16121423,
   4828818,
   7464372,
-  7621385
+  7621385,
+  16726135
  ],
  "recent_personas": [
-  "ananya",
-  "meera"
+  "meera",
+  "ananya"
  ],
- "post_counter": 94,
+ "post_counter": 95,
  "category_days": {
-  "2026-10-04": {
-   "regulatory": 1,
-   "ipo": 1
-  },
   "2026-10-05": {
    "ma": 1
   },
@@ -253,11 +251,17 @@
   "2026-10-10": {
    "ecommerce": 1,
    "ipo": 1
+  },
+  "2026-10-11": {
+   "regulatory": 1
   }
  },
- "bengali_date": "2026-10-10",
+ "bengali_date": "2026-10-11",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791703296
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "square"
+ ]
 }
