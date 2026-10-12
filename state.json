@@ -95,7 +95,8 @@
   "4b3ba30bd7a44afd57c5b61792cd8888",
   "a6f569f4a7b0bf9f94b7d63d0e8781a6",
   "c2be9bf501f8dae7559ec8d1e4692c9f",
-  "f1f66b3db59b7b1f1fb899d06f087b89"
+  "f1f66b3db59b7b1f1fb899d06f087b89",
+  "c49e2a9d10d48b00e753c5205bf5b6bc"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -193,25 +194,26 @@
   "amazon flipkart see strong start to 2026 festive sales",
   "etsa 2026 meesho groww ceos on how life changes after an ipo",
   "ambani s record india ipo of jio delayed by regulatory limbo",
-  "flipkart esop tussle over 1 000 former employees seek fair treatment from walmart"
+  "flipkart esop tussle over 1 000 former employees seek fair treatment from walmart",
+  "ecommerce firms sell goods worth rs 24 000 crore in first two days of festive sales redseer"
  ],
- "last_post_ts": 1791740683.3368168,
+ "last_post_ts": 1791800078.050311,
  "recent_categories": [
-  "ipo",
   "ecommerce",
   "ipo",
   "regulatory",
-  "ipo"
+  "ipo",
+  "ecommerce"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "bloomberg.com",
-  "moneycontrol.com"
+  "moneycontrol.com",
+  "economictimes.indiatimes.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "receipts",
-  "hot_take"
+  "hot_take",
+  "contrarian"
  ],
  "recent_photo_ids": [
   7843990,
@@ -226,14 +228,11 @@
   6170398
  ],
  "recent_personas": [
-  "ananya",
-  "riya"
+  "riya",
+  "dev"
  ],
- "post_counter": 96,
+ "post_counter": 97,
  "category_days": {
-  "2026-10-05": {
-   "ma": 1
-  },
   "2026-10-06": {
    "ipo": 1
   },
@@ -257,11 +256,14 @@
   "2026-10-11": {
    "regulatory": 1,
    "ipo": 1
+  },
+  "2026-10-12": {
+   "ecommerce": 1
   }
  },
- "bengali_date": "2026-10-11",
+ "bengali_date": "2026-10-12",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791790217
+ "recent_hooks": [
+  "fill_blank"
+ ]
 }
