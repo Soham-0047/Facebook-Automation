@@ -96,7 +96,8 @@
   "a6f569f4a7b0bf9f94b7d63d0e8781a6",
   "c2be9bf501f8dae7559ec8d1e4692c9f",
   "f1f66b3db59b7b1f1fb899d06f087b89",
-  "c49e2a9d10d48b00e753c5205bf5b6bc"
+  "c49e2a9d10d48b00e753c5205bf5b6bc",
+  "cafe9257d53f61a115946e3561d8d02b"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -195,28 +196,28 @@
   "etsa 2026 meesho groww ceos on how life changes after an ipo",
   "ambani s record india ipo of jio delayed by regulatory limbo",
   "flipkart esop tussle over 1 000 former employees seek fair treatment from walmart",
-  "ecommerce firms sell goods worth rs 24 000 crore in first two days of festive sales redseer"
+  "ecommerce firms sell goods worth rs 24 000 crore in first two days of festive sales redseer",
+  "starlink vs jio can elon musk make satellite internet affordable in india s cheap data market"
  ],
- "last_post_ts": 1791800078.050311,
+ "last_post_ts": 1791840081.5638554,
  "recent_categories": [
-  "ecommerce",
   "ipo",
   "regulatory",
   "ipo",
-  "ecommerce"
+  "ecommerce",
+  "ipo"
  ],
  "recent_domains": [
-  "bloomberg.com",
   "moneycontrol.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "livemint.com"
  ],
  "recent_shapes": [
-  "receipts",
   "hot_take",
-  "contrarian"
+  "contrarian",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  7843990,
   7464380,
   7464654,
   31735054,
@@ -225,17 +226,15 @@
   7464372,
   7621385,
   16726135,
-  6170398
+  6170398,
+  19463206
  ],
  "recent_personas": [
-  "riya",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 97,
+ "post_counter": 98,
  "category_days": {
-  "2026-10-06": {
-   "ipo": 1
-  },
   "2026-10-07": {
    "ecommerce": 1,
    "regulatory": 1
@@ -259,11 +258,14 @@
   },
   "2026-10-12": {
    "ecommerce": 1
+  },
+  "2026-10-13": {
+   "ipo": 1
   }
  },
- "bengali_date": "2026-10-12",
+ "bengali_date": "2026-10-13",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791823890
+ "recent_formats": [
+  "square"
+ ]
 }
