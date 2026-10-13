@@ -98,7 +98,8 @@
   "f1f66b3db59b7b1f1fb899d06f087b89",
   "c49e2a9d10d48b00e753c5205bf5b6bc",
   "cafe9257d53f61a115946e3561d8d02b",
-  "501537508f80c2c9757c2db13484fc85"
+  "501537508f80c2c9757c2db13484fc85",
+  "28289b8445d32c8897dc76b739fe3b0a"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -199,28 +200,28 @@
   "flipkart esop tussle over 1 000 former employees seek fair treatment from walmart",
   "ecommerce firms sell goods worth rs 24 000 crore in first two days of festive sales redseer",
   "starlink vs jio can elon musk make satellite internet affordable in india s cheap data market",
-  "fintech funding rises 14 to 2 2 billion in jan sep deal count falls 41 tracxn"
+  "fintech funding rises 14 to 2 2 billion in jan sep deal count falls 41 tracxn",
+  "freshworks to acquire torii to expand ai spend governance offerings"
  ],
- "last_post_ts": 1791886008.27814,
+ "last_post_ts": 1791919537.9942262,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "ecommerce",
   "ipo",
-  "funding"
+  "funding",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "livemint.com",
-  "economictimes.indiatimes.com"
+  "economictimes.indiatimes.com",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "stat_first",
-  "question_hook"
+  "question_hook",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  7464654,
   31735054,
   16121423,
   4828818,
@@ -229,18 +230,15 @@
   16726135,
   6170398,
   19463206,
-  8067819
+  8067819,
+  34774356
  ],
  "recent_personas": [
-  "kabir",
-  "riya"
+  "riya",
+  "ananya"
  ],
- "post_counter": 99,
+ "post_counter": 100,
  "category_days": {
-  "2026-10-07": {
-   "ecommerce": 1,
-   "regulatory": 1
-  },
   "2026-10-08": {
    "ipo": 1,
    "layoffs": 1
@@ -264,11 +262,17 @@
   "2026-10-13": {
    "ipo": 1,
    "funding": 1
+  },
+  "2026-10-14": {
+   "ipo": 1
   }
  },
- "bengali_date": "2026-10-13",
+ "bengali_date": "2026-10-14",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791904185
+ "recent_hooks": [
+  "hot_or_not"
+ ],
+ "recent_formats": [
+  "square"
+ ]
 }
