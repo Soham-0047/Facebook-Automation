@@ -99,7 +99,8 @@
   "c49e2a9d10d48b00e753c5205bf5b6bc",
   "cafe9257d53f61a115946e3561d8d02b",
   "501537508f80c2c9757c2db13484fc85",
-  "28289b8445d32c8897dc76b739fe3b0a"
+  "28289b8445d32c8897dc76b739fe3b0a",
+  "02eaae663d378ce849ece0610e09af8d"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -201,29 +202,28 @@
   "ecommerce firms sell goods worth rs 24 000 crore in first two days of festive sales redseer",
   "starlink vs jio can elon musk make satellite internet affordable in india s cheap data market",
   "fintech funding rises 14 to 2 2 billion in jan sep deal count falls 41 tracxn",
-  "freshworks to acquire torii to expand ai spend governance offerings"
+  "freshworks to acquire torii to expand ai spend governance offerings",
+  "groww q2 profit jumps 54 yoy to 725 cr revenue rises 47"
  ],
- "last_post_ts": 1791919537.9942262,
+ "last_post_ts": 1791966263.5209234,
  "recent_categories": [
-  "ipo",
   "ecommerce",
   "ipo",
   "funding",
-  "ipo"
+  "ipo",
+  "funding"
  ],
  "recent_domains": [
-  "livemint.com",
   "economictimes.indiatimes.com",
+  "inc42.com",
   "inc42.com"
  ],
  "recent_shapes": [
-  "stat_first",
   "question_hook",
-  "cold_open"
+  "cold_open",
+  "listicle"
  ],
  "recent_photo_ids": [
-  31735054,
-  16121423,
   4828818,
   7464372,
   7621385,
@@ -231,13 +231,15 @@
   6170398,
   19463206,
   8067819,
-  34774356
+  34774356,
+  7948071,
+  7989073
  ],
  "recent_personas": [
-  "riya",
-  "ananya"
+  "ananya",
+  "arjun"
  ],
- "post_counter": 100,
+ "post_counter": 101,
  "category_days": {
   "2026-10-08": {
    "ipo": 1,
@@ -264,12 +266,14 @@
    "funding": 1
   },
   "2026-10-14": {
-   "ipo": 1
+   "ipo": 1,
+   "funding": 1
   }
  },
  "bengali_date": "2026-10-14",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791958567
+ "bengali_count": 1,
+ "recent_formats": [
+  "square",
+  "portrait"
+ ]
 }
