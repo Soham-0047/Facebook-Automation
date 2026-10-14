@@ -100,7 +100,8 @@
   "cafe9257d53f61a115946e3561d8d02b",
   "501537508f80c2c9757c2db13484fc85",
   "28289b8445d32c8897dc76b739fe3b0a",
-  "02eaae663d378ce849ece0610e09af8d"
+  "02eaae663d378ce849ece0610e09af8d",
+  "54b708d65513b8d7443e32ddcb106828"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -203,28 +204,28 @@
   "starlink vs jio can elon musk make satellite internet affordable in india s cheap data market",
   "fintech funding rises 14 to 2 2 billion in jan sep deal count falls 41 tracxn",
   "freshworks to acquire torii to expand ai spend governance offerings",
-  "groww q2 profit jumps 54 yoy to 725 cr revenue rises 47"
+  "groww q2 profit jumps 54 yoy to 725 cr revenue rises 47",
+  "mukesh ambani s jio seeks 108 billion valuation in record indian ipo"
  ],
- "last_post_ts": 1791966263.5209234,
+ "last_post_ts": 1791998767.4345129,
  "recent_categories": [
-  "ecommerce",
   "ipo",
   "funding",
   "ipo",
-  "funding"
+  "funding",
+  "ipo"
  ],
  "recent_domains": [
-  "economictimes.indiatimes.com",
   "inc42.com",
-  "inc42.com"
+  "inc42.com",
+  "reuters"
  ],
  "recent_shapes": [
-  "question_hook",
   "cold_open",
-  "listicle"
+  "listicle",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  4828818,
   7464372,
   7621385,
   16726135,
@@ -233,13 +234,14 @@
   8067819,
   34774356,
   7948071,
-  7989073
+  7989073,
+  16777252
  ],
  "recent_personas": [
-  "ananya",
-  "arjun"
+  "arjun",
+  "ananya"
  ],
- "post_counter": 101,
+ "post_counter": 102,
  "category_days": {
   "2026-10-08": {
    "ipo": 1,
@@ -266,13 +268,16 @@
    "funding": 1
   },
   "2026-10-14": {
-   "ipo": 1,
+   "ipo": 2,
    "funding": 1
   }
  },
  "bengali_date": "2026-10-14",
  "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1791982631
+ "recent_hooks": [
+  "predict"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
