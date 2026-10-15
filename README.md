@@ -1,12 +1,21 @@
-# India Tech News Bot v5.5
+# Trending & Entertainment News Bot v5.6
 
-Fully-automated Facebook Page autopilot for Indian tech news: a strong
-multi-source fetching engine picks the highest-signal stories, Groq/Gemini
-write human-sounding commentary in 8 rotating shapes x 6 personas with
-built-in engagement hooks, and a designer-grade image pipeline mixes 8
-layouts, 2 formats and film grain so the feed reads like a real page, not a
-template. The page even talks back: a scheduled engagement pass replies to
-fan comments in the page's own voice.
+Fully-automated Facebook Page autopilot for **worldwide trending +
+entertainment news**: movies, music, TV & streaming, sports, celebs, gaming,
+viral moments, space, and big tech launches. A strong multi-source fetching
+engine (Variety, THR, Deadline, Billboard, NME, E! News, Guardian, BBC, IGN,
+GameSpot, Space.com, NASA + Google News trending fan-outs) picks the hottest
+clean stories, Groq/Gemini write human-sounding commentary in 8 rotating
+shapes x 6 personas with built-in engagement hooks, and a designer-grade
+image pipeline pulls impressive cinematic photography (concert lights,
+stadium floodlights, rocket launches, red carpets) into 8 layouts, 2 formats
+with film grain so the feed reads like a real page, not a template. The page
+even talks back: a scheduled engagement pass replies to fan comments in the
+page's own voice.
+
+**Family-friendly by construction:** an explicit-content firewall filters
+every headline, every LLM draft, and keeps all image queries inside curated
+safe banks. No explicit content, no graphic gore - ever.
 
 Single file. Two dependencies (`requests`, `pillow`; `trafilatura` optional
 but recommended). Runs on GitHub Actions free tier, Google Colab, or any
@@ -14,65 +23,65 @@ machine with Python 3.9+.
 
 ---
 
-## What's new in v5.5 (the human-touch release)
+## What's new in v5.6 (the worldwide entertainment pivot)
 
 ### Content
-- **Interaction hooks:** most posts now end with one cheap action a reader
-can complete in two seconds - emoji votes ("Your one-word take: 👍 or 👎?"),
-1-10 scales, quick polls, tag-a-friend, fill-in-the-blank. Hooks rotate
-with memory (never the same CTA twice in a row), are category-aware, and
-are skipped ~25% of the time so the page never feels needy. Tune with
-`ENGAGE_HOOK_PROBABILITY`.
-- **Two new post shapes:** RECEIPTS (three cold dash-line facts, zero
-opinion - the most shareable format on Indian tech pages) and COLD OPEN
-(starts mid-conversation, "So Bengaluru just..."). 8 shapes total.
-- **Anti-AI-tell hardening:** the banned-phrase list now blocks the current
-generation of LLM filler ("let's unpack", "isn't just", "read that again",
-"plot twist", ...), and shape selection is weighted-random with a 3-post
-memory instead of a predictable modulo rotation.
-- **Looser, commercial emoji policy:** 0-3 emoji as visual anchors
-(previously 0-1), with the hashtags always moved to the final line after
-the hook - the layout real pages use.
+- **Scope pivot: the page now covers the whole world.** The India tech
+  gate is gone, the source list is rebuilt around the global entertainment
+  trades + world news, and scoring runs on 11 new beats: VIRAL, GAMING,
+  MOVIES, MUSIC, SPORTS, TV, CELEBS, SPACE, TECH, WOW (world records &
+  bizarre-but-clean), TRENDING.
+- **Fresh source lineup (all live-probed):** Variety, Hollywood Reporter,
+  Deadline, IndieWire, Billboard, NME, Guardian Music/World/Culture/Sport/Tech,
+  E! News, NY Post Entertainment, TOI Entertainment, BBC News/Sport,
+  Space.com, NASA, IGN, GameSpot, PC Gamer, The Verge, Bored Panda + Google
+  News WORLD/ENTERTAINMENT/SPORTS/TECHNOLOGY topic feeds and `when:Nd`
+  trending queries (viral, box office, trailers, world records, awards).
+- **Pop-culture entity table:** ~70 names from Taylor Swift, Messi and
+  Marvel to Netflix, PlayStation and SpaceX carry category hints and score
+  weight - the page knows what's actually hot.
+- **Explicit-content firewall:** NSFW + graphic-gore regex gate at fetch
+  time, a second gate on LLM output, and strict family-friendly rules in
+  every prompt (posts, Bengali posts, comment replies). Image queries are
+  curated safe banks, never derived from raw headline text.
+- **Viral is a virtue now:** "gone viral / breaking the internet / millions
+  of views" moved from the penalty list to the top of the scoring engine -
+  while cheap clickbait ("you won't believe", SHOCKING!!!) still dies.
+- **Routine politics ranks below entertainment** - fun-first page; only a
+  massively corroborated political moment still clears the bar.
 
-### The page talks back
-- **Engagement pass (`--engage`):** a new scheduled mode reads fresh
-comments on recent posts, replies to the best ones via Groq/Gemini in the
-page's voice (40 words max, warm, never generic), and likes a handful
-more. Reply memory lives in `state.json`, so no comment is ever answered
-twice. This is the single biggest "real page vs bot page" signal - and
-Facebook's ranking rewards comment replies with extra reach.
+### Images (the "impressive photo" engine)
+- **Cinematic query banks per beat:** concert stage lights, stadium
+  floodlights, rocket launches at night, red-carpet flashbulbs, aurora,
+  neon city streets - every query aims for a photo people stop scrolling
+  for.
+- **Bigger candidate pools:** 18 photos per query (was 12), top 4
+  downloaded and vividness-ranked (was 3).
+- **Landscape-friendly ranking:** the resolution floor now accepts dramatic
+  wide shots (which crop beautifully) and the aspect penalty was softened
+  from 2200 to 1200 - huge cinematic landscapes can beat a mediocre
+  portrait.
+- **Rotating cinematic modifiers:** each run randomly appends "dramatic",
+  "cinematic", "night", "aerial", "neon", "bokeh" or "golden hour" to the
+  category queries, so no two days pull identical stock.
+- **New entertainment palette:** VIRAL hot-pink, MOVIES gold, MUSIC magenta,
+  STREAMING cyan, SPORTS electric green, GAMING violet, WOW yellow -
+  magazine-cover energy with the usual accent rotation so no category
+  repeats itself visually.
 
-### Images
-- **Square format mixing:** ~35% of cards render as 1080x1080 squares
-(never two in a row). A feed of only 4:5 cards reads as a template; a
-mixed feed reads like a real page. Tune with `SQUARE_CARD_PROBABILITY`.
-- **Text-only hot takes:** ~15% of conversational posts ship without an
-image card at all - exactly what real pages do between the designed posts.
-Tune with `TEXT_POST_PROBABILITY`.
-- **Film grain:** every card now carries subtle sensor noise. "Too clean"
-flat gradients are the #1 visual tell of AI-generated design; grain kills
-it.
-- **Two new layouts:** TICKER (broadcast banner: accent band, pulsing dot,
-heavy centered headline, dark strip - the loudest card we have) and QUOTE
-(editorial pull-quote: duotone photo, cream paper, giant serif quote mark,
-DejaVu Serif bundled in `fonts/`). 8 layouts total.
-- **Duotone treatments:** full-bleed and magazine cards periodically map
-the photo through an accent-tinted duotone ramp, so photo + typography
-read as one designed object.
-
-### Fixes
-- **`--insights` exits 0 when there's no engagement data** (token missing /
-FB hiccup / quiet page). "Nothing to do" was never a failure - but it
-marked the workflow red and emailed you. Green is green.
+### Everything that made v5.5 feel human stays
+Interaction hooks, the engagement pass, 8 layouts, square mixing, film
+grain, duotone treatments, text-only hot takes, crash-safe workflows.
 
 ### History
+- **v5.5** - interaction hooks, `--engage` comment replies, TICKER + QUOTE
+  layouts, square mixing, film grain, duotone, banned-phrase hardening.
 - **v5.4** - hard daily topic diversity, clickbait firewall, smart-tag
-safety net, entropy-aware crops, dynamic headline sizing, contrast-aware
-scrims, crash-safe in-flight dedup, safe retry, failure-alert issues,
-engagement tracker (`--insights`).
+  safety net, entropy-aware crops, dynamic headline sizing, contrast-aware
+  scrims, crash-safe in-flight dedup, safe retry, failure-alert issues,
+  engagement tracker (`--insights`).
 - **v5.3 / v5.3.1** - source-authority tiers, money-magnitude scoring,
-  SEO-junk firewall, content-based India gate (3-outlet corroboration),
-  freshness decay, threshold raised to 9, recap-series / `#WATCH` /
+  SEO-junk firewall, freshness decay, recap-series / `#WATCH` /
   social-aggregator penalties, gated-leaderboard logging.
 - **v5.2** - 6 rotating layouts, stat posters, photo anti-repeat memory,
   calmer Bengali frequency.
@@ -86,7 +95,7 @@ engagement tracker (`--insights`).
 
 ```
 .
-├── bot.py                              # the entire bot (v5.5)
+├── bot.py                              # the entire bot (v5.6)
 ├── requirements.txt
 ├── README.md
 ├── env.example                         # copy to .env and fill in
@@ -157,7 +166,7 @@ normal environment variables everywhere else.
    - **Insights workflow** - 2x/day IST (16:00, 23:45), pulls engagement
      into `state.json` and logs the leaderboard. Check the run logs (or
      `state.json -> hour_eng`) to see which posting hours perform best.
-   - **Manual run** - Actions -> India Tech Page Bot -> Run workflow.
+   - **Manual run** - Actions -> Trending Entertainment Page Bot -> Run workflow.
 
 ---
 
@@ -193,7 +202,7 @@ normal environment variables everywhere else.
 | `BENGALI_PROBABILITY` | `0.18` | Chance a Bengali companion accompanies a post |
 | `BENGALI_MAX_PER_DAY` | `1` | Bengali posts per day cap |
 | `POST_LINK_AS_FIRST_COMMENT` | `false` | Link-as-comment reach trick |
-| `PAGE_HANDLE` | *(empty)* | Watermark on cards, e.g. `@indiatechdaily` |
+| `PAGE_HANDLE` | *(empty)* | Watermark on cards, e.g. `@trendingbuzz` |
 | `FB_API_VERSION` | `v21.0` | Graph API version |
 | `GROQ_MODELS` | *(official replacements)* | Comma-separated Groq model chain - edit when Groq deprecates models |
 | `GEMINI_MODELS` | `gemini-2.5-flash,...` | Comma-separated Gemini model chain |

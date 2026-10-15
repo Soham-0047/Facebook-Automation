@@ -1,49 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-INDIA TECH NEWS - FACEBOOK PAGE BOT  .  v5.4
-=============================================
-Single-file bot: fetches Indian tech news from many free sources, scores it,
-writes a human-sounding post (English + optional Bengali companion), renders a
-designed 1080x1350 image card, and publishes to a Facebook Page.
+TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.6
+=========================================================
+Single-file bot: fetches worldwide trending + entertainment news (movies,
+music, TV, sports, celebs, gaming, viral moments, space, tech launches) from
+many free sources, scores it, writes a human-sounding post (English + optional
+Bengali companion), renders a designed 1080x1350 image card with impressive
+photography, and publishes to a Facebook Page.
 
-WHAT'S NEW IN v5.4 (topic variety + smarter crops + crash-safe automation)
+WHAT'S NEW IN v5.6 (worldwide entertainment pivot)
   CONTENT
-    * Hard daily topic diversity: max 2 posts per category per day and never
-      the same category back-to-back - the 4 daily posts cover 4 different
-      beats instead of 4 funding roundups (env: MAX_PER_CATEGORY_PER_DAY).
-    * Clickbait firewall: shout-words, punctuation spam and "you won't
-      believe" bait hooks now sink below clean newsroom headlines.
-    * Smart-tag safety net: LLM posts with zero hashtags get up to 2 clean
-      topical tags (category + company) for reach (env: SMART_TAGS).
+    * Scope pivot: Indian tech news -> GLOBAL trending & entertainment news.
+      All India-gate logic removed - the whole world is in play.
+    * New source lineup: Variety, THR, Deadline, Billboard, E! News, NME,
+      NY Post Ent, IndieWire, Guardian (culture/music/world/sport/tech),
+      BBC (news/sport), Space.com, NASA, IGN, GameSpot, PC Gamer, The Verge,
+      Bored Panda + Google News WORLD/ENTERTAINMENT/SPORTS/TECH topic feeds
+      and fresh when:Nd trending fan-out queries.
+    * 11 entertainment keyword categories (viral/movies/music/tv/celebs/
+      sports/gaming/space/tech/odd) + pop-culture entity table (Taylor
+      Swift, Messi, Marvel, Netflix, PlayStation, SpaceX...).
+    * EXPLICIT-CONTENT FIREWALL: every headline/description passes an NSFW
+      regex gate at fetch time; LLM output is validated again post-write;
+      prompts carry a strict family-friendly rule. No explicit content,
+      no graphic gore - ever.
   IMAGES
-    * Entropy-aware crop: edge energy decides which window of the photo
-      survives - faces, logos and skylines stay in frame instead of a blind
-      center + top-bias crop.
-    * Dynamic headline sizing: short punchy headlines render up to +14pt
-      (poster mode); long ones start smaller and wrap gracefully.
-    * Contrast-aware scrims: the scrim under the headline measures the actual
-      photo luminance there and adapts - bright photos get a stronger scrim,
-      dark photos keep breathing.
-  AUTOMATION
-    * Crash-safe by construction: the selected story's dedup key is marked
-      BEFORE the upload, so a mid-run timeout/kill/retry can never double-post.
-    * .run_ok completion sentinel: the workflow retries once ONLY on a real
-      crash (clean skips and clean failures are left alone).
-    * Engagement tracker (--insights + dedicated cron job): pulls reactions /
-      comments / shares for recent posts into state.json, logs a weekly
-      leaderboard and the best-performing IST hour.
-  Earlier: v5.3 (source-authority tiers, money-magnitude, SEO firewall,
-  India-gate, recap/social-aggregator penalties), v5.2 (6 layouts, stat
-  posters, photo anti-repeat, calmer Bengali), v5.1 (Groq model-line
-  migration), v5.0 (multi-source fan-out + scoring).
-  IMAGES carry-over
-    * 1080x1350 portrait cards, 6 rotating layouts; entity-aware Pexels
-      search, vividness-ranked multi-candidate pick, auto enhancement,
-      smart top-biased crop, cinematic scrims, category chip, auto-fit
-      headline, accent bar, source line, optional page handle.
-    * Designer fallback (duotone gradient + rotating motifs) when no photo.
-    * 2x supersampling + LANCZOS downscale for crisp text; UUID filenames.
+    * "Impressive photo" engine: curated cinematic query banks per beat
+      (concert lights, stadium floodlights, rocket launches, red carpets,
+      neon city, aurora), larger Pexels candidate pools (18/page, top 4
+      downloaded), landscape-friendly ranking so dramatic wide shots win,
+      and randomised cinematic modifiers so no two days look alike.
+  AUTOMATION (unchanged from v5.5)
+    * 4 posts/day IST cron, --engage comment-reply pass, --insights
+      tracker, crash-safe in-flight dedup, .run_ok sentinel.
+  Earlier: v5.5 (human-touch: hooks, engage mode, 8 layouts, grain),
+  v5.4 (diversity caps, crash-safe, insights), v5.3 (authority tiers,
+  money-magnitude, SEO firewall), v5.2 (6 layouts, stat posters),
+  v5.1 (Groq migration), v5.0 (multi-source fan-out).
   STATE
     * state.json persists dedup keys, rotation counters, Bengali daily cap.
       Syncs cadence + Bengali day-count from the Page itself as a backup.
@@ -57,6 +51,7 @@ USAGE
     python bot.py --no-image         # text-only post
     python bot.py --self-test        # offline checks + sample cards
     python bot.py --insights         # engagement stats -> state.json + leaderboard
+    python bot.py --engage           # reply to fresh comments + like a few
     python bot.py --verbose          # debug logging
 
 ENV / SECRETS  (Google Colab userdata OR environment; GitHub Actions secrets)
@@ -65,7 +60,7 @@ ENV / SECRETS  (Google Colab userdata OR environment; GitHub Actions secrets)
     GROQ_API_KEY, GEMINI_API_KEY          at least one required
     PEXELS_API_KEY                        strongly recommended (photo cards)
     GNEWS_API_KEY                         optional extra source
-    PAGE_HANDLE                           optional, e.g. "@indiatechdaily"
+    PAGE_HANDLE                           optional, e.g. "@trendingbuzz"
     POST_LINK_AS_FIRST_COMMENT            optional "true"/"false" (default false)
     MIN_ENGAGEMENT_SCORE_TO_POST          optional (default 9)
     BENGALI_PROBABILITY / BENGALI_MAX_PER_DAY / QUIET_HOURS / BOT_STATE_PATH
@@ -109,7 +104,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.5"
+VERSION = "5.6"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -215,52 +210,82 @@ def _duotone(img, dark=(12, 14, 24), light=(120, 200, 255)):
 # ==========================================================================
 # SCORING CONFIG - keyword rules (ALL word-boundary safe, case-insensitive)
 # ==========================================================================
+# v5.6: entertainment pivot. 11 beats - the categories the page now covers.
 # (category, points, regex)
 _KEYWORD_RULES = [
-    ("ipo", 6, r"\bIPOs?\b|\bDRHP\b|\bpublic issue\b|\bmarket debut\b|\bshare sale\b|\bgrey market premium\b|\blisting gains?\b|\bIPO subscription\b"),
-    ("ipo", 3, r"\blisting\b|\bgoing public\b|\bNYSE\b|\bNasdaq\b|\bNSE\b|\bBSE\b"),
-    ("ma", 6, r"\bacquir(?:e|es|ed|ing)?\b|\bacquisition\b|\btakeover\b|\bmerger\b|\bbuyout\b|\bdivest\w*\b|\bamalgamation\b"),
-    ("ma", 3, r"\bstake (?:in|sale|purchase|buyout)\b|\bbuys\b|\bbought\b"),   # v5.3: 'buys' only - bare 'buy' is shopping context
-    ("regulatory", 6, r"\bSEBI\b|\bRBI\b|\bCCI\b|\bEnforcement Directorate\b|\bPMLA\b|\bSFIO\b|\bIT raid\b|\bincome tax (?:raid|notice)\b|\bshow-?cause notice\b"),
-    ("regulatory", 4, r"\bban(?:s|ned|ning)?\b|\bfine(?:s|d)?\b|\bpenalt\w+\b|\bprobe\b|\bcrackdown\b|\binvestigat\w+\b|\bregulat\w+\b|\banti-?trust\b|\bfraud\b|\bscam\b|\bcheat\w*\b|\bviolat\w+\b"),
-    ("unicorn", 6, r"\bunicorns?\b|\bdecacorn\b|\bsoonicorn\b"),
-    ("unicorn", 4, r"\bbillion-?dollar (?:valuation|startup|company)\b"),
-    ("funding", 4, r"\brais(?:e|es|ed|ing)\b|\bfunding round\b|\bseed round\b|\bseries [a-g]\b(?: funding)?|\bpre-?series [a-g]\b|\bventure (?:funding|capital)\b|\bseed money\b|\bbridge round\b|\bdebt round\b"),
-    ("funding", 2, r"\bfund(?:s|ed|ing)?\b|\binvest(?:ment|or|ors)?\b|\bVCs?\b|\bangels?\b"),
-    ("layoffs", 5, r"\blayoff\w*\b|\bjob cuts?\b|\bsack(?:s|ed|ing)?\b|\bfired\b|\bdownsiz\w*\b|\brestructur\w*\b|\bresig\w+\b|\bstepping down\b|\bquit(?:s)?\b"),
-    ("record", 4, r"\brecord\b|\ball-?time (?:high|low)\b|\bcross(?:es|ed|ing)?\s+\d+\s+(?:crore|lakh|million|billion|mn|bn|cr|users?|subscribers?|customers?|downloads?)\b|\bmilestone\b|\bhighest ever\b|\bfirst-?ever\b"),
-    ("profit", 4, r"\bprofit(?:s|able)?\b|\bturn(?:s|ed)? (?:a )?profit\b|\bPAT\b|\bEBITDA\b|\bbreak-?even\b"),
-    ("profit", 2, r"\brevenue\b|\bloss(?:es)?\b|\bmargin\w*\b"),
-    ("ai", 3, r"\bAIs?\b|\bartificial intelligence\b|\bLLMs?\b|\bChatGPT\b|\bOpenAI\b|\bGPT-?\d\w*\b|\bGemini\b|\bClaude\b|\bgenerative AI\b|\bgen ?ai\b|\bcopilot\w*\b|\bmachine learning\b|\bdeep-?fake\w*\b|\bGPUs?\b"),
-    ("gadgets", 2, r"\bsmartphone\w*\b|\blaptops?\b|\bflagships?\b|\bwearable\w*\b|\be-?SIMs?\b|\bearbuds?\b|\btws\b|\bfoldable\w*\b|\btablets?\b"),
-    ("ev", 3, r"\belectric (?:scooter|vehicle|car|bike|two-?wheeler|three-?wheeler|SUV|bus)s?\b|\bEVs?\b|\bcharging station\w*\b|\be-?rickshaw\b|\be-?mobility\b"),
-    ("space", 4, r"\bISRO\b|\bChandrayaan\b|\bGaganyaan\b|\bAditya-?L1\b|\bNISAR\b|\brocket\w*\b|\bsatellite\w*\b|\blaunch vehicle\b|\bspace mission\b"),
-    ("cybersecurity", 4, r"\bhack\w*\b|\bcyber-?(?:attack\w*|crime\w*|security|fraud)\b|\bdata breach\w*\b|\bransomware\b|\bphishing\b|\bmalware\b|\bdata leak\w*\b"),
-    ("telecom", 3, r"\bJio\b|\bAirtel\b|\bBharti\b|\bVodafone Idea\b|\btelecom\b|\bspectrum\b|\bStarlink\b|\b5G\b|\b4G\b|\bBSNL\b|\btariff hike\b"),
-    ("fintech", 3, r"\bUPI\b|\bfintech\b|\bdigital payment\w*\b|\bRuPay\b|\bQR code\w*\b|\blending\b|\bNBFC\b|\bcredit card\w*\b|\bloan app\w*\b|\binsurtech\b|\bbroking\b|\bmutual fund\w*\b"),
-    ("ecommerce", 2, r"\be-?commerce\b|\bquick commerce\b|\b10-?minute delivery\b|\bflash sale\b|\bBig Billion Days\b|\bGreat Indian (?:Festival|Sale)\b|\bdark store\w*\b|\bonline shopping\b"),
+    # ---- VIRAL (the page's identity beat - what's blowing up right now)
+    ("viral", 6, r"\b(?:gone viral|goes viral|viral video|viral clip|breaking the internet|internet by storm|millions of views|trending (?:now|worldwide|everywhere|globally)|most-?(?:watched|shared|liked|streamed))\b"),
+    ("viral", 3, r"\b(?:blowing up|took over the internet|everyone is (?:talking|posting) about|no one saw (?:this|it) coming|watched [\d,.]+ (?:million|billion|mn|bn) times)\b"),
+    # ---- MOVIES
+    ("movies", 5, r"\b(?:box office|opening weekend|movie|movies|film|films|sequel|prequel|trailer|teaser|premiere|screening|cinema|cinemas)\b"),
+    ("movies", 4, r"\b(?:Oscars?|Academy Award\w*|film festival|Cannes|Venice|Sundance|director|franchise|casting|cast|IMAX|superhero|blockbuster|Bollywood|Hollywood|no-?one opener|post-?credit)\b"),
+    # ---- MUSIC
+    ("music", 5, r"\b(?:album|world tour|stadium tour|concert|live show|Grammys?|Grammy|Billboard (?:chart|Hot 100|200)|tops? the chart\w*|debut\w* at (?:no\.?|number) ?[0-9]|number-?one)\b"),
+    ("music", 3, r"\b(?:singer|rapper|band|K-?pop|setlist|headline\w* (?:show|festival|slot)|sold-?out|encore|vinyl|single drop\w*|chart debut)\b"),
+    # ---- TV & STREAMING
+    ("tv", 4, r"\b(?:series|season (?:finale|premiere)|show renewed|cancell?ed|Netflix|HBO|Prime Video|Disney\+|Apple TV\+|Hulu|episode|episodes|binge-?watch\w*|streaming (?:debut|hit|record|rights)|reality show|docuseries|season [0-9])\b"),
+    # ---- CELEBS (clean celebrity news only - the NSFW firewall runs upstream)
+    ("celebs", 4, r"\b(?:celebrit\w+|red carpet|breaks? (?:her|his|their) silence|split|divorce|engaged|wedding|baby (?:news|announcement)|Met Gala|power couple|breakup|announces? pregnancy)\b"),
+    ("celebs", 2, r"\b(?:actor|actors|actress\w*|superstar|pop star|rock star|movie star|influencer|rapper'\w*)\b"),
+    # ---- SPORTS
+    ("sports", 5, r"\b(?:champion|champions|championship|World Cup|Olympics?|Olympic|Grand Slam|finals?|hat-?trick|world record|title (?:win|defense|race|clinch)|trophy|gold medal|record-?breaking|Super Bowl|playoffs?)\b"),
+    ("sports", 3, r"\b(?:goal|goals|touchdown|home run|pole position|transfer (?:saga|fee|window|news)|cricket|football|tennis|basketball|F1|Formula 1|NBA|NFL|UFC|WWE|IPL|Premier League|Champions League|La Liga|test match)\b"),
+    # ---- GAMING
+    ("gaming", 4, r"\b(?:PlayStation[45]?|Xbox|Nintendo|Switch 2|Steam|speedrun|esports?|game (?:launch|release|trailer)|console|patch notes|early access|open beta|video game\w*)\b"),
+    ("gaming", 3, r"\b(?:Minecraft|Fortnite|Roblox|Valorant|Call of Duty|Grand Theft Auto|Cyberpunk|Baldur'?s Gate|Zelda|Mario|gameplay reveal|director\??\'?s cut)\b"),
+    # ---- SPACE (impressive, uplifting, endlessly shareable)
+    ("space", 4, r"\b(?:NASA|SpaceX|rocket|rockets|satellite|satellites|spacewalk|moon|lunar|Mars|asteroid|space station|space mission|ISRO|Chandrayaan|liftoff|spacecraft|space telescope|space launch|astronaut\w*)\b"),
+    # ---- TECH (launches, gadgets, AI - the fun side, not the finance side)
+    ("tech", 3, r"\b(?:iPhone|Galaxy S[0-9]|foldable|launch event|unveil\w*|OpenAI|ChatGPT|Gemini|robot|robots|drone\w*|MacBook|Apple (?:Watch|Vision)|wearable\w*|AI model|self-?driving|Cybertruck|smart glasses)\b"),
+    # ---- ODD / WOW (world records & bizarre-but-clean)
+    ("odd", 4, r"\b(?:Guinness World Record|world-?record attempt|bizarre|unusual|weird|strange|oddly satisfying|one in a (?:million|billion)|record attempt|world'?s (?:fastest|tallest|longest|biggest|smallest))\b"),
 ]
 
 # (regex, penalty) - penalties applied once per rule unless the penalty is
 # small (1), in which case each match costs 1 point, capped at 3.
+# v5.6: entertainment is CORE now - the old cricket/Bollywood/box-office
+# penalties are gone. Ads, SEO farms, horoscopes and clickbait still die.
 _NEGATIVE_RULES = [
     (r"\bsponsored\b|\badvertorial\b|\baffiliate\b|\bcoupon\w*\b|\bpromo code\w*\b|\bdiscount\w*\b|\bbest deals?\b|\bdeals of the day\b|\bsale alert\b", 5),
     (r"\bhiring\b|\bjob (?:openings?|listings?|fair)\b|\bwalk-?in\b|\bcareers?\b", 8),
-    (r"\bhoroscope\b|\bastrolog\w*\b|\bcricket\b|\bBollywood\b|\bIPL\b|\bbox office\b|\bentertainment\b|\brecipes?\b", 9),
-    (r"\breportedly\b|\balleged\w*\b|\brumou?r\w*\b|\bleak\w*\b|\bmight\b|\bexpected to\b|\bplanning to\b|\bslated to\b|\bin talks\b|\bunconfirmed\b", 1),
-    # v5.3: SEO/listicle firewall - evergreen deal filler, not news
-    (r"\b(?:top|best|worst|cheapest|coolest)\s+\d+\w*\b|\b\d+\s+(?:best|top|must-?haves?)\b|\bunder\s?\u20b9\s?\d[\d,.]*\b|\bbuying guide\b|\bhow to (?:choose|buy|pick|get)\b|\bfull specs?\b|\bunboxing\b|\breview roundup\b|\bprice list\b|\bcoupon codes?\b|\b(?:deal|offer) alert\b", 9),
+    (r"\bhoroscope\b|\bastrolog\w*\b|\brecipes?\b|\bskincare\b|\bmakeup tutorial\w*\b|\bfashion tips\b|\bworkout plan\b|\bdiet plan\b|\brelationship advice\b", 9),
+    # v5.6: lighter than v5.3 - entertainment journalism legitimately leans on
+    # 'reportedly'. Still nudges confirmed news above blind items.
+    (r"\breportedly\b|\balleged\w*\b|\brumou?r\w*\b|\bmight\b|\bexpected to\b|\bplanning to\b|\bslated to\b|\bin talks\b|\bunconfirmed\b", 1),
+    # v5.3: SEO/listicle firewall - evergreen filler, not news
+    (r"\b(?:top|best|worst|cheapest|coolest)\s+\d+\w*\b|\b\d+\s+(?:best|top|must-?haves?|movies|shows|songs|games)\b|\bunder\s?\u20b9\s?\d[\d,.]*\b|\bbuying guide\b|\bhow to (?:choose|buy|pick|get)\b|\bfull specs?\b|\bunboxing\b|\breview roundup\b|\bprice list\b|\bcoupon codes?\b|\b(?:deal|offer) alert\b|\branked\b", 9),
     # v5.3: digests / roundups / newsletters - yesterday's news sandwiches
-    (r"\b(?:roundup|wrap-?up|digest|recap|week in review|this week in tech|top stories of the week|stories of the week|morning brief|newsletter)\b", 5),
+    (r"\b(?:roundup|wrap-?up|digest|recap|week in review|this week in (?:tech|entertainment|music|gaming)|top stories of the week|stories of the week|morning brief|newsletter)\b", 5),
     # v5.3.1: date-range recap series ("Between June 01 and June 06, as many
     # as 18 Indian startups raised..." / "...raised $1.08 Bn from June 22 to
-    # June 27" - Inc42 weekly tracker in sentence form)
+    # June 27" - weekly tracker in sentence form)
     (r"\b(?:Between|from)\s+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{1,2}\s+(?:and|to)\s+", 6),
-    # v5.3.1: hashtag video-clip headlines ("#WATCH | ...") - link posts, not stories
+    # v5.3: hashtag video-clip headlines ("#WATCH | ...") - link posts, not stories
     (r"\#(?:WATCH|VIDEO|LIVE|LIVETV)\s*[|\u00bb:\-]?", 3),
-    # v5.3: viral-bait headlines
-    (r"\b(?:gone viral|goes viral|viral video|you won'?t believe|this one trick|shocking(?:ly)?|jaw-?dropping|mind-?blowing|unmissable|breaking the internet|internet by storm)\b", 6),
+    # v5.4: clickbait firewall (kept in v5.6 - fun page, not a sleaze page;
+    # note the viral terms moved OUT to the positive side)
+    (r"\byou won'?t believe\b|\bthis one trick\b|\bdoctors hate\b|\bshocking(?:ly)?\b|\bjaw-?dropping\b|\bmind-?blowing\b|\bunmissable\b|\bclick here\b|\bwatch before\b|\bwhat happens next\b", 6),
+    # v5.6: routine party politics ranks below entertainment (fun-first page;
+    # only a massively corroborated political moment still clears the bar)
+    (r"\b(?:white house|election\w*|senate|senator|parliament|impeach\w*|ballot\w*|voters?|campaign rally|president (?:trump|biden|modi|putin)|donald trump|prime minister narendra modi)\b", 4),
 ]
+
+# v5.6: EXPLICIT-CONTENT FIREWALL - the page is family-friendly entertainment.
+# Hard-rejected at fetch time (title+description), again on LLM output, and the
+# image queries are curated safe banks (never derived from raw headline text).
+_EXPLICIT_RE = re.compile(
+    r"\b(?:porn\w*|xxx|x-?rated|nudes?|naked|nudity|topless|bottomless|onlyfans|"
+    r"playboy|stripper\w*|escort (?:service|girl)|brothel\w*|orgy|orgies|threesome|"
+    r"nsfw|penis\w*|vagina\w*|genital\w*|hardcore|fetish\w*|bdsm|erotic\w*|obscene|"
+    r"sexting|sex (?:tape|scene|ual content|ual assault)|(?:sexual|indecent) assault|"
+    r"molest\w*|rap(?:e|ed|ing)\b|behead\w*|decapitat\w*|dismember\w*|disembowel\w*|"
+    r"snuff film|gore|gory (?:video|images?|footage)|graphic (?:footage|images?))\b",
+    re.I)
+
+
+def _is_explicit(text: str) -> bool:
+    """True if title/description/caption trips the NSFW or graphic-gore gate."""
+    return bool(_EXPLICIT_RE.search(text or ""))
 
 _MONEY_RE = re.compile(
     r"(?:\u20b9|Rs\.?|INR)\s?\d[\d,.]*\s?(?:crore|crores|cr\b|lakh|lakhs|billion|bn\b|million|mn\b)?"
@@ -270,37 +295,44 @@ _MONEY_RE = re.compile(
     re.I,
 )
 
-# v5.3: source-authority tiers - the SAME story from a Tier-1 outlet beats
-# an SEO gadget blog. Matched by substring on the article domain.
+# v5.6: source-authority tiers for the entertainment world - the SAME story
+# from a Tier-1 outlet beats a gossip blog. Matched by substring on the domain.
 _DOMAIN_AUTHORITY = {
-    # tier 1: India's business/tech incumbents
-    "economictimes.indiatimes.com": 2.5,
-    "moneycontrol.com": 2.5,
-    "livemint.com": 2.5,
-    "timesofindia.indiatimes.com": 2.0,
-    "business-standard.com": 2.2,
-    "hindubusinessline.com": 1.8,
-    # tier 2: specialist tech/startup/business outlets
-    "inc42.com": 2.0,
-    "yourstory.com": 1.8,
-    "vccircle.com": 1.8,
-    "gadgets.ndtv.com": 1.6,
-    "ndtv.com": 1.8,
-    "cnbctv18.com": 1.8,
-    "businesstoday.in": 1.6,
-    "hindustantimes.com": 1.4,
-    "indianexpress.com": 1.4,
-    "thehindu.com": 1.4,
-    "news18.com": 1.2,
-    "techcrunch.com": 1.2,
+    # tier 1: global wires + the entertainment trades
+    "apnews.com": 2.6, "reuters.com": 2.6, "nasa.gov": 2.6,
+    "bbc.com": 2.5, "bbci.co.uk": 2.5, "theguardian.com": 2.5,
+    "variety.com": 2.5, "hollywoodreporter.com": 2.5, "deadline.com": 2.4,
+    "nytimes.com": 2.4, "espn.com": 2.4,
+    # tier 2: trusted specialists
+    "billboard.com": 2.2, "rollingstone.com": 2.2, "news.sky.com": 2.2,
+    "skysports.com": 2.2, "washingtonpost.com": 2.2, "cnn.com": 2.2,
+    "indiewire.com": 2.0, "ign.com": 2.0, "gamespot.com": 1.8,
+    "pcgamer.com": 1.8, "polygon.com": 1.8, "eurogamer.net": 1.8,
+    "space.com": 2.0, "nme.com": 1.8, "pitchfork.com": 1.8,
+    "arstechnica.com": 1.8, "theverge.com": 2.0, "wired.com": 1.8,
+    "nbcnews.com": 2.0, "abcnews.go.com": 2.0, "cbsnews.com": 2.0,
+    "ew.com": 1.8, "people.com": 1.8, "etonline.com": 1.6,
+    "espncricinfo.com": 2.0, "cricbuzz.com": 1.6, "bleacherreport.com": 1.4,
+    "independent.co.uk": 1.6, "usatoday.com": 1.6, "dw.com": 2.0,
+    "aljazeera.com": 2.0, "france24.com": 1.8, "scmp.com": 1.6,
+    # India (Bollywood/cricket stories legitimately surface here)
+    "timesofindia.indiatimes.com": 1.6, "ndtv.com": 1.8, "economictimes.indiatimes.com": 1.6,
+    "hindustantimes.com": 1.4, "indianexpress.com": 1.4, "news18.com": 1.2,
+    "dnaindia.com": 1.0,
+    # gossip tier - real stories, weaker sourcing
+    "tmz.com": 1.2, "pagesix.com": 1.2, "usmagazine.com": 1.2,
+    "dailymail.co.uk": 0.6,
+    "thesun.co.uk": 0.6, "the-sun.com": 0.6, "mirror.co.uk": 0.6,
     # penalised: gadget-deal / SEO farms (listicles, coupons, price pages)
     "gadgetsnow.com": -1.5, "91mobiles.com": -2.0, "mysmartprice.com": -2.0,
     "smartprix.com": -2.0, "pricebaba.com": -1.5, "gizbot.com": -1.5,
     "fonearena.com": -1.0, "cashify.in": -1.5, "phonearena.com": -1.0,
     # v5.3.1: social-media aggregators are not publications - weak sourcing,
-    # and they must not masquerade as corroboration for the India gate
+    # and they must not masquerade as corroboration
     "linkedin": -2.5, "instagram": -2.5, "facebook": -2.5, "twitter": -2.5,
     "x.com": -2.5, "youtube": -2.5, "reddit": -2.5, "medium": -1.0,
+    # viral aggregators - fine as a source of ideas, weak as a citation
+    "boredpanda.com": 0.8, "unilad.com": 0.5, "ladbible.com": 0.5,
 }
 
 _AUTHORITY_LOOKUP = sorted(_DOMAIN_AUTHORITY.items(), key=lambda kv: -len(kv[0]))
@@ -329,275 +361,299 @@ def _domain_authority(domain: str) -> float:
 
 
 # category used for the chip label / image theme when several match
+# v5.6: gaming before movies - a GTA/PlayStation trailer is a GAMING story even
+# though 'trailer' is a movie word (games carry game-specific keywords too).
 _CATEGORY_PRIORITY = [
-    "regulatory", "ipo", "ma", "unicorn", "space", "cybersecurity", "layoffs",
-    "funding", "fintech", "ev", "telecom", "ai", "ecommerce", "record",
-    "profit", "gadgets", "general",
+    "viral", "gaming", "movies", "music", "sports", "tv", "celebs",
+    "space", "tech", "odd", "general",
 ]
 
-# company / entity table: name -> (points, category hint)
+# v5.6: pop-culture entity table: name -> (points, category hint)
 _ENTITIES = {
-    # conglomerates & IT majors
-    "reliance jio": (5, "telecom"), "reliance": (4, "general"), "ambani": (4, "general"),
-    "tata digital": (5, "ecommerce"), "tata neu": (5, "ecommerce"), "tata": (3, "general"),
-    "adani": (4, "general"),
-    "infosys": (4, "general"), "tcs": (4, "general"), "wipro": (4, "general"),
-    "hcltech": (4, "general"), "hcl tech": (4, "general"), "tech mahindra": (4, "general"),
-    "ltimindtree": (3, "general"), "zoho": (4, "general"), "freshworks": (4, "general"),
-    "browserstack": (3, "general"), "postman": (3, "general"),
-    # e-commerce & food delivery
-    "flipkart": (5, "ecommerce"), "amazon india": (4, "ecommerce"), "amazon": (3, "ecommerce"),
-    "zomato": (5, "ecommerce"), "swiggy": (5, "ecommerce"), "zepto": (5, "ecommerce"),
-    "blinkit": (4, "ecommerce"), "instamart": (3, "ecommerce"), "bigbasket": (3, "ecommerce"),
-    "meesho": (4, "ecommerce"), "myntra": (3, "ecommerce"), "nykaa": (4, "ecommerce"),
-    "delhivery": (3, "ecommerce"), "shiprocket": (3, "ecommerce"),
-    # fintech
-    "paytm": (5, "fintech"), "phonepe": (5, "fintech"), "bharatpe": (4, "fintech"),
-    "razorpay": (4, "fintech"), "cashfree": (3, "fintech"), "payu": (3, "fintech"),
-    "cred": (4, "fintech"), "mobikwik": (4, "fintech"), "groww": (4, "fintech"),
-    "zerodha": (4, "fintech"), "upstox": (3, "fintech"), "angel one": (3, "fintech"),
-    "policybazaar": (3, "fintech"), "google pay": (3, "fintech"),
-    # edtech
-    "byju's": (4, "general"), "byju": (4, "general"), "byjus": (4, "general"),
-    "unacademy": (3, "general"), "physics wallah": (3, "general"), "upgrad": (3, "general"),
-    # mobility & EV
-    "ola electric": (5, "ev"), "ather": (4, "ev"), "tata motors": (3, "ev"),
-    "mahindra": (3, "ev"), "hyundai india": (3, "ev"), "rapido": (3, "general"),
-    "uber india": (3, "general"), "namma yatri": (3, "general"), "yulu": (3, "ev"),
-    # telecom & space
-    "airtel": (4, "telecom"), "bharti airtel": (5, "telecom"),
-    "vodafone idea": (4, "telecom"), "bsnl": (3, "telecom"),
-    "starlink": (4, "telecom"), "oneweb": (3, "telecom"),
-    "isro": (5, "space"), "chandrayaan": (5, "space"), "gaganyaan": (5, "space"), "nisar": (4, "space"),
-    # global majors with an India angle
-    "apple": (3, "gadgets"), "google": (3, "ai"), "microsoft": (3, "ai"),
-    "openai": (4, "ai"), "nvidia": (4, "ai"), "tesla": (4, "ev"),
-    "samsung": (3, "gadgets"), "xiaomi": (3, "gadgets"), "oneplus": (3, "gadgets"),
-    "vivo": (3, "gadgets"), "oppo": (3, "gadgets"), "realme": (3, "gadgets"),
-    "nothing phone": (3, "gadgets"), "motorola": (3, "gadgets"),
-    "meta": (3, "ai"), "whatsapp": (3, "general"), "youtube": (3, "general"),
-    # travel, gaming, health
-    "oyo": (4, "general"), "makemytrip": (3, "general"), "ixigo": (3, "general"),
-    "dream11": (4, "general"), "nazara": (3, "general"),
-    "pharmeasy": (3, "general"), "practo": (3, "general"),
+    # streaming / studios
+    "netflix": (5, "tv"), "disney+": (5, "tv"), "disney": (4, "movies"),
+    "hbo": (4, "tv"), "max": (3, "tv"), "prime video": (4, "tv"),
+    "apple tv": (4, "tv"), "hulu": (3, "tv"), "marvel": (4, "movies"),
+    "dc studios": (4, "movies"), "star wars": (4, "movies"),
+    "warner bros": (4, "movies"), "paramount": (3, "movies"),
+    "stranger things": (5, "tv"), "squid game": (5, "tv"),
+    "avatar": (3, "movies"), "james bond": (4, "movies"),
+    "mission impossible": (3, "movies"), "spider-man": (4, "movies"),
+    "avengers": (5, "movies"), "barbie": (3, "movies"),
+    # music
+    "taylor swift": (5, "music"), "beyonce": (5, "music"), "beyoncé": (5, "music"),
+    "drake": (4, "music"), "bad bunny": (4, "music"), "bts": (4, "music"),
+    "blackpink": (4, "music"), "k-pop": (3, "music"), "coldplay": (4, "music"),
+    "bruno mars": (4, "music"), "the weeknd": (4, "music"), "weeknd": (4, "music"),
+    "lady gaga": (4, "music"), "billie eilish": (4, "music"),
+    "sabrina carpenter": (3, "music"), "ariana grande": (4, "music"),
+    "rihanna": (4, "music"), "adele": (4, "music"), "eminem": (4, "music"),
+    "spotify": (4, "music"), "coachella": (4, "music"),
+    "grammy": (5, "music"), "grammys": (5, "music"),
+    "oscar": (5, "movies"), "oscars": (5, "movies"), "academy awards": (5, "movies"),
+    "emmy": (5, "tv"), "emmys": (5, "tv"), "golden globe": (4, "movies"),
+    "met gala": (4, "celebs"), "cannes": (4, "movies"),
+    # sports
+    "messi": (5, "sports"), "lionel messi": (5, "sports"),
+    "cristiano ronaldo": (5, "sports"), "ronaldo": (5, "sports"),
+    "neymar": (4, "sports"), "mbappe": (4, "sports"), "mbapp\u00e9": (4, "sports"),
+    "virat kohli": (5, "sports"), "ms dhoni": (4, "sports"), "rohit sharma": (3, "sports"),
+    "neeraj chopra": (4, "sports"), "ipl": (4, "sports"),
+    "world cup": (5, "sports"), "champions league": (4, "sports"),
+    "premier league": (4, "sports"), "super bowl": (5, "sports"),
+    "olympics": (4, "sports"), "formula 1": (4, "sports"), "f1": (3, "sports"),
+    "max verstappen": (4, "sports"), "lewis hamilton": (4, "sports"),
+    "wwe": (4, "sports"), "ufc": (4, "sports"), "wimbledon": (4, "sports"),
+    "cricket world cup": (5, "sports"), "ipl auction": (5, "sports"),
+    # gaming
+    "playstation": (4, "gaming"), "xbox": (4, "gaming"), "nintendo": (4, "gaming"),
+    "nintendo switch": (5, "gaming"), "steam": (3, "gaming"),
+    "grand theft auto": (4, "gaming"), "gta": (3, "gaming"),
+    "minecraft": (3, "gaming"), "fortnite": (3, "gaming"),
+    "roblox": (3, "gaming"), "valorant": (2, "gaming"),
+    "call of duty": (3, "gaming"), "nintendo switch 2": (5, "gaming"),
+    # space & tech
+    "nasa": (4, "space"), "spacex": (5, "space"), "isro": (4, "space"),
+    "chandrayaan": (5, "space"), "artemis": (4, "space"), "james webb": (4, "space"),
+    "elon musk": (4, "tech"), "apple": (3, "tech"), "iphone": (4, "tech"),
+    "samsung": (3, "tech"), "openai": (4, "tech"), "chatgpt": (4, "tech"),
+    "google": (3, "tech"), "nvidia": (3, "tech"), "tesla": (4, "tech"),
+    "meta": (3, "tech"), "youtube": (3, "tv"),
+    # celebs (world + India)
+    "kim kardashian": (4, "celebs"), "tom cruise": (3, "celebs"),
+    "shah rukh khan": (5, "celebs"), "salman khan": (4, "celebs"),
+    "deepika padukone": (4, "celebs"), "priyanka chopra": (4, "celebs"),
+    "ranbir kapoor": (3, "celebs"), "alia bhatt": (3, "celebs"),
+    "prince harry": (3, "celebs"), "meghan": (3, "celebs"),
+    "king charles": (4, "celebs"), "kate middleton": (4, "celebs"),
+    "royal family": (4, "celebs"),
 }
 
 # ==========================================================================
 # NEWS SOURCES
 # ==========================================================================
+# v5.6: worldwide entertainment + trending sources. Every URL live-probed.
+# Movies/TV/music/celebs carry the feed; world/space/gaming/tech keep it broad.
 RSS_FEEDS = [
-    ("ET Tech", "https://economictimes.indiatimes.com/tech/rssfeeds/13357270.cms"),
-    ("ET Tech Top", "https://tech.economictimes.indiatimes.com/rss/topstories"),
-    ("ET Startups", "https://economictimes.indiatimes.com/rssfeeds/2094568912.cms"),
-    ("TOI Tech", "https://timesofindia.indiatimes.com/rssfeeds/66949542.cms"),
-    ("Gadgets360", "https://gadgets.ndtv.com/rss/news"),
-    ("YourStory", "https://yourstory.com/feed"),
-    ("Inc42", "https://inc42.com/feed/"),
-    ("Moneycontrol Tech", "https://www.moneycontrol.com/rss/technology.xml"),
-    ("Livemint Tech", "https://www.livemint.com/rss/technology"),
-    ("News18 Tech", "https://www.news18.com/rss/tech.xml"),
-    ("Business Standard Tech", "https://www.business-standard.com/rss/technology-102.rss"),
-    ("VCCircle", "https://www.vccircle.com/feed"),
+    # movies, tv, awards
+    ("Variety", "https://variety.com/feed/"),
+    ("HollywoodReporter", "https://www.hollywoodreporter.com/feed/"),
+    ("Deadline", "https://deadline.com/feed/"),
+    ("IndieWire", "https://www.indiewire.com/feed/"),
+    # music
+    ("Billboard", "https://www.billboard.com/feed/"),
+    ("NME", "https://www.nme.com/feed"),
+    ("Guardian Music", "https://www.theguardian.com/music/rss"),
+    # celebs / pop culture
+    ("E! News", "https://eonline.com/feed"),
+    ("NYPost Ent", "https://nypost.com/entertainment/feed/"),
+    ("TOI Entertainment", "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms"),
+    # sports
+    ("BBC Sport", "https://feeds.bbci.co.uk/sport/rss.xml"),
+    ("Guardian Sport", "https://www.theguardian.com/sport/rss"),
+    # world news
+    ("BBC News", "https://feeds.bbci.co.uk/news/rss.xml"),
+    ("Guardian World", "https://www.theguardian.com/world/rss"),
+    ("Guardian Culture", "https://www.theguardian.com/culture/rss"),
+    # space (the most impressive photos on the internet)
+    ("Space.com", "https://www.space.com/feeds/all"),
+    ("NASA", "https://www.nasa.gov/news-release/feed/"),
+    # gaming
+    ("IGN", "https://feeds.ign.com/ign/all"),
+    ("GameSpot", "https://www.gamespot.com/feeds/news/"),
+    ("PC Gamer", "https://www.pcgamer.com/rss/"),
+    # tech (launches & gadgets - the fun side)
+    ("The Verge", "https://www.theverge.com/rss/index.xml"),
+    ("Guardian Tech", "https://www.theguardian.com/uk/technology/rss"),
+    # viral / odd / wow
+    ("Bored Panda", "https://www.boredpanda.com/feed/"),
 ]
 
-# free, fresh, no API key - the workhorse for targeted topic fan-out
+# free, fresh, no API key - the workhorse for trending topic fan-out.
+# v5.6: when:Nd recency windows keep every query fresh + worldwide edition.
 GOOGLE_NEWS_QUERIES = [
-    "India startup funding",
-    "India tech IPO",
-    "Indian startup unicorn",
-    "India technology acquisition merger",
-    "India AI artificial intelligence",
-    "Indian tech company SEBI RBI",
-    # v5.3: extra targeted fan-out
-    "India semiconductor chip fab",
-    "India tech layoffs",
+    "viral when:2d",
+    "\"trending\" when:1d",
+    "\"box office\" when:3d",
+    "gaming when:2d",
+    "\"world record\" when:3d",
+    "\"breaks silence\" OR \"red carpet\" when:2d",
+    "trailer OR teaser when:2d",
+    "Grammy OR Oscar OR Emmy when:3d",
 ]
 
 # Bengali-language Google News queries (companion-post grounding + previews)
-GOOGLE_NEWS_BN_QUERIES = ["প্রযুক্তি ভারত", "ভারতীয় স্টার্টআপ", "আইপিও ভারত", "কৃত্রিম বুদ্ধিমত্তা"]
+GOOGLE_NEWS_BN_QUERIES = ["বিনোদন", "ভাইরাল ভিডিও", "সিনেমা", "ক্রিকেট"]
 
-# v5.3: Google News India-edition topic feeds - these ARE the top-rated
-# stories; joining the fan-out lets corroboration promote real big news.
+# v5.6: Google News US-edition topic feeds - these ARE the top-rated stories
+# worldwide; joining the fan-out lets corroboration promote real big news.
 GOOGLE_NEWS_TOPIC_FEEDS = [
-    ("GoogleNews Business", "https://news.google.com/rss/headlines/topic/BUSINESS?hl=en-IN&gl=IN&ceid=IN:en"),
-    ("GoogleNews Technology", "https://news.google.com/rss/headlines/topic/TECHNOLOGY?hl=en-IN&gl=IN&ceid=IN:en"),
+    ("GoogleNews World", "https://news.google.com/rss/headlines/topic/WORLD?hl=en-US&gl=US&ceid=US:en"),
+    ("GoogleNews Entertainment", "https://news.google.com/rss/headlines/topic/ENTERTAINMENT?hl=en-US&gl=US&ceid=US:en"),
+    ("GoogleNews Sports", "https://news.google.com/rss/headlines/topic/SPORTS?hl=en-US&gl=US&ceid=US:en"),
+    ("GoogleNews Technology", "https://news.google.com/rss/headlines/topic/TECHNOLOGY?hl=en-US&gl=US&ceid=US:en"),
 ]
 
 NEWSAPI_EVERYTHING_QUERIES = [
-    "India startup funding raise",
-    "India IPO DRHP listing",
-    "India tech acquisition",
-    "India AI artificial intelligence",
+    "viral video",
+    "box office record",
+    "world record",
+    "celebrity news",
+    "trending now",
 ]
 
 # ==========================================================================
 # IMAGE CONFIG
 # ==========================================================================
 ENTITY_VISUAL_HINTS = {
-    # food & quick commerce
-    "zomato": "food delivery rider bike city street",
-    "swiggy": "food delivery rider bag bike street",
-    "zepto": "delivery rider bike grocery bag city",
-    "blinkit": "grocery delivery rider bike city",
-    "instamart": "grocery delivery rider bike",
-    "bigbasket": "grocery boxes delivery doorstep",
-    # e-commerce
-    "flipkart": "warehouse workers parcels boxes",
-    "amazon": "delivery parcels boxes warehouse",
-    "meesho": "online shopping packages delivery home",
-    "myntra": "fashion clothes shopping store rack",
-    "nykaa": "cosmetics beauty products flatlay",
-    "delhivery": "delivery van boxes logistics",
-    "shiprocket": "parcel boxes courier",
-    # fintech
-    "paytm": "person paying smartphone qr code shop",
-    "phonepe": "person scanning qr code payment phone",
-    "google pay": "person paying smartphone shop counter",
-    "bharatpe": "shopkeeper qr code payment counter",
-    "razorpay": "digital payment laptop credit card",
-    "cred": "credit cards minimal table",
-    "mobikwik": "mobile wallet payment phone",
-    "groww": "stock market chart phone screen",
-    "zerodha": "stock trading chart screens",
-    "upstox": "stock chart phone screen",
-    "angel one": "stock trading phone screen chart",
-    "policybazaar": "insurance documents signing",
-    "payu": "online payment laptop card",
-    "cashfree": "digital payment phone hand card",
-    # edtech
-    "byju's": "student studying laptop home",
-    "byju": "student studying laptop home",
-    "byjus": "student studying laptop home",
-    "unacademy": "student online class laptop",
-    "physics wallah": "teacher online class whiteboard",
-    "upgrad": "professional studying laptop office",
-    # mobility & EV
-    "ola electric": "electric scooter city street",
-    "ather": "electric scooter charging plug",
-    "tata motors": "car factory assembly line",
-    "mahindra": "suv car showroom",
-    "rapido": "bike taxi rider helmet street",
-    "uber": "car ride city street night",
-    "namma yatri": "auto rickshaw driver street",
-    "yulu": "bicycle sharing city street",
-    # IT & software
-    "infosys": "modern office campus glass building",
-    "tcs": "corporate office building glass",
-    "wipro": "modern office lobby",
-    "hcltech": "software engineers office computers",
-    "hcl tech": "software engineers office computers",
-    "tech mahindra": "office workers meeting room",
-    "ltimindtree": "modern office workspace",
-    "zoho": "startup office team working",
-    "freshworks": "software team office laptops",
-    # telecom
-    "jio": "person using smartphone city street",
-    "airtel": "telecom tower sunset sky",
-    "bharti airtel": "telecom tower sunset sky",
-    "vodafone idea": "telecom antenna city skyline",
-    "bsnl": "telephone cables street",
-    "starlink": "satellite dish night sky",
-    "oneweb": "satellite orbit earth",
+    # streaming / movies
+    "netflix": "cinema screen dark room glow",
+    "disney": "movie theater audience silhouette",
+    "disney+": "living room tv night popcorn",
+    "marvel": "superhero silhouette city night",
+    "star wars": "star wars lights silhouette",
+    "avengers": "superhero silhouette city night",
+    "spider-man": "city skyline dusk dramatic",
+    "james bond": "sports car night city lights",
+    "hollywood": "hollywood sign los angeles dusk",
+    "bollywood": "indian film dance colorful stage",
+    "avatar": "3d cinema glasses dark",
+    "imax": "imax cinema huge screen",
+    # music
+    "taylor swift": "stadium concert lights crowd",
+    "beyonce": "concert stage spotlight silhouette",
+    "beyoncé": "concert stage spotlight silhouette",
+    "coldplay": "concert confetti stadium lights",
+    "drake": "hip hop concert crowd hands",
+    "bts": "kpop concert lightsticks crowd",
+    "blackpink": "kpop stage neon lights",
+    "k-pop": "kpop concert lightsticks crowd",
+    "concert": "concert crowd hands silhouette",
+    "spotify": "headphones music neon lights",
+    "coachella": "music festival sunset crowd",
+    "grammy": "gold gramophone trophy spotlight",
+    "grammys": "gold gramophone trophy spotlight",
+    "festival": "music festival crowd sunset",
+    # celebs & events
+    "red carpet": "red carpet photographers flashes night",
+    "oscars": "oscars red carpet flashbulbs",
+    "oscar": "oscars red carpet flashbulbs",
+    "academy awards": "awards ceremony stage spotlight gold",
+    "met gala": "met gala red carpet flashes",
+    "cannes": "cannes red carpet photographers",
+    # sports
+    "messi": "soccer stadium night floodlights",
+    "lionel messi": "soccer stadium night floodlights",
+    "ronaldo": "soccer stadium night floodlights",
+    "cristiano ronaldo": "soccer stadium night floodlights",
+    "world cup": "soccer world cup trophy confetti",
+    "cricket world cup": "cricket stadium floodlights night",
+    "cricket": "cricket stadium floodlights night",
+    "ipl": "cricket stadium floodlights crowd",
+    "virat kohli": "cricket stadium crowd celebration",
+    "champions league": "soccer trophy confetti celebration",
+    "premier league": "soccer stadium packed crowd",
+    "super bowl": "super bowl stadium lights halftime",
+    "olympics": "olympic stadium opening ceremony",
+    "wimbledon": "tennis court grass sunset",
+    "wwe": "wrestling arena lights crowd",
+    "ufc": "fight arena octagon lights",
+    "formula 1": "f1 race cars night speed",
+    "f1": "f1 race car speed motion blur",
+    "tour de france": "cycling peloton mountain road",
+    # gaming
+    "playstation": "gaming controller neon dark",
+    "xbox": "gaming controller neon dark",
+    "nintendo": "video game console colorful",
+    "gta": "neon city street night rain",
+    "grand theft auto": "neon city street night rain",
+    "minecraft": "voxel blocks landscape sunset",
+    "fortnite": "colorful battle royale illustration sky",
+    "esports": "esports arena rgb crowd",
+    "roblox": "colorful blocks toys play",
     # space
-    "isro": "rocket launch night",
-    "chandrayaan": "moon surface craters",
-    "gaganyaan": "astronaut space suit",
-    "nisar": "satellite orbit earth",
-    # AI & global tech
-    "openai": "artificial intelligence robot abstract",
-    "nvidia": "computer gpu graphics card closeup",
-    "google": "modern tech office colorful",
-    "microsoft": "office building glass modern",
-    "meta": "virtual reality headset person",
-    "apple": "smartphone closeup hand minimal",
-    "samsung": "smartphone store display",
-    "xiaomi": "smartphone flatlay tech",
-    "oneplus": "smartphone closeup dark",
-    "vivo": "smartphone camera closeup",
-    "oppo": "smartphone hand selfie",
-    "realme": "smartphone colorful tech",
-    "nothing phone": "minimal tech earbuds white",
-    "motorola": "smartphone closeup edge",
-    # travel & gaming
-    "oyo": "hotel room bed clean",
-    "makemytrip": "airport traveler suitcase",
-    "ixigo": "train station platform india",
-    "dream11": "cricket stadium floodlights",
-    "nazara": "esports gaming setup rgb",
-    # health & conglomerates
-    "pharmeasy": "medicine pills pharmacy shelf",
-    "practo": "doctor consultation stethoscope",
-    "reliance": "corporate towers city skyline",
-    "tata": "heritage corporate building india",
-    "adani": "port containers cranes",
-    # generic tech nouns
-    "data center": "server room blue lights",
-    "semiconductor": "silicon wafer chip macro",
-    "chip": "circuit board macro",
-    "5g": "network antenna city sunset",
+    "nasa": "rocket launch night long exposure",
+    "spacex": "falcon rocket launch smoke fire",
+    "isro": "rocket launch smoke flames",
+    "chandrayaan": "moon surface craters earthrise",
+    "moon": "full moon night clouds",
+    "mars": "mars surface rover sunset",
+    "james webb": "deep space nebula stars",
+    "aurora": "aurora borealis night mountains",
+    # tech
+    "iphone": "smartphone closeup neon bokeh",
+    "apple": "minimal tech product studio dark",
+    "openai": "artificial intelligence abstract lights",
+    "chatgpt": "artificial intelligence abstract lights",
+    "tesla": "electric car night city lights",
+    "cybertruck": "futuristic car night neon",
+    "robot": "humanoid robot studio light",
+    "drone": "drone aerial city dusk",
 }
 
+# v5.6: IMPRESSIVE query banks - every query aims for a photo people stop
+# scrolling for. Dramatic light, crowds, scale, energy. Photo-first strategy.
 CATEGORY_IMAGE_QUERIES = {
-    "ai": ["robot hand futuristic light", "person using laptop ai interface", "abstract neural lights blue"],
-    "funding": ["startup team office whiteboard", "handshake business meeting", "young team working office laptops"],
-    "ipo": ["stock market screens numbers", "stock exchange display", "stock market bull statue"],
-    "ma": ["business handshake boardroom", "contract signing pen hands", "two office buildings glass"],
-    "regulatory": ["government building columns india", "gavel law book court", "documents official stamps"],
-    "unicorn": ["startup team celebration office", "confetti office party"],
-    "fintech": ["qr code payment phone shop", "digital banking phone hand", "indian currency notes phone"],
-    "ev": ["electric scooter city street", "ev charging station car", "electric car charging plug"],
-    "gadgets": ["smartphone closeup hand", "laptop desk minimal coffee", "tech gadgets flatlay"],
-    "space": ["rocket launch night sky", "satellite orbit earth space", "mission control room screens"],
-    "cybersecurity": ["cyber security lock digital", "hacker code screen dark", "padlock circuit board"],
-    "telecom": ["telecom tower sunset sky", "network antenna city skyline", "fiber optic cables lights"],
-    "ecommerce": ["delivery packages boxes van", "courier parcel doorstep", "warehouse conveyor boxes"],
-    "layoffs": ["empty office desks chairs", "person leaving office box belongings"],
-    "record": ["celebration team office success", "mountain summit sunrise"],
-    "profit": ["stock chart growth green screen", "coins stacked growth plant"],
-    "general": ["modern indian city skyline night", "team working office laptops", "abstract technology blue lights"],
+    "viral": ["drone light show night sky", "crowd celebration confetti rain",
+              "colorful powder festival crowd", "flash mob street performance"],
+    "movies": ["cinema popcorn film reel macro", "movie theater screen audience silhouette",
+               "film set camera crane lights", "hollywood sign los angeles dusk"],
+    "music": ["concert stage lights crowd", "music festival night confetti",
+              "singer silhouette spotlight microphone", "dj turntables neon smoke"],
+    "tv": ["cozy living room tv night", "clapper board film set lights",
+           "binge watching popcorn couch night", "premiere event red carpet"],
+    "celebs": ["red carpet photographers flashes", "paparazzi cameras night city",
+               "award show stage spotlight", "limousine night city lights"],
+    "sports": ["stadium floodlights night full", "soccer goal celebration crowd",
+               "trophy confetti team lift", "athlete sprint finish dramatic",
+               "basketball dunk silhouette"],
+    "gaming": ["esports arena rgb crowd", "gaming controller neon lights",
+               "gaming setup triple monitor rgb", "retro arcade neon dark"],
+    "space": ["rocket launch night long exposure", "earth from orbit sunrise",
+              "milky way astrophotography mountains", "astronaut spacewalk earth",
+              "aurora borealis night sky"],
+    "tech": ["smartphone closeup neon bokeh", "futuristic gadget studio dark",
+             "robot arm precision light", "drone aerial city dusk"],
+    "odd": ["world record attempt crowd", "guinness world record celebration",
+            "bicycle tall weird invention", "giant rubber duck harbor"],
+    "general": ["city skyline night neon lights", "crowd cheering silhouette sunset",
+                "fireworks night sky burst", "neon street night rain reflections"],
 }
 
 FALLBACK_IMAGE_QUERIES = [
-    "modern city skyline night india",
-    "people office laptops working",
-    "abstract blue technology lights",
-    "india street smartphone person",
+    "crowd concert silhouette lights",
+    "neon city street night rain",
+    "aurora night mountains stars",
+    "fireworks city celebration night",
 ]
 
 # per-category design system: chip label + accent colour + designer gradient
-# v5.3: accent2 = rotated second palette - same category never looks identical
+# v5.6: entertainment palette - hotter, punchier, magazine-cover energy.
+# accent2 = rotated second palette - same category never looks identical
 CATEGORY_THEME = {
-    "ai":          {"label": "AI",           "accent": (86, 204, 242),  "accent2": (167, 139, 250), "grad": [(10, 14, 26), (26, 60, 120)]},
-    "funding":     {"label": "FUNDING",      "accent": (255, 170, 60),  "accent2": (245, 200, 66),  "grad": [(30, 20, 8), (120, 60, 20)]},
-    "ipo":         {"label": "IPO",          "accent": (80, 220, 180),  "accent2": (170, 235, 110), "grad": [(6, 26, 24), (20, 80, 70)]},
-    "ma":          {"label": "M&A",          "accent": (200, 160, 255), "accent2": (240, 130, 200), "grad": [(22, 14, 36), (80, 40, 120)]},
-    "regulatory":  {"label": "REGULATION",   "accent": (255, 120, 120), "accent2": (255, 170, 95),  "grad": [(30, 10, 12), (110, 30, 40)]},
-    "unicorn":     {"label": "UNICORN",      "accent": (255, 140, 220), "accent2": (190, 145, 255), "grad": [(28, 10, 30), (110, 30, 110)]},
-    "fintech":     {"label": "FINTECH",      "accent": (120, 220, 140), "accent2": (140, 230, 215), "grad": [(8, 24, 14), (20, 90, 60)]},
-    "ev":          {"label": "EV",           "accent": (120, 230, 200), "accent2": (175, 235, 120), "grad": [(6, 24, 20), (20, 80, 70)]},
-    "gadgets":     {"label": "GADGETS",      "accent": (255, 200, 90),  "accent2": (255, 150, 120), "grad": [(24, 18, 8), (100, 70, 20)]},
-    "space":       {"label": "SPACE",        "accent": (140, 180, 255), "accent2": (180, 160, 255), "grad": [(8, 10, 30), (30, 40, 100)]},
-    "cybersecurity": {"label": "CYBERSECURITY", "accent": (110, 230, 120), "accent2": (110, 200, 240), "grad": [(8, 20, 10), (20, 70, 30)]},
-    "telecom":     {"label": "TELECOM",      "accent": (255, 150, 100), "accent2": (250, 205, 95),  "grad": [(26, 14, 8), (90, 50, 20)]},
-    "ecommerce":   {"label": "ECOMMERCE",    "accent": (255, 120, 160), "accent2": (255, 175, 120), "grad": [(28, 8, 18), (100, 30, 60)]},
-    "layoffs":     {"label": "LAYOFFS",      "accent": (255, 120, 120), "accent2": (235, 150, 150), "grad": [(26, 10, 12), (90, 30, 40)]},
-    "record":      {"label": "RECORD",       "accent": (255, 210, 90),  "accent2": (255, 240, 130), "grad": [(28, 20, 6), (110, 80, 20)]},
-    "profit":      {"label": "BUSINESS",     "accent": (150, 230, 120), "accent2": (200, 240, 120), "grad": [(10, 22, 10), (30, 80, 30)]},
-    "general":     {"label": "TECH",         "accent": (110, 180, 255), "accent2": (100, 220, 220), "grad": [(10, 14, 24), (30, 50, 100)]},
+    "viral":     {"label": "VIRAL",      "accent": (255, 64, 96),   "accent2": (255, 140, 105), "grad": [(28, 6, 16), (130, 20, 60)]},
+    "movies":    {"label": "MOVIES",     "accent": (255, 200, 60),  "accent2": (255, 150, 60),  "grad": [(30, 18, 4), (120, 60, 16)]},
+    "music":     {"label": "MUSIC",      "accent": (255, 105, 180), "accent2": (190, 120, 255), "grad": [(24, 8, 34), (100, 20, 90)]},
+    "tv":        {"label": "STREAMING",  "accent": (120, 220, 255), "accent2": (140, 190, 255), "grad": [(6, 18, 32), (20, 60, 110)]},
+    "celebs":    {"label": "CELEBS",      "accent": (255, 160, 220), "accent2": (255, 110, 160), "grad": [(30, 8, 24), (120, 30, 80)]},
+    "sports":    {"label": "SPORTS",     "accent": (80, 255, 160),  "accent2": (170, 240, 80),  "grad": [(6, 26, 14), (16, 90, 50)]},
+    "gaming":    {"label": "GAMING",     "accent": (170, 120, 255), "accent2": (90, 200, 255),  "grad": [(20, 10, 38), (70, 20, 130)]},
+    "space":     {"label": "SPACE",      "accent": (140, 180, 255), "accent2": (180, 160, 255), "grad": [(8, 10, 30), (30, 40, 100)]},
+    "tech":      {"label": "TECH",       "accent": (110, 220, 230), "accent2": (120, 180, 255), "grad": [(8, 18, 24), (20, 60, 80)]},
+    "odd":       {"label": "WOW",        "accent": (255, 230, 90),  "accent2": (255, 170, 70),  "grad": [(30, 22, 4), (110, 70, 16)]},
+    "general":   {"label": "TRENDING",   "accent": (255, 120, 90),  "accent2": (255, 200, 90),  "grad": [(30, 10, 8), (110, 40, 20)]},
 }
 
 BN_CATEGORY_LABELS = {
-    "funding": "ফান্ডিং", "ipo": "আইপিও", "ma": "অধিগ্রহণ", "regulatory": "রেগুলেশন",
-    "unicorn": "ইউনিকর্ন", "fintech": "ফিনটেক", "ev": "ইভি", "gadgets": "গ্যাজেট",
-    "space": "স্পেস", "cybersecurity": "সাইবার সিকিউরিটি", "telecom": "টেলিকম",
-    "ecommerce": "ই-কমার্স", "layoffs": "ছাঁটাই", "record": "রেকর্ড",
-    "profit": "বিজনেস", "ai": "এআই", "general": "টেক",
+    "viral": "ভাইরাল", "movies": "সিনেমা", "music": "মিউজিক", "tv": "টিভি",
+    "celebs": "সেলিব্রিটি", "sports": "খেলা", "gaming": "গেমিং",
+    "space": "স্পেস", "tech": "টেক", "odd": "আশ্চর্য", "general": "ট্রেন্ডিং",
 }
 
 # ==========================================================================
 # LOGGING / SECRETS / HTTP / STATE
 # ==========================================================================
-log = logging.getLogger("india-tech-bot")
+log = logging.getLogger("trending-ent-bot")
 
 
 def _setup_logging(verbose: bool = False) -> None:
@@ -632,7 +688,7 @@ def _get_secret(name: str, default: str = "") -> str:
 _SESSION = requests.Session()
 _SESSION.headers.update({
     "User-Agent": ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                   "(KHTML, like Gecko) Chrome/124.0 Safari/537.36 IndiaTechPageBot/" + VERSION),
+                   "(KHTML, like Gecko) Chrome/124.0 Safari/537.36 TrendingEntPageBot/" + VERSION),
 })
 
 
@@ -957,8 +1013,9 @@ def fetch_newsapi() -> list:
         except Exception:
             return []
 
-    for cat in ("technology", "business"):
-        for a in _call("/top-headlines", {"country": "in", "category": cat, "pageSize": 50}):
+    # v5.6: global entertainment categories (no country pin - worldwide mix)
+    for cat in ("entertainment", "sports", "general", "technology"):
+        for a in _call("/top-headlines", {"category": cat, "pageSize": 50}):
             out.append(_newsapi_article(a, f"newsapi/{cat}"))
     since = (datetime.now(UTC) - timedelta(hours=48)).strftime("%Y-%m-%dT%H:%M:%S")
     for q in NEWSAPI_EVERYTHING_QUERIES:
@@ -969,12 +1026,11 @@ def fetch_newsapi() -> list:
 
 
 def fetch_hn() -> list:
-    """Hacker News (Algolia) - free, no key. India-related tech stories only."""
+    """Hacker News (Algolia) - free, no key. v5.6: global front page, big
+    stories only (the day's biggest tech/launch moments - the fun side)."""
     try:
-        ts = int((datetime.now(UTC) - timedelta(hours=48)).timestamp())
-        r = _http_get("https://hn.algolia.com/api/v1/search_by_date",
-                      params={"query": "India", "tags": "story", "hitsPerPage": 40,
-                              "numericFilters": f"created_at_i>{ts}"},
+        r = _http_get("https://hn.algolia.com/api/v1/search",
+                      params={"tags": "front_page", "hitsPerPage": 30},
                       timeout=15, retries=1)
         if r is None:
             return []
@@ -982,7 +1038,7 @@ def fetch_hn() -> list:
         out = []
         for h in hits:
             t = (h.get("title") or "").strip()
-            if not t or (h.get("points") or 0) < 4:
+            if not t or (h.get("points") or 0) < 50:   # only the big ones
                 continue
             url = h.get("url") or f"https://news.ycombinator.com/item?id={h.get('objectID')}"
             out.append(Article(
@@ -1003,8 +1059,8 @@ def fetch_gnews_api() -> list:
     if not key:
         return []
     r = _http_get("https://gnews.io/api/v4/search",
-                  params={"q": "India (startup OR technology OR IPO OR funding)",
-                          "lang": "en", "country": "in", "max": 15, "apikey": key},
+                  params={"q": "(viral OR entertainment OR box office OR celebrity OR trending)",
+                          "lang": "en", "max": 15, "apikey": key},
                   timeout=20, retries=1)
     if r is None:
         return []
@@ -1036,16 +1092,23 @@ def fetch_all_articles() -> list:
 
     def _add(label, items):
         n = 0
+        blocked = 0
         for a in items:
             if not a or not a.title or not a.url:
                 continue
             if a.title.lower() in ("[removed]", "removed"):
+                continue
+            # v5.6: explicit-content firewall - family-friendly page, always
+            if _is_explicit(f"{a.title} {a.description or ''}"):
+                blocked += 1
                 continue
             if a.url in seen:
                 continue
             seen.add(a.url)
             arts.append(a)
             n += 1
+        if blocked:
+            log.info("%s: %d article(s) dropped by the explicit-content filter", label, blocked)
         stats[label] = n
 
     _add("newsapi", fetch_newsapi())
@@ -1271,38 +1334,8 @@ def _score_one(a: Article, now: datetime):
     return max(0.0, base), chosen
 
 
-# v5.3: a story needs an India angle (or 3+ corroborating outlets) to rank.
-# The signal must come from the STORY, not just the outlet - ET/Moneycontrol
-# carry global wire stories too (Shein, Shanghai IPOs...).
-_INDIAN_PLACE_RE = re.compile(
-    r"\b(?:india|indian|india'?s|bharat|bengaluru|bangalore|mumbai|delhi|hyderabad|"
-    r"pune|chennai|kolkata|gurugram|gurgaon|noida|ahmedabad|jaipur|kochi|coimbatore|"
-    r"gujarat|karnataka|maharashtra|tamil nadu|telangana)\b", re.I)
-# India-specific vocabulary that only appears in Indian stories
-_INDIAN_TERM_RE = re.compile(
-    r"\b(?:RBI|SEBI|NSE|BSE|Nifty|Sensex|NIFTY|SENSEX|UPI|NITI Aayog|DRHP|"
-    r"crore|crores|lakh|lakhs|rupee|rupees|repo rate|LIC)\b")
-# global entities in the entity table (NOT India signals)
-_GLOBAL_ENTITY_KEYS = {"apple", "google", "microsoft", "openai", "nvidia", "tesla",
-                       "samsung", "xiaomi", "oneplus", "vivo", "oppo", "realme",
-                       "nothing phone", "motorola", "meta", "whatsapp", "youtube",
-                       "amazon", "oneweb", "starlink", "google pay"}
-_INDIAN_ENTITY_RES = [re.compile(r"\b" + re.escape(k) + r"\b", re.I)
-                      for k in _ENTITIES if k not in _GLOBAL_ENTITY_KEYS]
-
-
-def _india_signal(a) -> bool:
-    if a.via == "hn":
-        return True                    # HN query is India-filtered
-    text = f"{a.title} {a.description}"
-    if _INDIAN_PLACE_RE.search(text) or _INDIAN_TERM_RE.search(text):
-        return True
-    if (a.domain or "").endswith(".in"):
-        return True
-    for rx in _INDIAN_ENTITY_RES:      # an Indian company in the story
-        if rx.search(text):
-            return True
-    return False
+# v5.3: fuzzy-dup clustering helper kept for corroboration counting (the
+# India gate itself was removed in v5.6 - the page is worldwide now).
 
 
 def _cluster_articles(articles: list) -> list:
@@ -1333,12 +1366,9 @@ def score_articles(articles: list) -> list:
     for c in clusters:
         doms = len({x.domain for x in c if not _is_social(x.domain)})
         boost = 4.0 if doms >= 3 else 2.0 if doms == 2 else 0.0
-        india_ok = any(_india_signal(x) for x in c)
         for a in c:
-            a.india_ok = india_ok      # v5.3: cluster-level India signal
+            a.india_ok = True          # v5.6: gate retired - worldwide page
             a.score += boost
-            if not india_ok and doms < 3:
-                a.score -= 2.5        # v5.3: global story w/o India angle or wide pickup
     return clusters
 
 
@@ -1367,9 +1397,9 @@ def select_article(clusters: list, state: dict, threshold: float):
         return s
 
     def eligible(a: Article) -> bool:
-        # v5.3: India gate - a story with no India angle may only post if it
-        # is huge (3+ corroborating outlets); the page stays Indian tech news
-        return getattr(a, "india_ok", True) or a.corroborations >= 3
+        # v5.6: worldwide page - every clean story is eligible (the old India
+        # gate retired; the explicit-content firewall runs at fetch time)
+        return getattr(a, "india_ok", True)
 
     def diverse(a: Article) -> bool:
         # v5.4: HARD daily diversity - max 2 posts per category per day and
@@ -1413,12 +1443,12 @@ GEMINI_MODELS = [m.strip() for m in os.getenv(
 _LLM_KEY_WARNED = set()   # "key missing" logged once per provider, not per attempt
 
 PERSONAS = [
-    {"id": "arjun", "desc": "Arjun, 29, product manager at a Bengaluru startup. Dry humour, allergic to hype, quotes numbers to make points."},
-    {"id": "meera", "desc": "Meera, 34, ex-finance journalist in Mumbai who now runs a small creator page. Loves a good chart, explains money stuff simply."},
-    {"id": "dev", "desc": "Dev, 41, engineering manager in Pune. Dad energy, pragmatic, has watched a hundred buzzwords die."},
-    {"id": "riya", "desc": "Riya, 24, tech enthusiast in Kolkata. Sharp, playful, internet-native, allergic to corporate speak."},
-    {"id": "kabir", "desc": "Kabir, 37, consultant in Delhi who has read too many pitch decks. Skeptical of valuation theatre, respects profit."},
-    {"id": "ananya", "desc": "Ananya, 31, data scientist in Chennai. Notices the number everyone else skipped and explains it in one line."},
+    {"id": "arjun", "desc": "Arjun, 28, movie nerd in Bengaluru with first-day-first-show energy. Dry humour, allergic to hype, quotes box-office numbers to make points."},
+    {"id": "meera", "desc": "Meera, 33, ex-music journalist in Mumbai who now runs a pop-culture meme page. Lives for award-show chaos, explains industry tea simply."},
+    {"id": "dev", "desc": "Dev, 42, sports fanatic in Pune. Yells at the TV during finals, quotes stats like gospel, respects hustle but not flops."},
+    {"id": "riya", "desc": "Riya, 24, K-pop stan and internet-native in Kolkata. Playful, sharp, allergic to corporate speak, first to spot a viral moment."},
+    {"id": "kabir", "desc": "Kabir, 36, gaming dad in Delhi with 2,000 hours across consoles. Skeptical of hype launches, soft spot for a great speedrun."},
+    {"id": "ananya", "desc": "Ananya, 31, space-and-science geek in Chennai. Notices the number everyone else skipped, explains a launch in one line."},
 ]
 
 # Six STRUCTURALLY different post skeletons - the skeleton changes, not just words.
@@ -1594,7 +1624,7 @@ def _llm_complete(system, user, temperature=1.0, max_tokens=450):
 
 # ------------------------------------------------------------------ prompts
 def _system_prompt(persona):
-    return f"""You write Facebook posts for an Indian tech-news page read by smart, casual followers.
+    return f"""You write Facebook posts for a global entertainment & trending-news page (movies, music, sports, celebs, gaming, viral moments, space, tech launches) read by casual, fun-loving followers.
 
 You are writing as: {persona['desc']}
 
@@ -1603,11 +1633,13 @@ The #1 rule: sound like a real human posting to friends - never like AI, never l
 Style rules:
 - Contractions everywhere (it's, doesn't, they're).
 - Vary rhythm: mix longer sentences with very short ones (under 5 words).
-- Plain conversational Indian English is welcome ("honestly", "no joke", "worth noting").
+- Plain conversational English is welcome ("honestly", "no joke", "big if true", "worth noting").
 - Facts over adjectives. If a number exists, use it.
 - Never invent facts. Only use what's in the story you're given.
+- FUN BEATS FORMAL: this is entertainment - energy, reactions, hot takes. Not a news bulletin.
+- FAMILY-FRIENDLY, ALWAYS: no explicit content, no sleaze, no graphic gore. Keep it clean enough for a teenager's feed. If the story is explicit, refuse by writing about a different angle or keep it PG.
 - No markdown, no bold, no links.
-- Emoji: use 0-3, only as visual anchors (a chart emoji before a number line, a fire on a big raise). Never decorate every line. Never use emoji in the first line.
+- Emoji: use 0-3, only as visual anchors (fire on a big number, popcorn on a movie line). Never decorate every line. Never use emoji in the first line.
 - Max 2 hashtags, only if they feel natural. Do NOT end the post with hashtags.
 - Don't start with the headline - the image card already shows it.
 - At most one em dash in the whole post.
@@ -1661,6 +1693,9 @@ def _clean_post_text(text, bengali=False):
         return None
     if re.search(r"\b(as an ai|language model)\b", low):
         return None
+    # v5.6: explicit-content firewall applies to LLM output too
+    if _is_explicit(t):
+        return None
     words = t.split()
     if not (18 <= len(words) <= 180):
         return None
@@ -1687,6 +1722,8 @@ def _reject_reason(text, bengali=False):
         return "contains a link"
     if re.search(r"\b(as an ai|language model)\b", low):
         return "AI self-reference"
+    if _is_explicit(t):
+        return "explicit content"
     words = t.split()
     if not (18 <= len(words) <= 180):
         return f"word count {len(words)} outside 18-180"
@@ -1724,12 +1761,10 @@ def generate_commentary(art, shape, persona, grounding="", wiki=""):
 # v5.4: deterministic hashtag engine - clean, topical, never spammy.
 # Fires ONLY when the LLM post ships zero hashtags (safety net, not overlay).
 CATEGORY_TAGS = {
-    "funding": "#StartupFunding", "ipo": "#IPO", "ai": "#AI", "telecom": "#Telecom",
-    "fintech": "#Fintech", "ev": "#EVIndia", "semiconductor": "#Semiconductors",
-    "layoffs": "#TechLayoffs", "gigaeconomy": "#TechJobs", "policy": "#TechPolicy",
-    "earnings": "#Earnings", "smartphone": "#Smartphones", "gaming": "#Gaming",
-    "space": "#SpaceTech", "defense": "#DefenceTech", "biotech": "#Biotech",
-    "cybersecurity": "#CyberSecurity", "robotics": "#Robotics",
+    "viral": "#Viral", "movies": "#Movies", "music": "#Music", "tv": "#Streaming",
+    "celebs": "#PopCulture", "sports": "#Sports", "gaming": "#Gaming",
+    "space": "#Space", "tech": "#Tech", "odd": "#WorldRecord",
+    "general": "#Trending",
 }
 _TAG_STOPWORDS = {
     "The", "This", "That", "Here", "There", "Now", "New", "Why", "How", "What",
@@ -1768,24 +1803,27 @@ def _smart_tags(art, text=""):
 ENGAGEMENT_HOOKS = [
     {"id": "vote_emoji",    "text": "Your one-word take: {rx} or {dw}?"},
     {"id": "vote_fire",     "text": "Agree? Drop a {fire} | Disagree? Tell me why {down}"},
-    {"id": "scale",         "text": "On a scale of 1-10, how big is this for India?"},
+    {"id": "scale",         "text": "On a scale of 1-10, how crazy is this?"},
     {"id": "tag_friend",    "text": "Tag someone who needs to see this."},
-    {"id": "predict",       "text": "Where does this company end up in 2 years? I'm reading replies."},
-    {"id": "fill_blank",    "text": "Fill in the blank: this changes {___} for good."},
-    {"id": "poll_choice",   "text": "Quick poll: excited, worried, or don't care?"},
-    {"id": "hot_or_not",    "text": "Smart move or hype? Pick a side."},
+    {"id": "predict",       "text": "Big or flop? Call it below."},
+    {"id": "fill_blank",    "text": "Fill in the blank: this is the most {___} thing I've seen today."},
+    {"id": "poll_choice",   "text": "Quick poll: hyped, obsessed, or over it already?"},
+    {"id": "hot_or_not",    "text": "Iconic or overrated? Pick a side."},
     {"id": "first_comment", "text": "First thought in comments - unfiltered."},
-    {"id": "desi_verdict",  "text": "Bharat verdict: {up} for bold, {dw} for bust."},
+    {"id": "verdict",       "text": "Your verdict: {up} hit, {dw} miss."},
     {"id": "followup",      "text": "Want the follow-up when the numbers land? Say 'yes' below."},
     {"id": "disagree_ok",   "text": "Think I'm wrong? Good - comment and argue."},
 ]
 _HOOK_EMOJI = {"rx": "\U0001F44D", "dw": "\U0001F44E", "fire": "\U0001F525",
                "down": "\U0001F447", "___": "_____", "up": "\U0001F60A"}
 _HOOK_CATEGORIES = {
-    "funding": ["vote_emoji", "predict", "hot_or_not", "desi_verdict", "scale", "followup"],
-    "ipo": ["vote_emoji", "predict", "scale", "followup", "hot_or_not"],
-    "ai": ["scale", "poll_choice", "first_comment", "fill_blank", "disagree_ok"],
-    "layoffs": ["disagree_ok", "poll_choice", "first_comment", "tag_friend"],
+    "movies": ["vote_emoji", "scale", "poll_choice", "first_comment", "tag_friend", "hot_or_not"],
+    "music": ["vote_fire", "scale", "poll_choice", "tag_friend", "first_comment", "verdict"],
+    "sports": ["vote_emoji", "hot_or_not", "first_comment", "tag_friend", "disagree_ok", "predict"],
+    "tv": ["poll_choice", "scale", "first_comment", "followup", "tag_friend"],
+    "celebs": ["poll_choice", "first_comment", "tag_friend", "hot_or_not"],
+    "gaming": ["vote_emoji", "hot_or_not", "scale", "first_comment", "poll_choice", "predict"],
+    "viral": ["first_comment", "tag_friend", "vote_fire", "fill_blank", "scale"],
 }
 
 
@@ -1836,7 +1874,7 @@ def _apply_interaction_layer(text, art, state, shape_id=""):
 
 # ------------------------------------------------------------------ Bengali
 def _bengali_system_prompt(persona):
-    return f"""তুমি একটা ভারতীয় টেক-নিউজ ফেসবুক পেজের হয়ে বাংলায় পোস্ট লেখো। পাঠক: বাংলাভাষী তরুণ-তরুণী, প্রযুক্তি আর স্টার্টআপে আগ্রহী।
+    return f"""তুমি একটা বিশ্ব-বিনোদন ও ট্রেন্ডিং নিউজ ফেসবুক পেজের হয়ে বাংলায় পোস্ট লেখো। পাঠক: বাংলাভাষী তরুণ-তরুণী, সিনেমা-মিউজিক-খেলা-ভাইরাল সব খবরে আগ্রহী।
 
 তুমি এই চরিত্রে লিখছ: {persona['desc']}
 
@@ -1844,9 +1882,11 @@ def _bengali_system_prompt(persona):
 
 ভাষার নিয়ম:
 - কলকাতার কথ্য বাংলার টোন: 'হচ্ছে', 'দিচ্ছে', 'করেই', 'একদম', 'সোজা কথায়' - এই ধরনের প্রাকৃতিক রূপ।
-- প্রযুক্তির ইংরেজি শব্দ বাংলা অক্ষরে লেখো: স্টার্টআপ, ফান্ডিং, আইপিও, অ্যাপ, ইউজার - এগুলোই স্বাভাবিক।
+- বিনোদনের ইংরেজি শব্দ বাংলা অক্ষরে লেখো: সিনেমা, ট্রেলার, কনসার্ট, ভাইরাল, বক্স অফিস - এগুলোই স্বাভাবিক।
 - ছোট ছোট বাক্য। দু-একটা খুব ছোট বাক্য রাখো (৩-৪ শব্দের)।
 - সংস্কৃতঘেঁষা ভারী শব্দ একেবারে নিষিদ্ধ।
+- মজার, এনার্জি-ভরা টোন - এটা বিনোদন পেজ, সংবাদ বুলেটিন নয়।
+- ফ্যামিলি-ফ্রেন্ডলি রাখো: কোনো অশ্লীল বা গোর কনটেন্ট একেবারেই না।
 - শুধু গল্পে দেওয়া তথ্য ব্যবহার করো, বানাবে না।
 - কোনো লিংক, মার্কডাউন নয়। ইমোজি ০-১টা। হ্যাশট্যাগ সর্বোচ্চ ২টা।
 - হেডলাইন হুবহু কপি করবে না।
@@ -2312,7 +2352,7 @@ def _scrim_adj(luma: float) -> int:
 
 
 # ------------------------------------------------------------------ Pexels
-def _pexels_search(query, orientation="portrait", per_page=12):
+def _pexels_search(query, orientation="portrait", per_page=18):
     key = _get_secret("PEXELS_API_KEY")
     if not key:
         return []
@@ -2332,6 +2372,12 @@ def _pexels_search(query, orientation="portrait", per_page=12):
 _HINT_REGEX_CACHE = None
 
 
+# v5.6: cinematic modifiers rotate per run so the same category never pulls
+# identical photos day after day (the "every card looks the same" killer).
+_QUERY_MODIFIERS = ["", " dramatic", " cinematic", " night", " aerial", " neon",
+                    " closeup", " bokeh", " golden hour"]
+
+
 def _image_queries_for(art):
     global _HINT_REGEX_CACHE
     if _HINT_REGEX_CACHE is None:
@@ -2346,7 +2392,9 @@ def _image_queries_for(art):
             out.append(hint)
     cat_q = CATEGORY_IMAGE_QUERIES.get(art.category) or CATEGORY_IMAGE_QUERIES["general"]
     out.extend(cat_q)
-    out.append(cat_q[0] + " closeup")
+    # v5.6: randomised cinematic variant of the top category query
+    out.append(cat_q[0] + random.choice(_QUERY_MODIFIERS))
+    out.append(cat_q[-1] + random.choice(_QUERY_MODIFIERS))
     out.extend(FALLBACK_IMAGE_QUERIES)
     seen = set()
     dedup = []
@@ -2355,7 +2403,7 @@ def _image_queries_for(art):
         if q and q.lower() not in seen:
             seen.add(q.lower())
             dedup.append(q)
-    return dedup[:6]
+    return dedup[:7]
 
 
 def _download_photo(p):
@@ -2373,7 +2421,10 @@ def _download_photo(p):
 
 
 def _pick_photo(art, avoid_ids=None):
-    """Query ladder -> rank candidates -> download top 3 -> keep most vivid.
+    """Query ladder -> rank candidates -> download top 4 -> keep most vivid.
+    v5.6 'impressive photos': bigger pool (18/page), landscape-friendly floor
+    (dramatic wide shots crop beautifully), softened aspect penalty so a huge
+    cinematic landscape can beat a mediocre portrait, and 4 downloads.
     avoid_ids: Pexels photo ids used recently, so the feed never repeats a photo.
     Returns (PIL.Image, photographer, photo_id) or None."""
     if not PIL_OK:
@@ -2385,15 +2436,18 @@ def _pick_photo(art, avoid_ids=None):
         if not photos:
             photos = _pexels_search(query, None)
         if not photos:
+            photos = _pexels_search(query, "landscape")   # v5.6: dramatic wide shots
+        if not photos:
             continue
 
         def _rank(p):
             w, h = p.get("width", 0) or 0, p.get("height", 0) or 0
-            if w < 800 or h < 800:
+            if w < 900 or h < 700:          # v5.6: landscape-friendly floor
                 return None
             aspect = w / max(1, h)
             size = min(w, h)
-            return size - abs(aspect - target) * 2200
+            # v5.6: 1200 (was 2200) - big beautiful landscapes may win now
+            return size - abs(aspect - target) * 1200
 
         ranked = []
         for p in photos:
@@ -2409,8 +2463,8 @@ def _pick_photo(art, avoid_ids=None):
                 ranked = fresh   # prefer unseen photos; reuse rather than fail
 
         cand = []
-        with ThreadPoolExecutor(max_workers=3) as ex:
-            futs = {ex.submit(_download_photo, p): p for _, p in ranked[:3]}
+        with ThreadPoolExecutor(max_workers=4) as ex:      # v5.6: top 4 (was 3)
+            futs = {ex.submit(_download_photo, p): p for _, p in ranked[:4]}
             for f in as_completed(futs):
                 try:
                     img = f.result()
@@ -3278,9 +3332,9 @@ def run_insights(limit=25) -> int:
 
 # ---------------------------------------------------------------- engage mode
 def _engage_reply_system():
-    return """You reply to comments on an Indian tech-news Facebook page. You are the
-voice of the page: warm, sharp, a little playful - the admin who actually
-reads the comments.
+    return """You reply to comments on a global entertainment & trending-news
+Facebook page. You are the voice of the page: warm, sharp, a little playful -
+the admin who actually reads the comments.
 
 Hard rules:
 - 40 words MAX. One short paragraph, no line breaks.
@@ -3288,6 +3342,7 @@ Hard rules:
 - Agree, add one small insight or push back gently if they're off the mark.
 - If they state something wrong that the post itself contradicts, correct it kindly.
 - Contractions everywhere. 0-2 emoji max, only if natural.
+- Keep every reply family-friendly: no explicit content, no sleaze.
 - NEVER invent numbers or facts that aren't in the post. Stay vague if unsure.
 - No links, no hashtags, no questions that sound like customer support.
 - Never mention being an AI or a bot. Never discuss religion or party politics.
@@ -3310,6 +3365,8 @@ def _validate_reply(text):
         return None
     low = t.lower()
     if re.search(r"\b(as an ai|language model|i am a bot)\b", low):
+        return None
+    if _is_explicit(t):            # v5.6: replies pass the same NSFW gate
         return None
     if t.count("\n") > 1:
         t = " ".join(t.split())
@@ -3520,7 +3577,7 @@ def _save_preview(text_files, image_files):
 
 
 def run(args) -> int:
-    log.info("=== India Tech Page Bot v%s | %s ===", VERSION,
+    log.info("=== Trending & Entertainment Page Bot v%s | %s ===", VERSION,
              _now_ist().strftime("%d %b %Y, %H:%M IST"))
     if not PIL_OK:
         log.warning("Pillow not installed - posts will be text-only")
@@ -3748,14 +3805,14 @@ def _self_test() -> int:
 
     # scoring
     now = datetime.now(UTC)
-    a1 = Article("Paytm parent One97 raises $1.1 billion ahead of IPO listing",
-                 "https://x.com/a", "T", "t.com", now)
+    a1 = Article("Taylor Swift announces 15-stadium world tour after album tops charts",
+                 "https://x.com/a", "T", "variety.com", now)
     a2 = Article("Best smartphone deals and coupons this week",
                  "https://x.com/b", "T", "t.com", now)
     a3 = Article("Local man wins chess tournament",
                  "https://x.com/c", "T", "t.com", None)
     score_articles([a1, a2, a3])
-    if not (a1.score >= 8 and a1.category in ("ipo", "funding", "fintech")):
+    if not (a1.score >= 8 and a1.category in ("music", "celebs", "general")):
         failures.append(f"scoring strong story: {a1.score} {a1.category}")
     if a2.score >= 8:
         failures.append(f"junk leaked through: {a2.score}")
@@ -3766,52 +3823,62 @@ def _self_test() -> int:
     a4 = Article("Top 10 best 5G smartphones under \u20b920,000 to buy this week",
                  "https://x.com/d", "T", "gadgetsnow.com", now)
     a5 = Article("Top 10 best 5G smartphones under \u20b920,000 to buy this week",
-                 "https://x.com/e", "T", "economictimes.indiatimes.com", now)
-    a6 = Article("Reliance acquires Disney's India business for \u20b970,000 crore",
-                 "https://x.com/f", "T", "economictimes.indiatimes.com", now)
-    big = Article("Zeta raises $1.2 billion", "https://x.com/g", "T", "inc42.com", now)
-    small = Article("Zeta raises $5 million", "https://x.com/h", "T", "inc42.com", now)
+                 "https://x.com/e", "T", "variety.com", now)
+    a6 = Article("Avatar sequel breaks opening weekend box office record with $340 million worldwide",
+                 "https://x.com/f", "T", "variety.com", now)
+    big = Article("Messi signs record $1.2 billion contract extension",
+                  "https://x.com/g", "T", "espn.com", now)
+    small = Article("Messi extends deal worth $5 million",
+                    "https://x.com/h", "T", "espn.com", now)
     score_articles([a4, a5, a6, big, small])
     if a5.score >= 9:
         failures.append(f"SEO listicle leaked through a tier-1 outlet: {a5.score}")
     if a4.score >= 9:
         failures.append(f"SEO listicle leaked through: {a4.score}")
     if a6.score < 12:
-        failures.append(f"mega-deal scored too low: {a6.score}")
+        failures.append(f"mega entertainment story scored too low: {a6.score}")
     if big.score <= small.score:
         failures.append(f"money magnitude not ranked: big={big.score} small={small.score}")
-    if _domain_authority("economictimes.indiatimes.com") <= 0:
+    if _domain_authority("variety.com") <= 0:
         failures.append("domain authority table broken")
-    if not _india_signal(a6):
-        failures.append("india signal detection broken")
+    # v5.6: explicit-content firewall
+    nsfw = Article("Celebrity nude photo scandal leaks online",
+                   "https://x.com/z", "T", "tmz.com", now)
+    clean_tour = Article("Beyonce announces world tour dates",
+                         "https://x.com/y", "T", "variety.com", now)
+    score_articles([nsfw, clean_tour])
+    if not _is_explicit(nsfw.title):
+        failures.append("explicit filter missed an NSFW headline")
+    if _is_explicit(clean_tour.title):
+        failures.append("explicit filter false-positive on a clean headline")
 
     # v5.4: clickbait firewall - bait hooks die even on a tier-1 outlet
-    bait = Article("You won't believe what this SHOCKING chip startup just did!!!",
-                   "https://x.com/i", "T", "economictimes.indiatimes.com", now)
-    clean = Article("Tata Electronics begins chip production at Assam plant",
-                    "https://x.com/j", "T", "economictimes.indiatimes.com", now)
+    bait = Article("You won't believe what this SHOCKING celebrity just did!!!",
+                   "https://x.com/i", "T", "variety.com", now)
+    clean = Article("NASA unveils new spacecraft for first crewed Mars mission",
+                    "https://x.com/j", "T", "nasa.gov", now)
     score_articles([bait, clean])
     if bait.score >= clean.score:
         failures.append(f"clickbait outranked clean news: {bait.score} vs {clean.score}")
 
     # v5.4: smart hashtag engine
-    tag_art = Article("Zomato acquires stake in quick-commerce firm Blinkit",
-                      "https://x.com/k", "T", "t.com", now, category="funding")
+    tag_art = Article("Marvel announces casting for new Avengers sequel film",
+                      "https://x.com/k", "T", "t.com", now, category="movies")
     tags = _smart_tags(tag_art, "plain post text without any tags")
-    if tags and tags[0] != "#StartupFunding":
+    if tags and tags[0] != "#Movies":
         failures.append(f"category tag wrong: {tags}")
-    if "Blinkit" not in (tags[1] if len(tags) > 1 else ""):
+    if "Avengers" not in (tags[1] if len(tags) > 1 else ""):
         failures.append(f"entity tag missing/poor: {tags}")
-    dupes = [t.lower() for t in _smart_tags(tag_art, "already tagged #StartupFunding here")]
-    if "#startupfunding" in dupes:
+    dupes = [t.lower() for t in _smart_tags(tag_art, "already tagged #Movies here")]
+    if "#movies" in dupes:
         failures.append("smart tags duplicated an existing tag")
 
     # v5.5: interaction hooks - deterministic tests (probability forced to 1)
     global ENGAGE_HOOK_PROBABILITY
     _saved_hook_p = ENGAGE_HOOK_PROBABILITY
     ENGAGE_HOOK_PROBABILITY = 1.0
-    hook_art = Article("Sarvam AI raises $234 million, becomes India's newest AI unicorn",
-                       "https://x.com/h1", "T", "t.com", now, category="funding")
+    hook_art = Article("Taylor Swift world tour sells out stadiums as viral demand crashes sites",
+                       "https://x.com/h1", "T", "t.com", now, category="music")
     hs = _default_state()
     prev = None
     for _ in range(25):
@@ -3897,8 +3964,8 @@ def _self_test() -> int:
             failures.append("auto headline size not length-aware")
         out_dir = PREVIEW_DIR / "selftest"
         out_dir.mkdir(parents=True, exist_ok=True)
-        art = Article("Reliance Jio posts record \u20b952,000 crore profit as users cross 500 million",
-                      "https://example.com/jio", "Test Feed", "example.com", now, category="telecom")
+        art = Article("NASA moon rocket launch watched by 500 million people worldwide",
+                      "https://example.com/moon", "Test Feed", "nasa.gov", now, category="space")
         img = _render_designer_card(art, _card_headline(art.title), "TEST FEED \u00b7 TODAY", False, 0)
         img.save(out_dir / "designer_card.jpg", "JPEG", quality=90)
         if img.size != (CARD_W, CARD_H):
@@ -3962,7 +4029,7 @@ def _self_test() -> int:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="India Tech News Facebook Page Bot")
+    ap = argparse.ArgumentParser(description="Trending & Entertainment News Facebook Page Bot")
     ap.add_argument("--dry-run", action="store_true", help="no posting; save previews to ./preview/")
     ap.add_argument("--bengali-preview", action="store_true", help="force one Bengali companion preview")
     ap.add_argument("--preview-image", action="store_true", help="render the best card only (no LLM, no post)")

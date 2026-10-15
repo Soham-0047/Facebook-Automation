@@ -8,11 +8,11 @@ import bot
 
 class A: pass
 art = A()
-art.title = "Sarvam becomes India's newest AI unicorn with $234 million round"
-art.source = "Inc42"
-art.domain = "inc42.com"
-art.category = "unicorn"
-art.url = "https://inc42.com/buzz/sarvam-unicorn"
+art.title = "Taylor Swift world tour sells out stadiums as viral demand crashes sites"
+art.source = "Variety"
+art.domain = "variety.com"
+art.category = "music"
+art.url = "https://variety.com/taylor-swift-world-tour"
 
 # luminance helper read-back
 for name, color in (("BRIGHT white photo", (245, 245, 250)), ("DARK night photo", (18, 20, 26))):
@@ -31,7 +31,7 @@ print("scrim adjustment logic OK (+bright / -dark / 0 mid)")
 # render two photo cards end-to-end and compare headline-band darkness
 bright = Image.new("RGB", (1600, 2000), (250, 248, 245))
 dark = Image.new("RGB", (1600, 2000), (16, 18, 24))
-head = "Sarvam becomes India's newest AI unicorn with $234 million round"
+head = art.title
 out = Path(__file__).resolve().parent.parent / "preview"
 out.mkdir(parents=True, exist_ok=True)
 results = {}
