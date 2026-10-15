@@ -101,7 +101,8 @@
   "501537508f80c2c9757c2db13484fc85",
   "28289b8445d32c8897dc76b739fe3b0a",
   "02eaae663d378ce849ece0610e09af8d",
-  "54b708d65513b8d7443e32ddcb106828"
+  "54b708d65513b8d7443e32ddcb106828",
+  "2b0481b9a1b9cf7221db407b3df45ed7"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -205,29 +206,28 @@
   "fintech funding rises 14 to 2 2 billion in jan sep deal count falls 41 tracxn",
   "freshworks to acquire torii to expand ai spend governance offerings",
   "groww q2 profit jumps 54 yoy to 725 cr revenue rises 47",
-  "mukesh ambani s jio seeks 108 billion valuation in record indian ipo"
+  "mukesh ambani s jio seeks 108 billion valuation in record indian ipo",
+  "jio platforms ipo to open for subscription on october 21"
  ],
- "last_post_ts": 1791998767.4345129,
+ "last_post_ts": 1792051213.7323785,
  "recent_categories": [
-  "ipo",
   "funding",
   "ipo",
   "funding",
-  "ipo"
+  "ipo",
+  "regulatory"
  ],
  "recent_domains": [
   "inc42.com",
-  "inc42.com",
-  "reuters"
+  "reuters",
+  "inc42.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "listicle",
-  "hot_take"
+  "hot_take",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  7464372,
-  7621385,
   16726135,
   6170398,
   19463206,
@@ -235,18 +235,16 @@
   34774356,
   7948071,
   7989073,
-  16777252
+  16777252,
+  16121423,
+  4828818
  ],
  "recent_personas": [
-  "arjun",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 102,
+ "post_counter": 103,
  "category_days": {
-  "2026-10-08": {
-   "ipo": 1,
-   "layoffs": 1
-  },
   "2026-10-09": {
    "ai": 1,
    "regulatory": 1,
@@ -270,11 +268,15 @@
   "2026-10-14": {
    "ipo": 2,
    "funding": 1
+  },
+  "2026-10-15": {
+   "regulatory": 1
   }
  },
- "bengali_date": "2026-10-14",
+ "bengali_date": "2026-10-15",
  "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792043930
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ]
 }
