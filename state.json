@@ -104,7 +104,8 @@
   "54b708d65513b8d7443e32ddcb106828",
   "2b0481b9a1b9cf7221db407b3df45ed7",
   "8a8249d29dc71953eb92167fb7cdf42a",
-  "4396961975a8f461342fd02e9db80948"
+  "4396961975a8f461342fd02e9db80948",
+  "8cbb4ab083972698c84a1bda16bd76dd"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -211,28 +212,28 @@
   "mukesh ambani s jio seeks 108 billion valuation in record indian ipo",
   "jio platforms ipo to open for subscription on october 21",
   "jio s akash ambani says services not tariff hikes to drive revenue as record ipo nears",
-  "the gta 6 launch trailer shows off vice city and steamy scene with lucia and jason"
+  "the gta 6 launch trailer shows off vice city and steamy scene with lucia and jason",
+  "la bola negra before netflix s gay epic became an oscar frontrunner it had to survive the breakup of its directors"
  ],
- "last_post_ts": 1792137258.5933647,
+ "last_post_ts": 1792169418.5552704,
  "recent_categories": [
-  "funding",
   "ipo",
   "regulatory",
   "ipo",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "inc42.com",
   "yourstory.com",
-  "gamespot.com"
+  "gamespot.com",
+  "indiewire.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "cold_open",
-  "listicle"
+  "listicle",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  19463206,
   8067819,
   34774356,
   7948071,
@@ -241,13 +242,14 @@
   16121423,
   4828818,
   7971601,
-  7562151
+  7562151,
+  15610070
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "meera"
  ],
- "post_counter": 105,
+ "post_counter": 106,
  "category_days": {
   "2026-10-10": {
    "ecommerce": 1,
@@ -273,12 +275,16 @@
    "ipo": 1
   },
   "2026-10-16": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-10-16",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792154076
+ "recent_hooks": [
+  "hot_or_not"
+ ],
+ "recent_formats": [
+  "square"
+ ]
 }
