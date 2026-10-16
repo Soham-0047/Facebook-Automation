@@ -103,7 +103,8 @@
   "02eaae663d378ce849ece0610e09af8d",
   "54b708d65513b8d7443e32ddcb106828",
   "2b0481b9a1b9cf7221db407b3df45ed7",
-  "8a8249d29dc71953eb92167fb7cdf42a"
+  "8a8249d29dc71953eb92167fb7cdf42a",
+  "4396961975a8f461342fd02e9db80948"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -209,28 +210,28 @@
   "groww q2 profit jumps 54 yoy to 725 cr revenue rises 47",
   "mukesh ambani s jio seeks 108 billion valuation in record indian ipo",
   "jio platforms ipo to open for subscription on october 21",
-  "jio s akash ambani says services not tariff hikes to drive revenue as record ipo nears"
+  "jio s akash ambani says services not tariff hikes to drive revenue as record ipo nears",
+  "the gta 6 launch trailer shows off vice city and steamy scene with lucia and jason"
  ],
- "last_post_ts": 1792084469.5171487,
+ "last_post_ts": 1792137258.5933647,
  "recent_categories": [
-  "ipo",
   "funding",
   "ipo",
   "regulatory",
-  "ipo"
+  "ipo",
+  "gaming"
  ],
  "recent_domains": [
-  "reuters",
   "inc42.com",
-  "yourstory.com"
+  "yourstory.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "mini_story",
-  "cold_open"
+  "cold_open",
+  "listicle"
  ],
  "recent_photo_ids": [
-  6170398,
   19463206,
   8067819,
   34774356,
@@ -239,19 +240,15 @@
   16777252,
   16121423,
   4828818,
-  7971601
+  7971601,
+  7562151
  ],
  "recent_personas": [
-  "dev",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 104,
+ "post_counter": 105,
  "category_days": {
-  "2026-10-09": {
-   "ai": 1,
-   "regulatory": 1,
-   "ipo": 1
-  },
   "2026-10-10": {
    "ecommerce": 1,
    "ipo": 1
@@ -274,11 +271,14 @@
   "2026-10-15": {
    "regulatory": 1,
    "ipo": 1
+  },
+  "2026-10-16": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-15",
- "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792130257
+ "bengali_date": "2026-10-16",
+ "bengali_count": 0,
+ "recent_formats": [
+  "portrait"
+ ]
 }
