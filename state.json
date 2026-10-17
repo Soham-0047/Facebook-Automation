@@ -106,7 +106,8 @@
   "8a8249d29dc71953eb92167fb7cdf42a",
   "4396961975a8f461342fd02e9db80948",
   "8cbb4ab083972698c84a1bda16bd76dd",
-  "b47bfa699c2284125162bda65c3b84bd"
+  "b47bfa699c2284125162bda65c3b84bd",
+  "046fdb1df1f55b8fc844f7ad4255ba40"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -215,28 +216,28 @@
   "jio s akash ambani says services not tariff hikes to drive revenue as record ipo nears",
   "the gta 6 launch trailer shows off vice city and steamy scene with lucia and jason",
   "la bola negra before netflix s gay epic became an oscar frontrunner it had to survive the breakup of its directors",
-  "street fighter cast guide all the wwe stars ufc champs and celebs playing video game fighters in the live action movie"
+  "street fighter cast guide all the wwe stars ufc champs and celebs playing video game fighters in the live action movie",
+  "akka teaser out netflix confirms october 30 premiere for keerthy suresh and radhika apte starrer"
  ],
- "last_post_ts": 1792222332.4588814,
+ "last_post_ts": 1792252045.0158935,
  "recent_categories": [
-  "regulatory",
   "ipo",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "gamespot.com",
   "indiewire.com",
-  "variety.com"
+  "variety.com",
+  "bollywoodhungama"
  ],
  "recent_shapes": [
-  "listicle",
   "stat_first",
-  "hot_take"
+  "hot_take",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  34774356,
   7948071,
   7989073,
   16777252,
@@ -245,13 +246,14 @@
   7971601,
   7562151,
   15610070,
-  38575448
+  38575448,
+  3709371
  ],
  "recent_personas": [
-  "meera",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 107,
+ "post_counter": 108,
  "category_days": {
   "2026-10-11": {
    "regulatory": 1,
@@ -277,12 +279,16 @@
    "movies": 1
   },
   "2026-10-17": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-10-17",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792237270
+ "recent_hooks": [
+  "first_comment"
+ ],
+ "recent_formats": [
+  "portrait"
+ ]
 }
