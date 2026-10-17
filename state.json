@@ -282,10 +282,7 @@
  },
  "bengali_date": "2026-10-17",
  "bengali_count": 0,
- "recent_hooks": [
-  "first_comment"
- ],
- "recent_formats": [
-  "square"
- ]
+ "replied_comment_ids": [],
+ "liked_comment_ids": [],
+ "engage_last_ts": 1792237270
 }
