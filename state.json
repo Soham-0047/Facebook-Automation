@@ -109,7 +109,8 @@
   "b47bfa699c2284125162bda65c3b84bd",
   "046fdb1df1f55b8fc844f7ad4255ba40",
   "db3de225919f7f1ffb45e2c4d5752fa5",
-  "87c10c399442e2cb6ad7627e82025c05"
+  "87c10c399442e2cb6ad7627e82025c05",
+  "6fdb9db8accc770651d702e4b2f29142"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -221,29 +222,28 @@
   "street fighter cast guide all the wwe stars ufc champs and celebs playing video game fighters in the live action movie",
   "akka teaser out netflix confirms october 30 premiere for keerthy suresh and radhika apte starrer",
   "call of duty mw4 s campaign launches today please don t spoil it for others",
-  "akka official teaser keerthy suresh radhika apte netflix india"
+  "akka official teaser keerthy suresh radhika apte netflix india",
+  "box office you can see everything stuns with 15 million debut street fighter leads with 31 million"
  ],
- "last_post_ts": 1792309621.0493824,
+ "last_post_ts": 1792339343.9920845,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "bollywoodhungama",
   "gamespot.com",
-  "bollywoodhungama"
+  "bollywoodhungama",
+  "variety.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "receipts",
-  "cold_open"
+  "cold_open",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  7989073,
-  16777252,
   16121423,
   4828818,
   7971601,
@@ -251,13 +251,15 @@
   15610070,
   38575448,
   3709371,
-  34625043
+  34625043,
+  7848985,
+  19012034
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "ananya"
  ],
- "post_counter": 110,
+ "post_counter": 111,
  "category_days": {
   "2026-10-12": {
    "ecommerce": 1
@@ -283,13 +285,14 @@
    "movies": 1
   },
   "2026-10-18": {
-   "gaming": 1,
+   "gaming": 2,
    "movies": 1
   }
  },
  "bengali_date": "2026-10-18",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792325223
+ "bengali_count": 1,
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ]
 }
