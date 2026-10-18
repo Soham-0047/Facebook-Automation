@@ -108,7 +108,8 @@
   "8cbb4ab083972698c84a1bda16bd76dd",
   "b47bfa699c2284125162bda65c3b84bd",
   "046fdb1df1f55b8fc844f7ad4255ba40",
-  "db3de225919f7f1ffb45e2c4d5752fa5"
+  "db3de225919f7f1ffb45e2c4d5752fa5",
+  "87c10c399442e2cb6ad7627e82025c05"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -219,25 +220,26 @@
   "la bola negra before netflix s gay epic became an oscar frontrunner it had to survive the breakup of its directors",
   "street fighter cast guide all the wwe stars ufc champs and celebs playing video game fighters in the live action movie",
   "akka teaser out netflix confirms october 30 premiere for keerthy suresh and radhika apte starrer",
-  "call of duty mw4 s campaign launches today please don t spoil it for others"
+  "call of duty mw4 s campaign launches today please don t spoil it for others",
+  "akka official teaser keerthy suresh radhika apte netflix india"
  ],
- "last_post_ts": 1792262396.0090778,
+ "last_post_ts": 1792309621.0493824,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "variety.com",
   "bollywoodhungama",
-  "gamespot.com"
+  "gamespot.com",
+  "bollywoodhungama"
  ],
  "recent_shapes": [
-  "hot_take",
   "mini_story",
-  "receipts"
+  "receipts",
+  "cold_open"
  ],
  "recent_photo_ids": [
   7989073,
@@ -252,10 +254,10 @@
   34625043
  ],
  "recent_personas": [
-  "kabir",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 109,
+ "post_counter": 110,
  "category_days": {
   "2026-10-12": {
    "ecommerce": 1
@@ -281,12 +283,13 @@
    "movies": 1
   },
   "2026-10-18": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-10-18",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792303562
+ "recent_hooks": [
+  "first_comment"
+ ]
 }
