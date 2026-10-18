@@ -1,21 +1,31 @@
-# Trending & Entertainment News Bot v5.6
+# Trending & Entertainment News Bot v5.7
 
 Fully-automated Facebook Page autopilot for **worldwide trending +
 entertainment news**: movies, music, TV & streaming, sports, celebs, gaming,
 viral moments, space, and big tech launches. A strong multi-source fetching
 engine (Variety, THR, Deadline, Billboard, NME, E! News, Guardian, BBC, IGN,
 GameSpot, Space.com, NASA + Google News trending fan-outs) picks the hottest
-clean stories, Groq/Gemini write human-sounding commentary in 8 rotating
+clean stories, Groq/Gemini write human-sounding commentary in 10 rotating
 shapes x 6 personas with built-in engagement hooks, and a designer-grade
 image pipeline pulls impressive cinematic photography (concert lights,
 stadium floodlights, rocket launches, red carpets) into 8 layouts, 2 formats
 with film grain so the feed reads like a real page, not a template. The page
-even talks back: a scheduled engagement pass replies to fan comments in the
-page's own voice.
+is now a game show too: ~1 in 3 posts is an interactive special - trivia
+quizzes, THIS OR THAT battles, guess-the-title riddles - and ~1 in 5 photo
+posts becomes a swipeable multi-photo carousel. The page even talks back: a
+scheduled engagement pass replies to fan comments in the page's own voice.
+
+**Never-fail automation:** every run path exits 0 - the GitHub Actions job
+stays green even when Facebook, Groq, or every news source hiccups. Real
+problems (broken token, LLM outage) write `.run_alert`, which the workflow
+converts into an auto GitHub issue *without* failing the run. And if both
+LLM providers are down, a hand-written template caption keeps the page
+posting instead of going silent.
 
 **Family-friendly by construction:** an explicit-content firewall filters
-every headline, every LLM draft, and keeps all image queries inside curated
-safe banks. No explicit content, no graphic gore - ever.
+every headline, every LLM draft, every trivia question, and keeps all image
+queries inside curated safe banks. No explicit content, no graphic gore -
+ever.
 
 Single file. Two dependencies (`requests`, `pillow`; `trafilatura` optional
 but recommended). Runs on GitHub Actions free tier, Google Colab, or any
@@ -23,9 +33,46 @@ machine with Python 3.9+.
 
 ---
 
-## What's new in v5.6 (the worldwide entertainment pivot)
+## What's new in v5.7 (the engagement engine)
 
-### Content
+### Interactive specials (~1 in 3 posts, never two in a row, max 2/day)
+- **TRIVIA DROP:** clean entertainment trivia from OpenTDB (free, no key)
+  on its own neon quiz card - giant '?', lettered option pills. The answer
+  is posted as a first comment, so the thread becomes the game.
+- **THIS OR THAT:** A/B battle card - two striking photos split diagonally
+  behind a giant VS badge; readers pick a side in the comments.
+- **GUESS THE TITLE:** 3 clues on a gold mystery card + an emoji riddle in
+  the caption; the reveal lands in the comments.
+- Guard rails: hard daily cap, no same-kind repeats back-to-back, the same
+  NSFW gate as news, and every probability is env-tunable.
+
+### Carousel posts (~1 in 5 photo posts)
+- Facebook **multi-photo swipeable carousels**: the designed headline card
+  + 2 extra impressive photos from the same query pool (zero extra API
+  calls). Carousels reliably out-reach single-photo posts.
+- Slide design: enhanced crop, soft scrim, category accent bar, handle
+  watermark - reads as one designed object with the card.
+- If any upload step fails, the post silently falls back to a single photo
+  (unpublished uploads stay invisible on the page - no duplicates, ever).
+
+### More voices
+- 2 new post shapes (REACTION SPLIT, GUESS HOOK) and 2 new hooks
+  ("no googling", "which side are you on").
+
+### Never-fail automation (the CI stays green)
+- **Template-caption fallback:** if Groq AND Gemini are both down, the page
+  still posts a varied hand-written caption (6 rotating templates) - a
+  quiet page loses reach faster than a plainer post.
+- **Every exit is 0:** source outage -> "nothing to do this run"; publish
+  failure -> story marked, alert flagged, next run moves on.
+- **`.run_alert` -> auto GitHub issue** without failing the job: you get
+  the email, the badge stays green.
+- Stale-alert cleanup at run start; the alert issue dedupes itself (one
+  open issue, new flags become comments).
+
+### What was new in v5.6 (the worldwide entertainment pivot)
+
+#### Content
 - **Scope pivot: the page now covers the whole world.** The India tech
   gate is gone, the source list is rebuilt around the global entertainment
   trades + world news, and scoring runs on 11 new beats: VIRAL, GAMING,
@@ -50,7 +97,7 @@ machine with Python 3.9+.
 - **Routine politics ranks below entertainment** - fun-first page; only a
   massively corroborated political moment still clears the bar.
 
-### Images (the "impressive photo" engine)
+#### Images (the "impressive photo" engine)
 - **Cinematic query banks per beat:** concert stage lights, stadium
   floodlights, rocket launches at night, red-carpet flashbulbs, aurora,
   neon city streets - every query aims for a photo people stop scrolling
@@ -69,11 +116,9 @@ machine with Python 3.9+.
   magazine-cover energy with the usual accent rotation so no category
   repeats itself visually.
 
-### Everything that made v5.5 feel human stays
-Interaction hooks, the engagement pass, 8 layouts, square mixing, film
-grain, duotone treatments, text-only hot takes, crash-safe workflows.
-
 ### History
+- **v5.6** - worldwide pivot, 11 entertainment beats, NSFW firewall,
+  impressive-photo engine, entertainment palette.
 - **v5.5** - interaction hooks, `--engage` comment replies, TICKER + QUOTE
   layouts, square mixing, film grain, duotone, banned-phrase hardening.
 - **v5.4** - hard daily topic diversity, clickbait firewall, smart-tag
@@ -192,6 +237,15 @@ normal environment variables everywhere else.
 | `MAX_PER_CATEGORY_PER_DAY` | `2` | v5.4 topic diversity cap (`0` = off) |
 | `SMART_TAGS` | `true` | v5.4 hashtag safety net |
 | `ENGAGE_HOOK_PROBABILITY` | `0.75` | v5.5 share of posts ending with a CTA hook |
+| `SPECIAL_POSTS_ENABLED` | `true` | v5.7 master switch for trivia/VS/riddle specials |
+| `TRIVIA_PROBABILITY` | `0.16` | v5.7 share of runs that become a TRIVIA DROP |
+| `VS_PROBABILITY` | `0.12` | v5.7 share of runs that become a THIS OR THAT battle |
+| `RIDDLE_PROBABILITY` | `0.08` | v5.7 share of runs that become a GUESS THE TITLE riddle |
+| `MAX_SPECIALS_PER_DAY` | `2` | v5.7 hard daily cap on interactive specials |
+| `CAROUSEL_ENABLED` | `true` | v5.7 multi-photo carousel master switch |
+| `CAROUSEL_PROBABILITY` | `0.20` | v5.7 share of photo posts that become carousels |
+| `CAROUSEL_MAX_PHOTOS` | `3` | v5.7 slides per carousel (card + N photos) |
+| `TEMPLATE_CAPTION_FALLBACK` | `true` | v5.7 keep posting hand-written captions if both LLMs are down |
 | `TEXT_POST_PROBABILITY` | `0.15` | v5.5 share of conversational posts with no image |
 | `SQUARE_CARD_PROBABILITY` | `0.35` | v5.5 share of 1080x1080 square cards |
 | `ENGAGE_MAX_REPLIES` | `4` | v5.5 comment replies per `--engage` pass |

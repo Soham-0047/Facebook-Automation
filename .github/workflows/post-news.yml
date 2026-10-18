@@ -1,4 +1,4 @@
-name: India Tech Page Bot
+name: Trending & Entertainment Page Bot
 
 on:
   schedule:
@@ -44,6 +44,12 @@ jobs:
           POST_LINK_AS_FIRST_COMMENT: ${{ vars.POST_LINK_AS_FIRST_COMMENT }}
           # v5.4: hard topic diversity (0 = off, default max 2 per category/day)
           MAX_PER_CATEGORY_PER_DAY: ${{ vars.MAX_PER_CATEGORY_PER_DAY }}
+          # v5.7: engagement specials mix (repo variables or leave default)
+          SPECIAL_POSTS_ENABLED: ${{ vars.SPECIAL_POSTS_ENABLED }}
+          TRIVIA_PROBABILITY: ${{ vars.TRIVIA_PROBABILITY }}
+          VS_PROBABILITY: ${{ vars.VS_PROBABILITY }}
+          RIDDLE_PROBABILITY: ${{ vars.RIDDLE_PROBABILITY }}
+          CAROUSEL_PROBABILITY: ${{ vars.CAROUSEL_PROBABILITY }}
         run: |
           rm -f .run_ok
           python bot.py
@@ -69,6 +75,36 @@ jobs:
           - expired FB_PAGE_ACCESS_TOKEN (regenerate + update the repo secret)
           - Groq free tier exhausted / model renamed (check the WARNING lines in the log)
           - Facebook Graph API hiccup (usually self-heals next run)" || true
+          fi
+
+      # v5.7: the bot now degrades gracefully instead of failing - but real
+      # problems (broken FB token, LLM down) write .run_alert, which becomes
+      # a GitHub issue WITHOUT failing this job (green CI + email alert).
+      - name: Alert on bot-flagged errors (job stays green)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f .run_alert ]; then
+            TITLE="Bot flagged an error - needs attention"
+            BODY=$(cat .run_alert)
+            OPEN=$(gh issue list --state open --search "in:title $TITLE" --json number --jq 'length' 2>/dev/null || echo 0)
+            if [ "$OPEN" = "0" ]; then
+              gh issue create --title "$TITLE" --body "The bot stayed green but flagged a problem on $(date -u '+%Y-%m-%d %H:%M UTC'):
+
+          $BODY
+
+          Log: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+          The page kept posting (graceful degradation), but these keys/services need a look." || true
+            else
+              echo "alert issue already open - adding a comment instead"
+              gh issue list --state open --search "in:title $TITLE" --json number --jq '.[0].number' 2>/dev/null | \
+                xargs -r -I{} gh issue comment {} --body "New flag on $(date -u '+%Y-%m-%d %H:%M UTC'):\n\n$BODY" || true
+            fi
+            rm -f .run_alert
+          else
+            echo "no bot errors flagged - all healthy"
           fi
 
       - name: Persist state.json (dedup memory across runs)

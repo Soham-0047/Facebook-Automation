@@ -10,3 +10,9 @@ news_bot.log
 *.log
 card_*.jpg
 final_*.png
+.run_alert
+slide_*.jpg
+generated/
+quiz_*.jpg
+riddle_*.jpg
+vs_*.jpg

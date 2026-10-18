@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.6
+TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.7
 =========================================================
 Single-file bot: fetches worldwide trending + entertainment news (movies,
 music, TV, sports, celebs, gaming, viral moments, space, tech launches) from
@@ -9,7 +9,32 @@ many free sources, scores it, writes a human-sounding post (English + optional
 Bengali companion), renders a designed 1080x1350 image card with impressive
 photography, and publishes to a Facebook Page.
 
-WHAT'S NEW IN v5.6 (worldwide entertainment pivot)
+WHAT'S NEW IN v5.7 (engagement engine - the page becomes an experience)
+  INTERACTIVE SPECIALS (~1 in 3 posts, never two in a row, capped 2/day)
+    * TRIVIA DROP: clean entertainment trivia from OpenTDB (free, no key).
+      Custom quiz card (giant '?', lettered options) + the answer is posted
+      as a first comment - people answer in the thread.
+    * THIS OR THAT: A/B battle card - two striking photos, diagonal split,
+      giant VS, readers pick a side in comments.
+    * GUESS THE TITLE: 3 text clues on a mystery card, emoji riddle in the
+      caption, answer in the first comment.
+  CAROUSEL POSTS (~1 in 5 photo posts)
+    * Facebook multi-photo swipeable carousels: designed headline card + 2
+      extra impressive photos. Carousels get ~2-3x the reach of single-photo
+      posts. Falls back to a single-photo post if any upload step fails.
+  MORE VOICES
+    * 2 new post shapes (REACTION SPLIT / GUESS HOOK) + 2 new hooks.
+  NEVER-FAIL AUTOMATION
+    * Template-caption fallback: if both Groq and Gemini are down, the page
+      still posts a hand-written template caption (page never goes quiet).
+    * Every run path now exits 0 (green CI); real problems write .run_alert,
+      which the workflow turns into an auto GitHub issue WITHOUT failing
+      the job. Fetch/LLM/publish failures degrade gracefully, never crash.
+  Earlier: v5.6 (worldwide pivot, NSFW firewall), v5.5 (human touch),
+  v5.4 (diversity, crash-safe, insights), v5.3 (authority tiers),
+  v5.2 (6 layouts), v5.1 (Groq migration), v5.0 (multi-source fan-out).
+
+WHAT WAS NEW IN v5.6 (worldwide entertainment pivot)
   CONTENT
     * Scope pivot: Indian tech news -> GLOBAL trending & entertainment news.
       All India-gate logic removed - the whole world is in play.
@@ -104,7 +129,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.6"
+VERSION = "5.7"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -161,6 +186,24 @@ ENGAGE_MAX_REPLIES = _env_int("ENGAGE_MAX_REPLIES", 4)
 ENGAGE_LIKE_COMMENTS = _env_int("ENGAGE_LIKE_COMMENTS", 6)
 ENGAGE_COMMENTS_PER_POST = _env_int("ENGAGE_COMMENTS_PER_POST", 20)
 POST_LINK_AS_FIRST_COMMENT = _env_bool("POST_LINK_AS_FIRST_COMMENT", False)
+# ---- v5.7: engagement engine tunables --------------------------------
+# Interactive specials (trivia / this-or-that / guess-the-title). ~1 in 3
+# posts; never two specials in a row; hard cap per day; every one is
+# env-overridable so the mix can be tuned without touching code.
+SPECIAL_POSTS_ENABLED = _env_bool("SPECIAL_POSTS_ENABLED", True)
+TRIVIA_PROBABILITY = _env_float("TRIVIA_PROBABILITY", 0.16)
+VS_PROBABILITY = _env_float("VS_PROBABILITY", 0.12)
+RIDDLE_PROBABILITY = _env_float("RIDDLE_PROBABILITY", 0.08)
+MAX_SPECIALS_PER_DAY = _env_int("MAX_SPECIALS_PER_DAY", 2)
+# Carousel posts (Facebook multi-photo): headline card + 2 extra photos.
+# Carousels reliably out-reach single-photo posts; ~1 in 5 photo posts.
+CAROUSEL_ENABLED = _env_bool("CAROUSEL_ENABLED", True)
+CAROUSEL_PROBABILITY = _env_float("CAROUSEL_PROBABILITY", 0.20)
+CAROUSEL_MAX_PHOTOS = _env_int("CAROUSEL_MAX_PHOTOS", 3)
+# v5.7: if both LLM providers are down, post a hand-written template caption
+# instead of skipping the run - a quiet page loses reach faster than a
+# slightly plainer post. Disable with TEMPLATE_CAPTION_FALLBACK=false.
+TEMPLATE_CAPTION_FALLBACK = _env_bool("TEMPLATE_CAPTION_FALLBACK", True)
 PAGE_HANDLE = os.getenv("PAGE_HANDLE", "").strip()   # e.g. "@indiatechdaily"
 FB_API_VERSION = os.getenv("FB_API_VERSION", "v21.0")
 HTTP_TIMEOUT = _env_int("HTTP_TIMEOUT", 25)
@@ -1486,6 +1529,15 @@ POST_SHAPES = [
      "scaffold": "Start mid-conversation, as if the reader walked in on you talking: 'So...' / 'Okay so' / 'Right, so' followed immediately by the event.\n"
                  "Then 2-3 sentences of what just happened, with the key number.\n"
                  "End with one sentence of consequence for the reader - no question mark."},
+    # v5.7: engagement shapes - the post IS the interaction
+    {"id": "react_split", "name": "REACTION SPLIT",
+     "scaffold": "Line 1: a reaction-ask built on the story, e.g. 'Drop \U0001F525 if you're team YES, \u2764\ufe0f if you're team NO.' - adapt the two sides to THIS story in your own words (keep one emoji per side).\n"
+                 "Then 2-3 sentences: what happened, one key fact or number.\n"
+                 "Last line: tell readers which side YOU picked and why in under 10 words."},
+    {"id": "guess_what", "name": "GUESS HOOK",
+     "scaffold": "Line 1: a tease that hides the subject: name the CATEGORY, not the name (e.g. 'A certain pop star just did something no one saw coming...').\n"
+                 "Then 2-3 sentences of clues - specific facts that make guessing fun, without revealing who/what.\n"
+                 "Last line: 'Guess who/what in the comments - answer pinned below.'"},
 ]
 
 BANNED_EN_PHRASES = [
@@ -1813,6 +1865,9 @@ ENGAGEMENT_HOOKS = [
     {"id": "verdict",       "text": "Your verdict: {up} hit, {dw} miss."},
     {"id": "followup",      "text": "Want the follow-up when the numbers land? Say 'yes' below."},
     {"id": "disagree_ok",   "text": "Think I'm wrong? Good - comment and argue."},
+    # v5.7: specials-flavoured hooks
+    {"id": "share_score",   "text": "Drop your answer below - no googling."},
+    {"id": "which_team",    "text": "Which side are you on? Fight it out in the comments."},
 ]
 _HOOK_EMOJI = {"rx": "\U0001F44D", "dw": "\U0001F44E", "fire": "\U0001F525",
                "down": "\U0001F447", "___": "_____", "up": "\U0001F60A"}
@@ -1870,6 +1925,560 @@ def _apply_interaction_layer(text, art, state, shape_id=""):
         parts.append(tags)
     out = "\n\n".join(parts)
     return out.rstrip() + "\n"
+
+
+# ==========================================================================
+# v5.7: ENGAGEMENT SPECIALS - trivia / this-or-that / guess-the-title
+# ==========================================================================
+# Commercial entertainment pages don't just broadcast news: roughly 1 in 3
+# posts is an interactive game post (quiz, battle, riddle). Those posts
+# collect 5-10x the comments of straight news because the comment IS the
+# game. Each special has its own custom card design, its own caption voice,
+# and its own guard rails: never two specials in a row, a hard daily cap,
+# and the same family-friendly NSFW gate the news pipeline uses.
+
+def _flag_run_alert(reason: str):
+    """v5.7: write .run_alert so the workflow can open a GitHub issue WITHOUT
+    failing the job (green CI + email alert). Never raises."""
+    try:
+        path = BASE_DIR / ".run_alert"
+        path.write_text(f"v{VERSION} {_now_ist().isoformat()}\n{reason}\n", encoding="utf-8")
+    except Exception:
+        pass
+
+
+# ---- TRIVIA (OpenTDB - free, no key, clean entertainment categories) -----
+_TRIVIA_CATEGORIES = [11, 12, 15, 32]   # film / music / video games / cartoons
+_TRIVIA_CAT_LABEL = {11: "movies", 12: "music", 15: "gaming", 32: "tv"}
+
+
+def fetch_trivia():
+    """One clean multiple-choice entertainment question from OpenTDB.
+    Returns dict(question, options[4], answer_idx, answer, category,
+    difficulty) or None. Base64 encoding is requested so apostrophes,
+    quotes and ampersands survive every layer untouched."""
+    import base64
+    try:
+        cat = random.choice(_TRIVIA_CATEGORIES)
+        r = _http_get("https://opentdb.com/api.php",
+                      params={"amount": 1, "category": cat,
+                              "difficulty": random.choice(("easy", "medium")),
+                              "type": "multiple", "encode": "base64"},
+                      timeout=15, retries=1)
+        if r is None:
+            return None
+        blob = (r.json() or {}).get("results") or []
+        if not blob:
+            return None
+        q = blob[0]
+
+        def b64(s):
+            return base64.b64decode(s or "").decode("utf-8", "replace")
+
+        question = _html.unescape(b64(q.get("question", ""))).strip()
+        correct = _html.unescape(b64(q.get("correct_answer", ""))).strip()
+        wrong = [_html.unescape(b64(w)).strip() for w in (q.get("incorrect_answers") or [])]
+        if not question or not correct or len(wrong) != 3:
+            return None
+        # family-friendly gate + layout gate (long options wreck the card)
+        if _is_explicit(" ".join([question, correct] + wrong)):
+            log.warning("trivia question tripped the NSFW gate - skipping it")
+            return None
+        if any(len(o) > 58 for o in [correct] + wrong):
+            return None
+        options = wrong + [correct]
+        random.shuffle(options)
+        return {"question": question, "options": options,
+                "answer_idx": options.index(correct), "answer": correct,
+                "category": _TRIVIA_CAT_LABEL.get(cat, "general"),
+                "difficulty": (b64(q.get("difficulty", "")) or "medium").strip()}
+    except Exception as e:
+        log.debug("OpenTDB fetch failed: %s", e)
+        return None
+
+
+# ---- GUESS THE TITLE (hand-written riddle bank; no LLM dependency) -------
+_RIDDLE_BANK = [
+    {"answer": "Titanic", "kind": "movie", "emoji": "\U0001F6A4 \u2744\ufe0f \U0001F9CA \U0001F48B",
+     "clues": ["The ship everyone swore was unsinkable", "A door that famously fit only one", "An iceberg, a necklace, and a band that kept playing"]},
+    {"answer": "Inception", "kind": "movie", "emoji": "\U0001F4A4 \U0001F5ED \U0001F503 \U0001F5B1\ufe0f",
+     "clues": ["Dreams inside dreams inside dreams", "A spinning top that decides everything", "A city folds onto itself like paper"]},
+    {"answer": "The Lion King", "kind": "movie", "emoji": "\U0001F981 \U0001F41A \u2600\ufe0f \U0001F3B6",
+     "clues": ["An uncle with serious trust issues", "A heir who'd rather sing about no worries", "Hakuna Matata for two full hours"]},
+    {"answer": "The Matrix", "kind": "movie", "emoji": "\U0001F457 \u26a1 \U0001F455 \u2699\ufe0f",
+     "clues": ["A red pill and a blue pill", "Reality turns out to be code", "Dodge this - literally in slow motion"]},
+    {"answer": "Interstellar", "kind": "movie", "emoji": "\U0001F30C \U0001F680 \u23F3 \U0001F5A1\ufe0f",
+     "clues": ["A father races time itself", "Every hour costs seven years", "A wormhole with a bookshelf twist"]},
+    {"answer": "Jurassic Park", "kind": "movie", "emoji": "\U0001F996 \U0001F7E9 \u26c4 \U0001F35C",
+     "clues": ["Science revived something it shouldn't have", "A theme park with a VERY bad opening day", "Life finds a way"]},
+    {"answer": "Minecraft", "kind": "game", "emoji": "\u26cf\ufe0f \U0001F9F9 \U0001F7DC \U0001F40A",
+     "clues": ["Punch a tree, get wood - that's lesson one", "Creepers blow up everything you love", "The whole world is literally blocks"]},
+    {"answer": "Spider-Man", "kind": "movie", "emoji": "\U0001F577\ufe0f \U0001F997 \u2764\ufe0f \U0001F3A9",
+     "clues": ["Bitten by the world's most career-changing bug", "Great power, great you-know-what", "Swings to work instead of taking the subway"]},
+    {"answer": "Frozen", "kind": "movie", "emoji": "\u2744\ufe0f \U0001F9AC \U0001F3B6 \u26a1",
+     "clues": ["A queen who accidentally ices her kingdom", "A snowman who dreams of summer", "A song every kid belted for a full year"]},
+    {"answer": "Avengers", "kind": "movie", "emoji": "\U0001F535 \U0001F7E9 \u2694\ufe0f \U0001F3B2",
+     "clues": ["The world's strangest job interview", "A snap that ended half of everything", "Earth's mightiest group therapy session"]},
+]
+
+# ---- THIS OR THAT (A/B battles with per-side photo queries) --------------
+_VS_PAIRS = [
+    {"a": "Movie night in bed", "a_q": "cozy movie night home popcorn blanket",
+     "b": "First-day-first-show", "b_q": "cinema hall audience crowd premiere",
+     "q": "A movie you've waited months for: bed + laptop, or the big screen on day one?"},
+    {"a": "Stadium concert", "a_q": "stadium concert crowd lights night",
+     "b": "Living-room playlist", "b_q": "home music speaker relaxing evening",
+     "q": "Your favourite artist on tour: front-row chaos, or home speakers and zero queues?"},
+    {"a": "Late-night gaming", "a_q": "gamer room neon night controller",
+     "b": "Binge the whole season", "b_q": "tv series marathon night couch",
+     "q": "One free night: rank up with the squad, or finish the season everyone's spoiling?"},
+    {"a": "Football final", "a_q": "football stadium night match floodlights",
+     "b": "Cricket final", "b_q": "cricket stadium crowd floodlights",
+     "q": "Both finals, same weekend, ONE ticket: football or cricket?"},
+    {"a": "Rewatch a favourite", "a_q": "cinema classic film scene",
+     "b": "Gamble on something new", "b_q": "new movie release neon poster night",
+     "q": "Two hours to yourself: the comfort rewatch you know line-by-line, or a gamble on something new?"},
+    {"a": "Paper books", "a_q": "stack of books reading cozy warm",
+     "b": "Audiobooks", "b_q": "headphones music walking street",
+     "q": "Same story, two formats: pages you can smell, or narration on the move?"},
+]
+
+
+def _pick_special_kind(state):
+    """'trivia' | 'vs' | 'riddle' | None. Guards: hard daily cap, never two
+    specials in a row, light same-kind damping (a page full of quizzes is
+    as robotic as a page full of links)."""
+    today = _today_ist_str()
+    if state.get("specials_date") != today:
+        state["specials_date"] = today
+        state["specials_today"] = 0
+    if int(state.get("specials_today", 0) or 0) >= MAX_SPECIALS_PER_DAY:
+        return None
+    if state.get("last_post_was_special"):
+        return None
+    r = random.random()
+    kind = None
+    if r < TRIVIA_PROBABILITY:
+        kind = "trivia"
+    elif r < TRIVIA_PROBABILITY + VS_PROBABILITY:
+        kind = "vs"
+    elif r < TRIVIA_PROBABILITY + VS_PROBABILITY + RIDDLE_PROBABILITY:
+        kind = "riddle"
+    if kind is None:
+        return None
+    if kind == state.get("last_special_kind") and random.random() < 0.7:
+        return None
+    return kind
+
+
+def _download_first(query, orientation="portrait"):
+    """v5.7 helper: best-effort download of ONE photo for a query (VS sides)."""
+    photos = _pexels_search(query, orientation) or _pexels_search(query, None)
+    for p in (photos or [])[:3]:
+        img = _download_photo(p)
+        if img is not None:
+            return img
+    return None
+
+
+# ---- special card renderers (own design language: neon quiz stages) -----
+def _save_special_card(img, prefix):
+    try:
+        IMAGE_DIR.mkdir(parents=True, exist_ok=True)
+        path = IMAGE_DIR / f"{prefix}_{datetime.now().strftime('%Y%m%d%H%M%S')}_{uuid.uuid4().hex[:8]}.jpg"
+        img.save(path, "JPEG", quality=90, optimize=True, progressive=True)
+        return path
+    except Exception as e:
+        log.error("special card save failed: %s", e)
+        return None
+
+
+def _render_quiz_card(header, question=None, clues=None, options=None,
+                      footer="", accent=(170, 120, 255), watermark="?"):
+    """v5.7: the quiz stage - dark neon gradient, dot grid, giant translucent
+    watermark, auto-fit question or numbered clues, lettered option pills.
+    Used by both TRIVIA DROP and GUESS THE TITLE (options=None)."""
+    if not PIL_OK:
+        return None
+    _ensure_fonts()
+    _set_card_format(False)          # specials are always portrait drama
+    S = max(1, SUPERSAMPLE)
+    W, H = CARD_W * S, CARD_H * S
+    M = int(72 * S)
+
+    # ---- stage: dark vertical blend + dot grid + rings
+    dark = (16, 10, 34)
+    base = Image.new("RGBA", (W, H), dark + (255,))
+    ov = _vertical_gradient((W, H), (34, 12, 70), 0, 235, curve=1.25)
+    base = Image.alpha_composite(base, ov)
+    d = ImageDraw.Draw(base, "RGBA")
+    step = int(44 * S)
+    for gy in range(int(60 * S), H, step):
+        for gx in range(int(60 * S), W, step):
+            d.ellipse([gx - 2 * S, gy - 2 * S, gx + 2 * S, gy + 2 * S],
+                      fill=(255, 255, 255, 22))
+    for (cx, cy, rad, alpha) in ((W - int(150 * S), int(190 * S), int(120 * S), 26),
+                                 (int(140 * S), H - int(260 * S), int(170 * S), 20)):
+        d.ellipse([cx - rad, cy - rad, cx + rad, cy + rad], outline=accent + (alpha,), width=3 * S)
+    # giant watermark glyph (top-right, barely-there)
+    try:
+        wm_font = _font(int(560 * S), "bold")
+        if wm_font is not None:
+            d.text((W - int(430 * S), int(-60 * S)), watermark, font=wm_font,
+                   fill=accent + (30,))
+    except Exception:
+        pass
+
+    y = int(84 * S)
+    # ---- header chip
+    _, chip_h = _draw_chip(d, M, y, header, accent, int(25 * S))
+    y += chip_h + int(46 * S)
+    if PAGE_HANDLE:
+        hf = _font(int(26 * S), "medium")
+        if hf is not None:
+            hw = d.textlength(PAGE_HANDLE, font=hf)
+            d.text((W - M - hw, int(90 * S)), PAGE_HANDLE, font=hf, fill=(255, 255, 255, 150))
+
+    # ---- question / clue block
+    if question:
+        lines, font, lh, th, _sz = _fit_headline(d, question, "semibold",
+                                                 W - 2 * M, 5, int(54 * S), int(32 * S))
+        for ln in lines:
+            _txt(d, (M, y), ln, font, (255, 255, 255, 250))
+            y += lh
+        y += int(40 * S)
+    if clues:
+        nf = _font(int(24 * S), "bold")
+        tf = _font(int(33 * S), "medium")
+        for i, c in enumerate(clues, 1):
+            if nf is not None:
+                d.text((M, y), f"0{i}", font=nf, fill=accent + (255,))
+            if tf is not None:
+                cl = _wrap_text(d, c, tf, W - 2 * M - int(90 * S))
+                cy = y
+                for ln in cl[:3]:
+                    _txt(d, (M + int(90 * S), cy), ln, tf, (255, 255, 255, 235))
+                    cy += int(44 * S)
+            y += max(int(46 * S), int(44 * S) * min(2, len(cl)))
+            y += int(26 * S)
+        y += int(20 * S)
+
+    # ---- options (lettered pills)
+    if options:
+        letters = "ABCD"
+        row_h = int(118 * S)
+        for i, opt in enumerate(options[:4]):
+            box = [M, y, W - M, y + row_h - int(22 * S)]
+            d.rounded_rectangle(box, radius=int(26 * S), fill=(8, 10, 18, 185),
+                                outline=accent + (120,), width=2 * S)
+            # letter badge
+            br = int(38 * S)
+            bx, by = M + int(26 * S), y + int(18 * S)
+            d.ellipse([bx, by, bx + 2 * br, by + 2 * br], fill=accent + (255,))
+            lf = _font(int(30 * S), "bold")
+            if lf is not None:
+                lw = d.textlength(letters[i], font=lf)
+                d.text((bx + br - lw / 2, by + br - int(21 * S)), letters[i],
+                       font=lf, fill=(12, 10, 24, 255))
+            of = _font(int(32 * S), "medium")
+            if of is not None:
+                ols = _wrap_text(d, opt, of, W - 2 * M - int(130 * S))
+                oy = y + int(30 * S) if len(ols) > 1 else y + int(34 * S)
+                for ln in ols[:2]:
+                    d.text((M + int(120 * S), oy), ln, font=of, fill=(255, 255, 255, 240))
+                    oy += int(40 * S)
+            y += row_h
+        y += int(28 * S)
+
+    # ---- footer
+    ff = _font(int(25 * S), "medium")
+    if ff is not None and footer:
+        fw = d.textlength(footer, font=ff)
+        d.text(((W - fw) / 2, H - M - int(10 * S)), footer, font=ff, fill=(255, 255, 255, 190))
+
+    out = base.convert("RGB")
+    out = _apply_grain(out)
+    return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+
+
+def _render_vs_card(pair, photo_a=None, photo_b=None):
+    """v5.7: THIS OR THAT battle card - diagonal split, two photos (or two
+    tinted stages), giant VS badge, side labels, question strip at the bottom."""
+    if not PIL_OK:
+        return None
+    _ensure_fonts()
+    _set_card_format(False)
+    S = max(1, SUPERSAMPLE)
+    W, H = CARD_W * S, CARD_H * S
+    M = int(72 * S)
+    acc_a = (255, 64, 96)      # team pink
+    acc_b = (80, 200, 255)     # team blue
+
+    base = Image.new("RGBA", (W, H), (12, 12, 26, 255))
+    # diagonal cut: left A / right B
+    cut_top, cut_bot = int(W * 0.54), int(W * 0.46)
+
+    def half_photo(img, polygon):
+        if img is None:
+            return None
+        try:
+            box = (0, 0, W, int(H * 0.78))
+            ph = _smart_crop(img, W, int(H * 0.78)).resize((W, int(H * 0.78)), _RESAMPLE.LANCZOS)
+            ph = _enhance_photo(ph)
+            mask = Image.new("L", (W, int(H * 0.78)), 0)
+            ImageDraw.Draw(mask).polygon(polygon, fill=255)
+            return ph, mask
+        except Exception:
+            return None
+
+    left = half_photo(photo_a, [(0, 0), (cut_top, 0), (cut_bot, int(H * 0.78)), (0, int(H * 0.78))])
+    right = half_photo(photo_b, [(cut_top, 0), (W, 0), (W, int(H * 0.78)), (cut_bot, int(H * 0.78))])
+    if left:
+        base.paste(left[0].convert("RGB"), (0, 0), left[1])
+    else:
+        d0 = ImageDraw.Draw(base, "RGBA")
+        d0.polygon([(0, 0), (cut_top, 0), (cut_bot, int(H * 0.78)), (0, int(H * 0.78))],
+                   fill=tuple(int(c * 0.35) for c in acc_a) + (255,))
+    if right:
+        base.paste(right[0].convert("RGB"), (0, 0), right[1])
+    else:
+        d0 = ImageDraw.Draw(base, "RGBA")
+        d0.polygon([(cut_top, 0), (W, 0), (W, int(H * 0.78)), (cut_bot, int(H * 0.78))],
+                   fill=tuple(int(c * 0.35) for c in acc_b) + (255,))
+
+    d = ImageDraw.Draw(base, "RGBA")
+    # scrim the top/bottom of the photo zone so labels read
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ov.alpha_composite(_vertical_gradient((W, int(H * 0.14)), (8, 10, 18), 150, 0), (0, 0))
+    ov.alpha_composite(_vertical_gradient((W, int(H * 0.22)), (8, 10, 18), 0, 190, curve=1.4),
+                       (0, int(H * 0.78) - int(H * 0.22)))
+    base = Image.alpha_composite(base, ov)
+    d = ImageDraw.Draw(base, "RGBA")
+
+    # neon divider along the cut
+    d.line([(cut_top, 0), (cut_bot, int(H * 0.78))], fill=(255, 255, 255, 230), width=4 * S)
+
+    # ---- VS badge (circle, ring, bold text)
+    cx, cy, rr = W // 2, int(H * 0.36), int(105 * S)
+    d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], fill=(10, 10, 22, 255),
+              outline=(255, 255, 255, 255), width=5 * S)
+    d.ellipse([cx - rr + int(14 * S), cy - rr + int(14 * S),
+               cx + rr - int(14 * S), cy + rr - int(14 * S)],
+              outline=acc_a + (255,), width=3 * S)
+    vf = _font(int(96 * S), "bold")
+    if vf is not None:
+        vw = d.textlength("VS", font=vf)
+        d.text((cx - vw / 2, cy - int(62 * S)), "VS", font=vf, fill=(255, 255, 255, 255))
+
+    # ---- team labels + chips
+    ytop = int(90 * S)
+    _draw_chip(d, M, ytop, "THIS OR THAT", (255, 200, 60), int(25 * S))
+    la = _font(int(40 * S), "bold")
+    ma = _font(int(26 * S), "medium")
+    if la is not None:
+        _txt(d, (M, int(H * 0.10)), "A", la, acc_a + (255,))
+    if ma is not None:
+        for i, ln in enumerate(_wrap_text(d, pair["a"], ma, int(W * 0.38))[:2]):
+            _txt(d, (M, int(H * 0.10) + int(56 * S) + i * int(32 * S)), ln, ma, (255, 255, 255, 220))
+    if la is not None:
+        aw = d.textlength("B", font=la)
+        _txt(d, (W - M - aw, int(H * 0.10)), "B", la, acc_b + (255,))
+    for i, ln in enumerate(_wrap_text(d, pair["b"], ma, int(W * 0.38))[:2]):
+        lw = d.textlength(ln, font=ma) if ma is not None else 0
+        _txt(d, (W - M - lw, int(H * 0.10) + int(56 * S) + i * int(32 * S)), ln, ma, (255, 255, 255, 220))
+
+    # ---- question strip (bottom solid panel)
+    panel_y = int(H * 0.78)
+    d.rectangle([0, panel_y, W, H], fill=(8, 10, 18, 255))
+    d.rectangle([0, panel_y, W, panel_y + int(6 * S)], fill=(255, 200, 60, 255))
+    qf_lines, qf, qlh, _, _ = _fit_headline(d, pair["q"], "semibold",
+                                            W - 2 * M, 3, int(40 * S), int(28 * S))
+    qy = panel_y + int(60 * S)
+    for ln in qf_lines:
+        _txt(d, (M, qy), ln, qf, (255, 255, 255, 250))
+        qy += qlh
+    ff = _font(int(25 * S), "medium")
+    if ff is not None:
+        footer = "Pick a side in the comments \u00b7 " + _now_ist().strftime("%d %b")
+        fw = d.textlength(footer, font=ff)
+        d.text(((W - fw) / 2, H - M - int(10 * S)), footer, font=ff, fill=(255, 255, 255, 190))
+
+    out = base.convert("RGB")
+    out = _apply_grain(out)
+    return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+
+
+# ---- special post builder -------------------------------------------------
+def build_special_post(state):
+    """v5.7 entry point: maybe build an interactive special post.
+    Returns dict(kind, message, card_path, comment, art) or None (regular
+    news flow then continues). Every failure inside degrades to None - the
+    page always has the news pipeline to fall back on."""
+    kind = _pick_special_kind(state)
+    if kind is None:
+        return None
+
+    if kind == "trivia":
+        t = fetch_trivia()
+        if t is None:
+            log.info("Trivia source unavailable - regular news flow")
+            return None
+        letters = "ABCD"
+        opts = "\n".join(f"{letters[i]}) {o}" for i, o in enumerate(t["options"]))
+        theme = CATEGORY_THEME.get(t["category"], CATEGORY_THEME["general"])
+        message = (
+            f"TRIVIA DROP \u00b7 {theme['label']}\n\n"
+            f"{t['question']}\n\n{opts}\n\n"
+            "No googling. First correct answer in the comments gets the bragging rights - "
+            "pinned comment has the answer.\n\n"
+            "#Trivia #PopCultureQuiz")
+        card = None
+        if PIL_OK:
+            try:
+                card = _save_special_card(_render_quiz_card(
+                    header="TRIVIA DROP",
+                    question=t["question"],
+                    options=t["options"],
+                    footer="Answer in the comments \u00b7 " + _now_ist().strftime("%d %b"),
+                    accent=(170, 120, 255)), "quiz")
+            except Exception as e:
+                log.warning("quiz card render failed (%s) - posting without card", e)
+        correct_letter = letters[t["answer_idx"]]
+        comment = (f"ANSWER: {correct_letter}) {t['answer']}\n"
+                   "How'd you do? Honest scores only.")
+        art = Article(title=f"special:trivia:{t['question'][:70]}",
+                      url="https://opentdb.com", source="OpenTDB",
+                      domain="opentdb.com", category=t["category"])
+        return {"kind": "trivia", "message": message, "card_path": card,
+                "comment": comment, "art": art}
+
+    if kind == "vs":
+        recent = set((state.get("recent_vs") or [])[-3:])
+        pool = [p for p in _VS_PAIRS if p["q"] not in recent] or _VS_PAIRS
+        pair = random.choice(pool)
+        state.setdefault("recent_vs", []).append(pair["q"])
+        state["recent_vs"] = (state.get("recent_vs") or [])[-6:]
+        pa = pb = None
+        if PIL_OK and _get_secret("PEXELS_API_KEY"):
+            try:
+                with ThreadPoolExecutor(max_workers=2) as ex:
+                    fa = ex.submit(_download_first, pair["a_q"])
+                    fb = ex.submit(_download_first, pair["b_q"])
+                    pa, pb = fa.result(), fb.result()
+            except Exception as e:
+                log.debug("vs photos failed: %s", e)
+        card = None
+        if PIL_OK:
+            try:
+                card = _save_special_card(_render_vs_card(pair, pa, pb), "vs")
+            except Exception as e:
+                log.warning("vs card render failed (%s) - posting without card", e)
+        message = (
+            f"THIS OR THAT \u00b7 pick your side\n\n{pair['q']}\n\n"
+            f"A) {pair['a']}  or  B) {pair['b']}?\n\n"
+            "Team A or Team B - drop your pick below and defend it like it's a final.\n\n"
+            "#ThisOrThat #PickASide")
+        art = Article(title=f"special:vs:{pair['a']} vs {pair['b']}",
+                      url="https://www.pexels.com", source="This or That",
+                      domain="pexels.com", category="viral")
+        return {"kind": "vs", "message": message, "card_path": card,
+                "comment": None, "art": art}
+
+    # riddle
+    recent = set((state.get("recent_riddles") or [])[-4:])
+    pool = [r for r in _RIDDLE_BANK if r["answer"] not in recent] or _RIDDLE_BANK
+    r = random.choice(pool)
+    state.setdefault("recent_riddles", []).append(r["answer"])
+    state["recent_riddles"] = (state.get("recent_riddles") or [])[-8:]
+    card = None
+    if PIL_OK:
+        try:
+            card = _save_special_card(_render_quiz_card(
+                header=f"GUESS THE {r['kind'].upper()}",
+                clues=r["clues"],
+                footer="First correct comment wins \u00b7 " + _now_ist().strftime("%d %b"),
+                accent=(255, 200, 60)), "riddle")
+        except Exception as e:
+            log.warning("riddle card render failed (%s) - posting without card", e)
+    message = (
+        f"GUESS THE {r['kind'].upper()} \u2014 decode the emoji\n\n"
+        f"{r['emoji']}\n\n"
+        + "\n".join(f"- {c}" for c in r["clues"])
+        + "\n\nName the title in the comments. First correct guess gets pinned. "
+          "Answer drops in the comments in an hour.\n\n"
+          "#GuessTheTitle #EmojiRiddle")
+    comment = f"ANSWER: {r['answer']}. How fast did you get it?"
+    art = Article(title=f"special:riddle:{r['answer']}",
+                  url="https://www.facebook.com", source="Riddle Bank",
+                  domain="local", category="movies")
+    return {"kind": "riddle", "message": message, "card_path": card,
+            "comment": comment, "art": art}
+
+
+def _publish_special(sp, state, args) -> int:
+    """Publish one special post with the same crash-safety as news posts:
+    mark in-flight BEFORE upload, answer-comment after, lenient exits."""
+    kind, art = sp["kind"], sp["art"]
+    if getattr(args, "dry_run", False):
+        files = {"message.txt": sp["message"], "kind.txt": kind + "\n"}
+        imgs = {"card.jpg": sp["card_path"]} if sp.get("card_path") else {}
+        _save_preview(files, imgs)
+        log.info("DRY RUN special (%s) - nothing published. Message:\n%s", kind, sp["message"])
+        return 0
+
+    _mark_in_flight(state, art)
+    post_id = None
+    try:
+        post_id = (publish_photo_post(sp["card_path"], sp["message"])
+                   if sp.get("card_path") else publish_text_post(sp["message"]))
+        log.info("Published SPECIAL post (%s) id=%s", kind, post_id)
+    except Exception as e:
+        log.error("Special publish failed: %s - job stays green, alert flagged", e)
+        _flag_run_alert(f"special ({kind}) publish failed: {e}")
+        _save_state(state)
+        return 0
+
+    if sp.get("comment") and post_id:
+        try:
+            publish_comment(post_id, sp["comment"])
+            log.info("Answer comment posted (the reveal)")
+        except Exception as e:
+            log.warning("answer comment failed (non-fatal): %s", e)
+
+    _update_state_after_post(state, art, f"special_{kind}", kind)
+    state["last_post_was_special"] = True
+    state["specials_today"] = int(state.get("specials_today", 0) or 0) + 1
+    state["last_special_kind"] = kind
+    _save_state(state)
+    log.info("Run complete (special=%s). post=%s", kind, post_id)
+    return 0
+
+
+# ---- v5.7: hand-written caption templates (LLM-down fallback) ------------
+# If both Groq and Gemini are down (keys rotated, free tier gone), the page
+# still posts: a varied template beats a silent page, and the interaction
+# layer still adds hooks + tags on top. Written like texts from a friend.
+_TEMPLATE_CAPTIONS = [
+    "{title}.\n\nHonestly, this is the story I keep re-reading today. {src} has the "
+    "details - the part that got me is how quietly it happened.\n\nWhat's your take on it?",
+    "Okay, {title} - did anyone else see this coming?\n\n{src} broke it earlier today. "
+    "Read it once and you'll see why everyone's suddenly talking about this.\n\nRight or wrong - where do you stand?",
+    "So this just happened: {title}.\n\nNo take needed, the headline does the work. "
+    "{src} has the full story - worth two minutes of your scroll.\n\nThoughts?",
+    "{title} - and the internet is already divided.\n\n{src} reports it with receipts. "
+    "I'm curious which side of this you land on.\n\nTell me below.",
+    "Stop scrolling for 30 seconds: {title}.\n\nIt sounds made up until you check {src}. "
+    "Checked. Real.\n\nDrop a reaction - stunned or shrug?",
+    "{title}.\n\nFiled under: things I did NOT have on my bingo card. {src} confirms it, "
+    "details and all. The comments on this one should be fun.\n\nYour call: big deal or nothingburger?",
+]
+
+
+def _template_caption(art) -> str:
+    """Varied hand-written fallback caption - never lets the page go quiet."""
+    t = _strip_html(art.title or "").strip().rstrip(".!?")
+    src = (art.source or art.domain or "the report").strip().split()[0].title()
+    return random.choice(_TEMPLATE_CAPTIONS).format(title=t, src=src)
 
 
 # ------------------------------------------------------------------ Bengali
@@ -2420,15 +3029,17 @@ def _download_photo(p):
         return None
 
 
-def _pick_photo(art, avoid_ids=None):
+def _pick_photo_pool(art, avoid_ids=None, want=4):
     """Query ladder -> rank candidates -> download top 4 -> keep most vivid.
     v5.6 'impressive photos': bigger pool (18/page), landscape-friendly floor
     (dramatic wide shots crop beautifully), softened aspect penalty so a huge
     cinematic landscape can beat a mediocre portrait, and 4 downloads.
+    v5.7: returns the whole ranked pool (up to `want`) - the first entry feeds
+    the card, the extras feed carousel slides.
     avoid_ids: Pexels photo ids used recently, so the feed never repeats a photo.
-    Returns (PIL.Image, photographer, photo_id) or None."""
+    Returns [(PIL.Image, photographer, photo_id), ...] or []."""
     if not PIL_OK:
-        return None
+        return []
     avoid = avoid_ids or set()
     target = CARD_W / CARD_H
     for query in _image_queries_for(art):
@@ -2476,9 +3087,14 @@ def _pick_photo(art, avoid_ids=None):
         if not cand:
             continue
         cand.sort(key=lambda c: _vividness(c[0]), reverse=True)
-        log.info("Photo found for query '%s' (%d candidates)", query, len(cand))
-        return cand[0]
-    return None
+        log.info("Photo pool for query '%s' (%d candidates)", query, len(cand))
+        return cand[:max(1, int(want))]
+    return []
+
+
+def _pick_photo(art, avoid_ids=None):
+    pool = _pick_photo_pool(art, avoid_ids)
+    return pool[0] if pool else None
 
 
 _EMOJI_RE = re.compile(
@@ -3106,11 +3722,20 @@ def render_card(art, state=None, bengali=False, card_headline=None):
         card_headline = card_headline.upper()
 
     photo = None
+    pool = []
     avoid = set((state or {}).get("recent_photo_ids") or [])
     try:
-        photo = _pick_photo(art, avoid)
+        pool = _pick_photo_pool(art, avoid)
     except Exception as e:
         log.debug("photo pick failed: %s", e)
+    if pool:
+        photo = pool[0]
+    # v5.7: stash the extra downloaded photos on the article - the carousel
+    # builder turns them into swipeable slides (plain images, no typography)
+    try:
+        art.photo_pool = pool
+    except Exception:
+        pass
 
     # remember the photo so the next 10 cards never reuse it
     if photo is not None and state is not None and photo[2]:
@@ -3141,6 +3766,62 @@ def render_card(art, state=None, bengali=False, card_headline=None):
     except Exception as e:
         log.error("card save failed: %s", e)
         return None
+
+# ==========================================================================
+# v5.7: CAROUSEL SLIDES - extra photos become swipeable Facebook carousels
+# ==========================================================================
+def _render_plain_photo(img, art=None):
+    """Carousel slide: enhanced smart-crop + soft bottom scrim + category
+    accent bar + grain. No typography - the designed card carries the
+    headline; the slides carry pure wow. Slides share the feed's format
+    language so the carousel reads as one designed object."""
+    _set_card_format(False)
+    S = max(1, SUPERSAMPLE)
+    W, H = CARD_W * S, CARD_H * S
+    base = _enhance_photo(_smart_crop(img, W, H).resize((W, H), _RESAMPLE.LANCZOS)).convert("RGBA")
+    theme = CATEGORY_THEME.get(art.category if art is not None else None,
+                               CATEGORY_THEME["general"])
+    ov = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ov.alpha_composite(_vertical_gradient((W, int(H * 0.28)), (8, 10, 18), 0, 145, curve=1.6),
+                       (0, H - int(H * 0.28)))
+    d = ImageDraw.Draw(ov, "RGBA")
+    bar_h = int(12 * S)
+    d.rectangle([0, H - bar_h, W, H], fill=theme["accent"] + (255,))
+    if PAGE_HANDLE:
+        hf = _font(int(26 * S), "medium")
+        if hf is not None:
+            hw = d.textlength(PAGE_HANDLE, font=hf)
+            d.text((W - int(46 * S) - hw, H - int(46 * S)), PAGE_HANDLE,
+                   font=hf, fill=(255, 255, 255, 185))
+    out = Image.alpha_composite(base, ov).convert("RGB")
+    out = _apply_grain(out)
+    return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+
+
+def _build_carousel_paths(art, state, card_path):
+    """[card, slide, slide] for a swipeable multi-photo post. Uses the extra
+    photos render_card already downloaded (art.photo_pool) - no new API calls.
+    Returns [card_path] alone if not enough photos survived."""
+    pool = list(getattr(art, "photo_pool", None) or [])[1:]
+    random.shuffle(pool)                      # variety between runs
+    take = pool[: max(1, CAROUSEL_MAX_PHOTOS - 1)]
+    paths = [card_path] if card_path else []
+    for img, _credit, pid in take:
+        try:
+            slide = _render_plain_photo(img, art)
+            p = _save_special_card(slide, "slide")
+            if p:
+                paths.append(p)
+        except Exception as e:
+            log.debug("carousel slide failed: %s", e)
+    if state is not None:
+        ids = [pid for _i, _c, pid in take if pid]
+        if ids:
+            state["recent_photo_ids"] = (list(state.get("recent_photo_ids") or []) + ids)[-10:]
+    if len(paths) >= 2:
+        log.info("Carousel ready: %d slides (headline card + %d photos)", len(paths), len(paths) - 1)
+    return paths
+
 
 # ==========================================================================
 # FACEBOOK GRAPH API  (POSTs are NEVER retried - duplicate-post risk)
@@ -3489,6 +4170,34 @@ def publish_photo_post(image_path, message):
     return j.get("post_id") or j.get("id")
 
 
+def publish_carousel_post(image_paths, message):
+    """v5.7: Facebook multi-photo (swipeable carousel). Each photo is uploaded
+    UNPUBLISHED first, then one feed post references them via attached_media.
+    Safety: if the final feed call fails, the unpublished photos stay invisible
+    on the page, so falling back to a single-photo post can never duplicate
+    content - the photo is just re-used."""
+    tok, pid = _fb_creds()
+    if not tok or not pid:
+        raise RuntimeError("FB_PAGE_ACCESS_TOKEN / FB_PAGE_ID missing")
+    fbids = []
+    for p in image_paths:
+        with open(p, "rb") as f:
+            img_bytes = f.read()
+        files = {"source": (Path(p).name, img_bytes, "image/jpeg")}
+        j = _fb_post_once(f"{_fb_base()}/{pid}/photos",
+                          data={"access_token": tok, "published": "false"},
+                          files=files, timeout=120)
+        fid = j.get("id")
+        if not fid:
+            raise RuntimeError("carousel photo upload returned no media id")
+        fbids.append(str(fid))
+    j = _fb_post_once(f"{_fb_base()}/{pid}/feed",
+                      data={"access_token": tok, "message": message,
+                            "attached_media": json.dumps([{"media_fbid": f} for f in fbids])},
+                      timeout=60)
+    return j.get("id")
+
+
 def publish_text_post(message):
     tok, pid = _fb_creds()
     if not tok or not pid:
@@ -3594,9 +4303,12 @@ def run(args) -> int:
     # ---- 1. fetch
     articles = fetch_all_articles()
     if not articles:
-        log.warning("No articles fetched from any source - aborting run")
+        # v5.7: a total source outage is "nothing to do this run", not a
+        # failure - the next cron retries in a few hours and the job stays green
+        log.warning("No articles fetched from any source - nothing to do this run "
+                    "(next scheduled run retries automatically)")
         _save_state(state)
-        return 1
+        return 0
 
     # ---- 2. score + log the leaderboard
     clusters = score_articles(articles)
@@ -3615,7 +4327,7 @@ def run(args) -> int:
         art = select_article(clusters, state, max(5, threshold - 2)) or (flat[0] if flat else None)
         if art is None:
             log.warning("nothing to render")
-            return 1
+            return 0
         card = render_card(art, state=state)
         _save_preview({"headline.txt": art.title + "\n" + art.url}, {"card.jpg": card} if card else {})
         return 0
@@ -3624,16 +4336,29 @@ def run(args) -> int:
         art = select_article(clusters, state, max(4, threshold - 2)) or (flat[0] if flat else None)
         if art is None:
             log.warning("nothing to preview")
-            return 1
+            return 0
         grounding = _article_grounding(art)
         post, card_h, provider = generate_bengali_post(art, grounding)
         if not post:
             log.error("Bengali generation failed")
-            return 1
+            return 0
         card = render_card(art, state=state, bengali=True, card_headline=card_h)
         _save_preview({"bengali.txt": post}, {"bengali_card.jpg": card} if card else {})
         log.info("BENGALI PREVIEW (provider=%s):\n%s", provider, post)
         return 0
+
+    # ---- 3.5 v5.7 ENGAGEMENT SPECIALS: trivia / this-or-that / riddle.
+    # ~1 in 3 posts is a game post; the comment section becomes the show.
+    # Any failure degrades to the regular news flow below.
+    if SPECIAL_POSTS_ENABLED:
+        special = None
+        try:
+            special = build_special_post(state)
+        except Exception as e:
+            log.warning("special-post build failed (%s) - continuing with news flow", e)
+        if special:
+            return _publish_special(special, state, args)
+        _save_state(state)      # special roll may have updated counters
 
     # ---- 4. select
     art = select_article(clusters, state, threshold)
@@ -3659,11 +4384,21 @@ def run(args) -> int:
         log.debug("wiki failed: %s", e)
     commentary, meta = generate_commentary(art, shape, persona, grounding, wiki)
     if not commentary:
-        log.error("LLM commentary failed after retries - skipping run (better silent than bad). "
-                  "Check the WARNING lines above for the exact API error; usual suspects: "
-                  "invalid/expired key, rate limit, or a renamed model (override via GROQ_MODELS env).")
-        _save_state(state)
-        return 1
+        # v5.7: LLM down is NOT a reason to go quiet. A hand-written template
+        # caption keeps the page alive (and the CI green); the alert file tells
+        # the owner their LLM keys need a look.
+        if TEMPLATE_CAPTION_FALLBACK:
+            commentary = _template_caption(art)
+            meta = {"provider": "template-fallback", "persona": "template"}
+            log.warning("LLM commentary failed after retries - posting a hand-written "
+                        "template caption instead (page stays alive)")
+            _flag_run_alert("LLM commentary failed after retries - template caption used. "
+                            "Check GROQ_API_KEY/GEMINI_API_KEY and the WARNING lines in the log.")
+        else:
+            log.error("LLM commentary failed after retries and template fallback disabled - "
+                      "skipping this run (nothing posted)")
+            _save_state(state)
+            return 0
     log.info("Commentary ready (provider=%s, shape=%s, persona=%s):\n%s",
              meta.get("provider"), shape["id"], meta.get("persona"), commentary)
     # v5.4: hashtag safety net - LLM shipped zero tags -> add up to 2 clean ones
@@ -3680,6 +4415,7 @@ def run(args) -> int:
 
     # ---- 6. image
     image_path = None
+    carousel_paths = []
     conversational = shape["id"] in ("hot_take", "question_hook", "cold_open", "contrarian")
     text_only = (conversational and random.random() < TEXT_POST_PROBABILITY) \
         or getattr(args, "no_image", False)
@@ -3690,11 +4426,25 @@ def run(args) -> int:
             image_path = render_card(art, state=state)
         except Exception as e:
             log.warning("image render failed (%s) - continuing without image", e)
+        # v5.7: multi-photo carousel - the extra photos from the pool become
+        # swipeable slides; carousels consistently out-reach single-photo posts
+        if (CAROUSEL_ENABLED and image_path
+                and random.random() < CAROUSEL_PROBABILITY):
+            try:
+                carousel_paths = _build_carousel_paths(art, state, image_path)
+            except Exception as e:
+                log.warning("carousel build failed (%s) - single-photo post", e)
+                carousel_paths = []
+            if len(carousel_paths) < 2:
+                carousel_paths = []
 
     # ---- 7. publish (or preview)
     if getattr(args, "dry_run", False):
         files = {"message.txt": commentary}
         imgs = {"card.jpg": image_path} if image_path else {}
+        if carousel_paths:
+            for i, p in enumerate(carousel_paths[1:], 2):
+                imgs[f"slide_{i}.jpg"] = p
         if _should_post_bengali(state):
             try:
                 bn_post, bn_card_h, _ = generate_bengali_post(art, grounding)
@@ -3713,13 +4463,28 @@ def run(args) -> int:
     # can never re-select it, so double-posting is structurally impossible
     _mark_in_flight(state, art)
 
+    post_id = None
     try:
-        post_id = publish_photo_post(image_path, commentary) if image_path else publish_text_post(commentary)
-        log.info("Published post id=%s", post_id)
+        if len(carousel_paths) >= 2:
+            try:
+                post_id = publish_carousel_post(carousel_paths, commentary)
+                log.info("Published CAROUSEL post id=%s (%d photos)", post_id, len(carousel_paths))
+            except Exception as e:
+                # unpublished uploads stay invisible - safe to retry as single photo
+                log.warning("carousel publish failed (%s) - falling back to single photo", e)
+                post_id = None
+        if post_id is None:
+            post_id = publish_photo_post(image_path, commentary) if image_path \
+                else publish_text_post(commentary)
+            log.info("Published post id=%s", post_id)
     except Exception as e:
+        # v5.7: a broken token / FB hiccup flags an alert issue but does NOT
+        # fail the workflow - the story is already marked, so the next run
+        # simply picks a fresh story (no double-post, no red X)
         log.error("Publish failed: %s - story stays marked (no double-post risk on retry)", e)
+        _flag_run_alert(f"publish failed: {e}")
         _save_state(state)
-        return 1
+        return 0
 
     # optional reach trick: link as first comment instead of post body
     if POST_LINK_AS_FIRST_COMMENT and post_id and art.url:
@@ -3730,6 +4495,7 @@ def run(args) -> int:
             log.warning("Link comment failed (non-fatal): %s", e)
 
     _update_state_after_post(state, art, shape["id"], meta.get("persona", ""))
+    state["last_post_was_special"] = False      # v5.7: specials rotation bookkeeping
 
     # ---- 8. Bengali companion track
     if _should_post_bengali(state):
@@ -4015,9 +4781,80 @@ def _self_test() -> int:
         plain = Image.new("RGB", (300, 300), (40, 60, 90))
         if plain.tobytes() == _apply_grain(plain).tobytes():
             failures.append("grain is a no-op")
+        # ---- v5.7: special card renders (quiz stage / riddle / VS battle)
+        img = _render_quiz_card(header="TRIVIA DROP",
+                                question="Which movie famously won 11 Oscars in a single night?",
+                                options=["Titanic", "Ben-Hur", "LOTR: Return of the King",
+                                         "West Side Story"],
+                                footer="Answer in the comments \u00b7 TEST")
+        img.save(out_dir / "special_card_quiz.jpg", "JPEG", quality=90)
+        if img.size != (CARD_W, CARD_H):
+            failures.append(f"quiz card size {img.size}")
+        img = _render_quiz_card(header="GUESS THE MOVIE",
+                                clues=["The ship everyone swore was unsinkable",
+                                       "A door that famously fit only one",
+                                       "An iceberg, a necklace, and a band that kept playing"],
+                                footer="First correct comment wins \u00b7 TEST",
+                                accent=(255, 200, 60))
+        img.save(out_dir / "special_card_riddle.jpg", "JPEG", quality=90)
+        if img.size != (CARD_W, CARD_H):
+            failures.append(f"riddle card size {img.size}")
+        img = _render_vs_card(_VS_PAIRS[0], photo, photo)
+        img.save(out_dir / "special_card_vs.jpg", "JPEG", quality=90)
+        if img.size != (CARD_W, CARD_H):
+            failures.append(f"vs card size {img.size}")
+        img = _render_vs_card(_VS_PAIRS[1], None, None)   # designer-half fallback
+        img.save(out_dir / "special_card_vs_fallback.jpg", "JPEG", quality=90)
+        if img.size != (CARD_W, CARD_H):
+            failures.append(f"vs fallback card size {img.size}")
+        # v5.7: carousel slide (plain photo, no typography)
+        img = _render_plain_photo(photo, art)
+        img.save(out_dir / "carousel_slide.jpg", "JPEG", quality=90)
+        if img.size != (CARD_W, CARD_H):
+            failures.append(f"carousel slide size {img.size}")
         log.info("Sample cards written to %s", out_dir)
     else:
         log.warning("Pillow missing - image tests skipped")
+
+    # ---- v5.7: engagement specials (pure logic - runs with or without PIL)
+    capped = {"specials_date": _today_ist_str(), "specials_today": MAX_SPECIALS_PER_DAY}
+    if _pick_special_kind(capped) is not None:
+        failures.append("special daily cap not enforced")
+    b2b = {"specials_date": _today_ist_str(), "specials_today": 0,
+           "last_post_was_special": True}
+    if _pick_special_kind(b2b) is not None:
+        failures.append("back-to-back specials allowed")
+    for rb in _RIDDLE_BANK:
+        if not rb.get("answer") or len(rb.get("clues") or []) != 3 or not rb.get("emoji"):
+            failures.append(f"malformed riddle bank entry: {rb.get('answer')}")
+            continue
+        if _is_explicit(" ".join(rb["clues"]) + " " + rb["answer"]):
+            failures.append(f"riddle tripped NSFW gate: {rb['answer']}")
+    for vp in _VS_PAIRS:
+        if not (vp.get("a") and vp.get("b") and vp.get("q") and vp.get("a_q") and vp.get("b_q")):
+            failures.append("malformed VS pair")
+    # riddle special builds fully offline (bank, no network)
+    _orig_rand = random.random
+    try:
+        random.random = lambda: 0.30          # lands inside the riddle band
+        sp = build_special_post({})
+    finally:
+        random.random = _orig_rand
+    if not sp or sp.get("kind") != "riddle":
+        failures.append(f"riddle special not built: {type(sp)}")
+    else:
+        if "GUESS THE" not in sp["message"].upper() or "ANSWER:" not in (sp["comment"] or ""):
+            failures.append("riddle special message/comment malformed")
+        if not sp["message"].strip() or _is_explicit(sp["message"]):
+            failures.append("riddle special message failed safety/format check")
+        if not str(sp["art"].title).startswith("special:riddle:"):
+            failures.append("riddle special art key malformed")
+    # template-caption fallback (LLM-down path)
+    tcap = _template_caption(a1)
+    if not tcap or "{" in tcap or "}" in tcap:
+        failures.append("template caption malformed (unfilled placeholder)")
+    if a1.title.split()[0].lower() not in tcap.lower():
+        failures.append("template caption lost the headline")
 
     if failures:
         for f in failures:
@@ -4043,6 +4880,12 @@ def main() -> int:
     ap.add_argument("--verbose", action="store_true", help="debug logging")
     args = ap.parse_args()
     _setup_logging(args.verbose)
+    # v5.7: clear any stale alert flag from a previous run before starting
+    # (the workflow turns a FRESH .run_alert into a GitHub issue)
+    try:
+        (BASE_DIR / ".run_alert").unlink(missing_ok=True)
+    except Exception:
+        pass
     if args.self_test:
         return _self_test()
     if args.insights:
