@@ -110,7 +110,8 @@
   "046fdb1df1f55b8fc844f7ad4255ba40",
   "db3de225919f7f1ffb45e2c4d5752fa5",
   "87c10c399442e2cb6ad7627e82025c05",
-  "6fdb9db8accc770651d702e4b2f29142"
+  "6fdb9db8accc770651d702e4b2f29142",
+  "f1a9695c048aa2e7169da6e295676cf3"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -223,47 +224,45 @@
   "akka teaser out netflix confirms october 30 premiere for keerthy suresh and radhika apte starrer",
   "call of duty mw4 s campaign launches today please don t spoil it for others",
   "akka official teaser keerthy suresh radhika apte netflix india",
-  "box office you can see everything stuns with 15 million debut street fighter leads with 31 million"
+  "box office you can see everything stuns with 15 million debut street fighter leads with 31 million",
+  "ramayana to hold diwali themed red carpet world premiere at los angeles academy museum"
  ],
- "last_post_ts": 1792339343.9920845,
+ "last_post_ts": 1792349113.1826634,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "gamespot.com",
   "bollywoodhungama",
-  "variety.com"
+  "variety.com",
+  "timesofindia.indiatimes.com"
  ],
  "recent_shapes": [
-  "receipts",
   "cold_open",
-  "question_hook"
+  "question_hook",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  16121423,
-  4828818,
-  7971601,
   7562151,
   15610070,
   38575448,
   3709371,
   34625043,
   7848985,
-  19012034
+  19012034,
+  15213183,
+  12810654,
+  12810657
  ],
  "recent_personas": [
-  "dev",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 111,
+ "post_counter": 112,
  "category_days": {
-  "2026-10-12": {
-   "ecommerce": 1
-  },
   "2026-10-13": {
    "ipo": 1,
    "funding": 1
@@ -287,11 +286,18 @@
   "2026-10-18": {
    "gaming": 2,
    "movies": 1
+  },
+  "2026-10-19": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-10-18",
- "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792341702
+ "bengali_date": "2026-10-19",
+ "bengali_count": 0,
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
