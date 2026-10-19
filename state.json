@@ -111,7 +111,8 @@
   "db3de225919f7f1ffb45e2c4d5752fa5",
   "87c10c399442e2cb6ad7627e82025c05",
   "6fdb9db8accc770651d702e4b2f29142",
-  "f1a9695c048aa2e7169da6e295676cf3"
+  "f1a9695c048aa2e7169da6e295676cf3",
+  "f43bc10c2e2c8d099d141d15497248c6"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -225,29 +226,28 @@
   "call of duty mw4 s campaign launches today please don t spoil it for others",
   "akka official teaser keerthy suresh radhika apte netflix india",
   "box office you can see everything stuns with 15 million debut street fighter leads with 31 million",
-  "ramayana to hold diwali themed red carpet world premiere at los angeles academy museum"
+  "ramayana to hold diwali themed red carpet world premiere at los angeles academy museum",
+  "riot games reveals agent 31 hush as valorant s new duelist sheep esports"
  ],
- "last_post_ts": 1792349113.1826634,
+ "last_post_ts": 1792398589.4160678,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "bollywoodhungama",
   "variety.com",
-  "timesofindia.indiatimes.com"
+  "timesofindia.indiatimes.com",
+  "sheepesports.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "question_hook",
-  "mini_story"
+  "mini_story",
+  "listicle"
  ],
  "recent_photo_ids": [
-  7562151,
-  15610070,
   38575448,
   3709371,
   34625043,
@@ -255,13 +255,15 @@
   19012034,
   15213183,
   12810654,
-  12810657
+  12810657,
+  28993079,
+  19012062
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "arjun"
  ],
- "post_counter": 112,
+ "post_counter": 113,
  "category_days": {
   "2026-10-13": {
    "ipo": 1,
@@ -288,12 +290,18 @@
    "movies": 1
   },
   "2026-10-19": {
-   "movies": 1
+   "movies": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-10-19",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792390861
+ "bengali_count": 1,
+ "recent_hooks": [
+  "predict"
+ ],
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
