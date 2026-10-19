@@ -112,7 +112,8 @@
   "87c10c399442e2cb6ad7627e82025c05",
   "6fdb9db8accc770651d702e4b2f29142",
   "f1a9695c048aa2e7169da6e295676cf3",
-  "f43bc10c2e2c8d099d141d15497248c6"
+  "f43bc10c2e2c8d099d141d15497248c6",
+  "b5a560462fe780e9ff60d1956a9999a1"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -227,48 +228,45 @@
   "akka official teaser keerthy suresh radhika apte netflix india",
   "box office you can see everything stuns with 15 million debut street fighter leads with 31 million",
   "ramayana to hold diwali themed red carpet world premiere at los angeles academy museum",
-  "riot games reveals agent 31 hush as valorant s new duelist sheep esports"
+  "riot games reveals agent 31 hush as valorant s new duelist sheep esports",
+  "european film producers say oscar contender la bola negra shows taking big risks can pay off"
  ],
- "last_post_ts": 1792398589.4160678,
+ "last_post_ts": 1792435632.157202,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "variety.com",
   "timesofindia.indiatimes.com",
-  "sheepesports.com"
+  "sheepesports.com",
+  "hollywoodreporter.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "mini_story",
-  "listicle"
+  "listicle",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  38575448,
-  3709371,
-  34625043,
   7848985,
   19012034,
   15213183,
   12810654,
   12810657,
   28993079,
-  19012062
+  19012062,
+  15610070,
+  6789626,
+  4329870
  ],
  "recent_personas": [
-  "dev",
-  "arjun"
+  "arjun",
+  "dev"
  ],
- "post_counter": 113,
+ "post_counter": 114,
  "category_days": {
-  "2026-10-13": {
-   "ipo": 1,
-   "funding": 1
-  },
   "2026-10-14": {
    "ipo": 2,
    "funding": 1
@@ -292,11 +290,18 @@
   "2026-10-19": {
    "movies": 1,
    "gaming": 1
+  },
+  "2026-10-20": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-10-19",
- "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792421256
+ "bengali_date": "2026-10-20",
+ "bengali_count": 0,
+ "recent_hooks": [
+  "tag_friend"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
