@@ -113,7 +113,8 @@
   "6fdb9db8accc770651d702e4b2f29142",
   "f1a9695c048aa2e7169da6e295676cf3",
   "f43bc10c2e2c8d099d141d15497248c6",
-  "b5a560462fe780e9ff60d1956a9999a1"
+  "b5a560462fe780e9ff60d1956a9999a1",
+  "90518107ee2998a2d352e69df7a57344"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -229,28 +230,28 @@
   "box office you can see everything stuns with 15 million debut street fighter leads with 31 million",
   "ramayana to hold diwali themed red carpet world premiere at los angeles academy museum",
   "riot games reveals agent 31 hush as valorant s new duelist sheep esports",
-  "european film producers say oscar contender la bola negra shows taking big risks can pay off"
+  "european film producers say oscar contender la bola negra shows taking big risks can pay off",
+  "new blade runner 2099 trailer is a space fan s dream with sinister starships and strange exoplanets video"
  ],
- "last_post_ts": 1792435632.157202,
+ "last_post_ts": 1792483897.737488,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "timesofindia.indiatimes.com",
   "sheepesports.com",
-  "hollywoodreporter.com"
+  "hollywoodreporter.com",
+  "space.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "listicle",
-  "cold_open"
+  "cold_open",
+  "react_split"
  ],
  "recent_photo_ids": [
-  7848985,
   19012034,
   15213183,
   12810654,
@@ -259,13 +260,14 @@
   19012062,
   15610070,
   6789626,
-  4329870
+  4329870,
+  19012046
  ],
  "recent_personas": [
-  "arjun",
-  "dev"
+  "dev",
+  "ananya"
  ],
- "post_counter": 114,
+ "post_counter": 115,
  "category_days": {
   "2026-10-14": {
    "ipo": 2,
@@ -292,12 +294,14 @@
    "gaming": 1
   },
   "2026-10-20": {
-   "movies": 1
+   "movies": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-10-20",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792476566
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
