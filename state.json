@@ -116,7 +116,8 @@
   "b5a560462fe780e9ff60d1956a9999a1",
   "90518107ee2998a2d352e69df7a57344",
   "81bd2161a7978f7b8241a13284d34a93",
-  "997b87d132f6e3b54824fe7cd130fd3d"
+  "997b87d132f6e3b54824fe7cd130fd3d",
+  "0bb7c8baedfd1febfc1ab78fe9e19708"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -235,29 +236,28 @@
   "european film producers say oscar contender la bola negra shows taking big risks can pay off",
   "new blade runner 2099 trailer is a space fan s dream with sinister starships and strange exoplanets video",
   "netflix joins new edition of santiago guadalajara queer incubator",
-  "the suits made all the money from call of duty black ops 1 and 2 ports og dev says"
+  "the suits made all the money from call of duty black ops 1 and 2 ports og dev says",
+  "possible love trailer two families are divided by a documentary in netflix oscar hopeful"
  ],
- "last_post_ts": 1792570613.1422486,
+ "last_post_ts": 1792603729.1727219,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "space.com",
   "variety.com",
-  "gamespot.com"
+  "gamespot.com",
+  "indiewire.com"
  ],
  "recent_shapes": [
-  "react_split",
   "stat_first",
-  "receipts"
+  "receipts",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  12810654,
-  12810657,
   28993079,
   19012062,
   15610070,
@@ -265,13 +265,15 @@
   4329870,
   19012046,
   3709371,
-  7562151
+  7562151,
+  7991321,
+  3709369
  ],
  "recent_personas": [
-  "dev",
-  "kabir"
+  "kabir",
+  "dev"
  ],
- "post_counter": 117,
+ "post_counter": 118,
  "category_days": {
   "2026-10-15": {
    "regulatory": 1,
@@ -298,12 +300,15 @@
    "gaming": 1
   },
   "2026-10-21": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-10-21",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792587693
+ "bengali_count": 1,
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
