@@ -115,7 +115,8 @@
   "f43bc10c2e2c8d099d141d15497248c6",
   "b5a560462fe780e9ff60d1956a9999a1",
   "90518107ee2998a2d352e69df7a57344",
-  "81bd2161a7978f7b8241a13284d34a93"
+  "81bd2161a7978f7b8241a13284d34a93",
+  "997b87d132f6e3b54824fe7cd130fd3d"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -233,28 +234,28 @@
   "riot games reveals agent 31 hush as valorant s new duelist sheep esports",
   "european film producers say oscar contender la bola negra shows taking big risks can pay off",
   "new blade runner 2099 trailer is a space fan s dream with sinister starships and strange exoplanets video",
-  "netflix joins new edition of santiago guadalajara queer incubator"
+  "netflix joins new edition of santiago guadalajara queer incubator",
+  "the suits made all the money from call of duty black ops 1 and 2 ports og dev says"
  ],
- "last_post_ts": 1792517081.3368502,
+ "last_post_ts": 1792570613.1422486,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "hollywoodreporter.com",
   "space.com",
-  "variety.com"
+  "variety.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "react_split",
-  "stat_first"
+  "stat_first",
+  "receipts"
  ],
  "recent_photo_ids": [
-  15213183,
   12810654,
   12810657,
   28993079,
@@ -263,18 +264,15 @@
   6789626,
   4329870,
   19012046,
-  3709371
+  3709371,
+  7562151
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 116,
+ "post_counter": 117,
  "category_days": {
-  "2026-10-14": {
-   "ipo": 2,
-   "funding": 1
-  },
   "2026-10-15": {
    "regulatory": 1,
    "ipo": 1
@@ -298,11 +296,18 @@
   "2026-10-20": {
    "movies": 2,
    "gaming": 1
+  },
+  "2026-10-21": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-20",
+ "bengali_date": "2026-10-21",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792562873
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
