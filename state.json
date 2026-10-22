@@ -117,7 +117,8 @@
   "90518107ee2998a2d352e69df7a57344",
   "81bd2161a7978f7b8241a13284d34a93",
   "997b87d132f6e3b54824fe7cd130fd3d",
-  "0bb7c8baedfd1febfc1ab78fe9e19708"
+  "0bb7c8baedfd1febfc1ab78fe9e19708",
+  "29e4ca0dce44c6deadac02a8aa2be2cc"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -237,28 +238,28 @@
   "new blade runner 2099 trailer is a space fan s dream with sinister starships and strange exoplanets video",
   "netflix joins new edition of santiago guadalajara queer incubator",
   "the suits made all the money from call of duty black ops 1 and 2 ports og dev says",
-  "possible love trailer two families are divided by a documentary in netflix oscar hopeful"
+  "possible love trailer two families are divided by a documentary in netflix oscar hopeful",
+  "former wwe champion turns pookie don the great khali s pink onesie collab with netflix goes viral leaves netizens baffled"
  ],
- "last_post_ts": 1792603729.1727219,
+ "last_post_ts": 1792657132.606892,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "viral"
  ],
  "recent_domains": [
-  "variety.com",
   "gamespot.com",
-  "indiewire.com"
+  "indiewire.com",
+  "newsgram"
  ],
  "recent_shapes": [
-  "stat_first",
   "receipts",
-  "hot_take"
+  "hot_take",
+  "listicle"
  ],
  "recent_photo_ids": [
-  28993079,
   19012062,
   15610070,
   6789626,
@@ -267,18 +268,15 @@
   3709371,
   7562151,
   7991321,
-  3709369
+  3709369,
+  16453343
  ],
  "recent_personas": [
-  "kabir",
-  "dev"
+  "dev",
+  "meera"
  ],
- "post_counter": 118,
+ "post_counter": 119,
  "category_days": {
-  "2026-10-15": {
-   "regulatory": 1,
-   "ipo": 1
-  },
   "2026-10-16": {
    "gaming": 1,
    "movies": 1
@@ -302,11 +300,18 @@
   "2026-10-21": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-10-22": {
+   "viral": 1
   }
  },
- "bengali_date": "2026-10-21",
- "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792649475
+ "bengali_date": "2026-10-22",
+ "bengali_count": 0,
+ "recent_hooks": [
+  "fill_blank"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
