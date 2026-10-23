@@ -119,7 +119,8 @@
   "997b87d132f6e3b54824fe7cd130fd3d",
   "0bb7c8baedfd1febfc1ab78fe9e19708",
   "29e4ca0dce44c6deadac02a8aa2be2cc",
-  "5fa38ab5ffa1a7fa742bfeae4e13b039"
+  "5fa38ab5ffa1a7fa742bfeae4e13b039",
+  "849dbaee6d788549f90ad7674edb0511"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -241,28 +242,28 @@
   "the suits made all the money from call of duty black ops 1 and 2 ports og dev says",
   "possible love trailer two families are divided by a documentary in netflix oscar hopeful",
   "former wwe champion turns pookie don the great khali s pink onesie collab with netflix goes viral leaves netizens baffled",
-  "final james bond screen tests set who s on list"
+  "final james bond screen tests set who s on list",
+  "call of duty modern warfare 4 review a thrilling airport novel of a game"
  ],
- "last_post_ts": 1792689978.279389,
+ "last_post_ts": 1792743332.1774626,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "viral",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "indiewire.com",
   "newsgram",
-  "deadline"
+  "deadline",
+  "theguardian.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "listicle",
-  "cold_open"
+  "cold_open",
+  "react_split"
  ],
  "recent_photo_ids": [
-  15610070,
   6789626,
   4329870,
   19012046,
@@ -271,18 +272,15 @@
   7991321,
   3709369,
   16453343,
-  19743813
+  19743813,
+  34625043
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "kabir"
  ],
- "post_counter": 120,
+ "post_counter": 121,
  "category_days": {
-  "2026-10-16": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-10-17": {
    "gaming": 1,
    "movies": 1
@@ -306,11 +304,15 @@
   "2026-10-22": {
    "viral": 1,
    "movies": 1
+  },
+  "2026-10-23": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-22",
+ "bengali_date": "2026-10-23",
  "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792735591
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
