@@ -122,7 +122,8 @@
   "5fa38ab5ffa1a7fa742bfeae4e13b039",
   "849dbaee6d788549f90ad7674edb0511",
   "f0fa96682ce79ddffea2ce4ab3c9a310",
-  "41c772dd1b26c6baf087fe0db60e12e7"
+  "41c772dd1b26c6baf087fe0db60e12e7",
+  "cc2d7aca19725f2235357f789c157c54"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -247,29 +248,28 @@
   "final james bond screen tests set who s on list",
   "call of duty modern warfare 4 review a thrilling airport novel of a game",
   "box office clayface makes 3 5 million in previews",
-  "watch the official grand theft auto vi launch trailer explore leonida before the game arrives november 19"
+  "watch the official grand theft auto vi launch trailer explore leonida before the game arrives november 19",
+  "ss rajamouli says varanasi is 5 6 times bigger than rrr"
  ],
- "last_post_ts": 1792828419.970648,
+ "last_post_ts": 1792858136.1670587,
  "recent_categories": [
-  "viral",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "theguardian.com",
   "variety.com",
-  "xboxwire"
+  "xboxwire",
+  "timesofindia.indiatimes.com"
  ],
  "recent_shapes": [
-  "react_split",
   "hot_take",
-  "listicle"
+  "listicle",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  19012046,
-  3709371,
   7562151,
   7991321,
   3709369,
@@ -277,13 +277,15 @@
   19743813,
   34625043,
   8652199,
-  7562381
+  7562381,
+  34084882,
+  17397813
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 123,
+ "post_counter": 124,
  "category_days": {
   "2026-10-18": {
    "gaming": 2,
@@ -310,12 +312,15 @@
    "movies": 1
   },
   "2026-10-24": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-10-24",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792843578
+ "bengali_count": 1,
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
