@@ -124,7 +124,8 @@
   "f0fa96682ce79ddffea2ce4ab3c9a310",
   "41c772dd1b26c6baf087fe0db60e12e7",
   "cc2d7aca19725f2235357f789c157c54",
-  "6fb3e2398df79b83ac29fb6814dc42f0"
+  "6fb3e2398df79b83ac29fb6814dc42f0",
+  "f982935bfd16006ad986ee157f4d2a53"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -251,43 +252,44 @@
   "box office clayface makes 3 5 million in previews",
   "watch the official grand theft auto vi launch trailer explore leonida before the game arrives november 19",
   "ss rajamouli says varanasi is 5 6 times bigger than rrr",
-  "netflix reportedly wanted a 500 million film and tv deal with xbox but the counter offer was 800 million"
+  "netflix reportedly wanted a 500 million film and tv deal with xbox but the counter offer was 800 million",
+  "quentin tarantino screens 17 minutes of the further mis adventures of cliff booth before release"
  ],
- "last_post_ts": 1792868107.7347796,
+ "last_post_ts": 1792915643.2830822,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "xboxwire",
   "timesofindia.indiatimes.com",
-  "gamesradar.com"
+  "gamesradar.com",
+  "timesofindia.indiatimes.com"
  ],
  "recent_shapes": [
-  "listicle",
   "question_hook",
-  "stat_first"
+  "stat_first",
+  "guess_what"
  ],
  "recent_photo_ids": [
-  3709369,
-  16453343,
-  19743813,
   34625043,
   8652199,
   7562381,
   34084882,
   17397813,
   15610070,
-  3709371
+  3709371,
+  6789626,
+  6800202,
+  4329870
  ],
  "recent_personas": [
-  "kabir",
-  "meera"
+  "meera",
+  "ananya"
  ],
- "post_counter": 125,
+ "post_counter": 126,
  "category_days": {
   "2026-10-19": {
    "movies": 1,
@@ -314,12 +316,17 @@
    "movies": 1
   },
   "2026-10-25": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-10-25",
  "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792909172
+ "recent_hooks": [
+  "hot_or_not"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
