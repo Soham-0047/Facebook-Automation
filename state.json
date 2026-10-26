@@ -126,7 +126,8 @@
   "cc2d7aca19725f2235357f789c157c54",
   "6fb3e2398df79b83ac29fb6814dc42f0",
   "f982935bfd16006ad986ee157f4d2a53",
-  "2cfe5a748ce6fc79bfd31bdb46346492"
+  "2cfe5a748ce6fc79bfd31bdb46346492",
+  "53aa6b6197281f6a6c2dc28281d21885"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -255,29 +256,28 @@
   "ss rajamouli says varanasi is 5 6 times bigger than rrr",
   "netflix reportedly wanted a 500 million film and tv deal with xbox but the counter offer was 800 million",
   "quentin tarantino screens 17 minutes of the further mis adventures of cliff booth before release",
-  "xbox movie and tv exclusivity deal with netflix reportedly off the table after microsoft asked for 800 million ign"
+  "xbox movie and tv exclusivity deal with netflix reportedly off the table after microsoft asked for 800 million ign",
+  "f1 grid gigs presented by american express returns in austin with grammy award winning america band train"
  ],
- "last_post_ts": 1792946347.512552,
+ "last_post_ts": 1793003515.0534275,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "music"
  ],
  "recent_domains": [
-  "gamesradar.com",
   "timesofindia.indiatimes.com",
-  "ign.com"
+  "ign.com",
+  "formulaoneworldchampionshiplimited"
  ],
  "recent_shapes": [
-  "stat_first",
   "guess_what",
-  "react_split"
+  "react_split",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  8652199,
-  7562381,
   34084882,
   17397813,
   15610070,
@@ -285,18 +285,16 @@
   6789626,
   6800202,
   4329870,
-  3709369
+  3709369,
+  7005685,
+  35844840
  ],
  "recent_personas": [
-  "ananya",
-  "riya"
+  "riya",
+  "dev"
  ],
- "post_counter": 127,
+ "post_counter": 128,
  "category_days": {
-  "2026-10-19": {
-   "movies": 1,
-   "gaming": 1
-  },
   "2026-10-20": {
    "movies": 2,
    "gaming": 1
@@ -320,11 +318,19 @@
   "2026-10-25": {
    "gaming": 2,
    "movies": 1
+  },
+  "2026-10-26": {
+   "music": 1
   }
  },
- "bengali_date": "2026-10-25",
+ "bengali_date": "2026-10-26",
  "bengali_count": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1792996109
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
