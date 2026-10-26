@@ -325,12 +325,7 @@
  },
  "bengali_date": "2026-10-26",
  "bengali_count": 1,
- "recent_hooks": [
-  "scale"
- ],
- "recent_formats": [
-  "portrait",
-  "portrait"
- ],
- "last_post_was_special": false
+ "replied_comment_ids": [],
+ "liked_comment_ids": [],
+ "engage_last_ts": 1793024737
 }
