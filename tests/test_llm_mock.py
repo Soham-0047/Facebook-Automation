@@ -10,6 +10,12 @@ logging.basicConfig(level=logging.DEBUG, format="%(levelname)-7s | %(message)s")
 
 import bot
 
+# v5.8: the LLM chain gained a keyless tier-3 (pollinations.ai text). This
+# suite exercises the Groq/Gemini tiers only - the third tier has its own
+# dedicated cases in test_ai_features.py. Keep it OFF so no test ever hits
+# the real network.
+bot.POLLINATIONS_TEXT_ENABLED = False
+
 PASS = []
 FAIL = []
 

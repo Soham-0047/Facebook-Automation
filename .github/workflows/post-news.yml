@@ -10,6 +10,8 @@ on:
 
 permissions:
   contents: write   # needed to commit state.json (dedup memory)
+  issues: write      # v5.8: without this the alert steps' `gh issue create`
+                    # silently 403'd - alerts now actually reach the inbox
 
 concurrency:
   group: news-bot
@@ -50,6 +52,12 @@ jobs:
           VS_PROBABILITY: ${{ vars.VS_PROBABILITY }}
           RIDDLE_PROBABILITY: ${{ vars.RIDDLE_PROBABILITY }}
           CAROUSEL_PROBABILITY: ${{ vars.CAROUSEL_PROBABILITY }}
+          # v5.8: AI image engine + editorial pipeline tuning (repo variables,
+          # leave unset for the built-in defaults)
+          AI_IMAGE_ENABLED: ${{ vars.AI_IMAGE_ENABLED }}
+          AI_IMAGE_PROBABILITY: ${{ vars.AI_IMAGE_PROBABILITY }}
+          EDITOR_PASS_ENABLED: ${{ vars.EDITOR_PASS_ENABLED }}
+          CINEMATIC_GRADE_PROBABILITY: ${{ vars.CINEMATIC_GRADE_PROBABILITY }}
         run: |
           rm -f .run_ok
           python bot.py

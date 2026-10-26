@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write   # commits state.json (replied/liked comment memory)
+  issues: write      # v5.8: alert issues can actually be created
 
 concurrency:
   group: news-bot-engage
@@ -44,7 +45,31 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ENGAGE_MAX_REPLIES: ${{ vars.ENGAGE_MAX_REPLIES || '4' }}
           ENGAGE_LIKE_COMMENTS: ${{ vars.ENGAGE_LIKE_COMMENTS || '6' }}
-        run: python bot.py --engage
+        # v5.8: a crashing engage pass must NEVER redden the job - flag an
+        # issue instead (same green-but-alerted philosophy as post-news)
+        run: |
+          if python bot.py --engage; then
+            echo "engage pass completed"
+          else
+            echo "::warning::engage bot exited non-zero - job stays green, flagging issue"
+            echo "The --engage run crashed on $(date -u '+%Y-%m-%d %H:%M UTC') (exit $?). Check FB_PAGE_ACCESS_TOKEN / Graph API status." > .run_alert
+          fi
+
+      - name: Alert on bot-flagged errors (job stays green)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f .run_alert ]; then
+            TITLE="Engage run crashed - needs attention"
+            OPEN=$(gh issue list --state open --search "in:title $TITLE" --json number --jq 'length' 2>/dev/null || echo 0)
+            if [ "$OPEN" = "0" ]; then
+              gh issue create --title "$TITLE" --body "$(cat .run_alert)" || true
+            fi
+            rm -f .run_alert
+          else
+            echo "no engage errors flagged"
+          fi
 
       - name: Persist state.json (skip if unchanged)
         if: always()

@@ -45,3 +45,6 @@ jobs:
 
       - name: Contrast-aware scrim tests
         run: python tests/test_scrim.py
+
+      - name: AI engine + editorial pass mock tests (v5.8)
+        run: python tests/test_ai_features.py

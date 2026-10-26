@@ -10,6 +10,7 @@ on:
 
 permissions:
   contents: write   # commits state.json (post_stats + hour histogram)
+  issues: write      # v5.8: alert issues can actually be created
 
 concurrency:
   group: news-bot-insights
@@ -34,7 +35,31 @@ jobs:
         env:
           FB_PAGE_ACCESS_TOKEN: ${{ secrets.FB_PAGE_ACCESS_TOKEN }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
-        run: python bot.py --insights
+        # v5.8: a crashing insights pull must NEVER redden the job - flag an
+        # issue instead (same green-but-alerted philosophy as post-news)
+        run: |
+          if python bot.py --insights; then
+            echo "insights pull completed"
+          else
+            echo "::warning::insights bot exited non-zero - job stays green, flagging issue"
+            echo "The --insights run crashed on $(date -u '+%Y-%m-%d %H:%M UTC') (exit $?). Check FB_PAGE_ACCESS_TOKEN / Graph API status." > .run_alert
+          fi
+
+      - name: Alert on bot-flagged errors (job stays green)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f .run_alert ]; then
+            TITLE="Insights run crashed - needs attention"
+            OPEN=$(gh issue list --state open --search "in:title $TITLE" --json number --jq 'length' 2>/dev/null || echo 0)
+            if [ "$OPEN" = "0" ]; then
+              gh issue create --title "$TITLE" --body "$(cat .run_alert)" || true
+            fi
+            rm -f .run_alert
+          else
+            echo "no insights errors flagged"
+          fi
 
       - name: Persist state.json (skip if unchanged)
         if: always()

@@ -113,12 +113,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from urllib.parse import quote_plus, urlparse
+from urllib.parse import quote, quote_plus, urlparse
 
 import requests
 
 try:
-    from PIL import Image, ImageDraw, ImageEnhance, ImageFont, ImageStat
+    from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps, ImageStat
     PIL_OK = True
 except Exception:
     PIL_OK = False
@@ -129,7 +129,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.7"
+VERSION = "5.8"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -204,6 +204,24 @@ CAROUSEL_MAX_PHOTOS = _env_int("CAROUSEL_MAX_PHOTOS", 3)
 # instead of skipping the run - a quiet page loses reach faster than a
 # slightly plainer post. Disable with TEMPLATE_CAPTION_FALLBACK=false.
 TEMPLATE_CAPTION_FALLBACK = _env_bool("TEMPLATE_CAPTION_FALLBACK", True)
+# ---- v5.8: AI IMAGE ENGINE + EDITORIAL PIPELINE tunables -----------------
+# Free, keyless, open-source image generation (Pollinations serving FLUX).
+# ~45% of photo cards get a unique AI-generated illustration that NO other
+# page on Facebook can repost - the rest stay on stock photos. Any AI failure
+# (rate limit, timeout, NSFW filter) silently falls back to the stock flow.
+AI_IMAGE_ENABLED = _env_bool("AI_IMAGE_ENABLED", True)
+AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.45)
+AI_IMAGE_TIMEOUT = _env_int("AI_IMAGE_TIMEOUT", 90)
+AI_IMAGE_RETRY_WAIT = _env_int("AI_IMAGE_RETRY_WAIT", 32)   # anon tier: 1 img/30s
+AI_IMAGE_MARK = "AI \u00b7 FLUX (Pollinations)"
+# Tier-3 LLM: pollinations.ai text endpoint, no API key. Only reached when
+# BOTH Groq and Gemini are down - the page never goes quiet for lack of keys.
+POLLINATIONS_TEXT_ENABLED = _env_bool("POLLINATIONS_TEXT_ENABLED", True)
+# Second-pass "viral editor": draft -> tighten hook -> trim filler. Only
+# accepted when the rewrite scores >= the draft on the hook heuristic.
+EDITOR_PASS_ENABLED = _env_bool("EDITOR_PASS_ENABLED", True)
+# Blockbuster teal-orange colour grade applied to a share of photo cards.
+CINEMATIC_GRADE_PROBABILITY = _env_float("CINEMATIC_GRADE_PROBABILITY", 0.35)
 PAGE_HANDLE = os.getenv("PAGE_HANDLE", "").strip()   # e.g. "@indiatechdaily"
 FB_API_VERSION = os.getenv("FB_API_VERSION", "v21.0")
 HTTP_TIMEOUT = _env_int("HTTP_TIMEOUT", 25)
@@ -1654,6 +1672,30 @@ def _gemini_chat(system, user, temperature=1.0, max_tokens=500):
     return None
 
 
+def _pollinations_chat(system, user, temperature=1.0, max_tokens=450):
+    """v5.8 tier-3 LLM: pollinations.ai text endpoint - free, no API key.
+    Reached only when Groq AND Gemini both fail. The anonymous tier is
+    IP rate-limited (~1 reply / 30s) and shared CI runners are busy, so this
+    is strictly best-effort: ONE attempt, no sleeps, silent on failure."""
+    if not POLLINATIONS_TEXT_ENABLED:
+        return None
+    prompt = f"{system}\n\n---\n\n{user}"[:6000]
+    url = "https://text.pollinations.ai/" + quote(prompt, safe="")
+    try:
+        r = _SESSION.get(url, params={"model": "openai"}, timeout=45)
+        if r.status_code != 200:
+            log.warning("pollinations text -> HTTP %s (free tier busy) - treating as unavailable",
+                        r.status_code)
+            return None
+        t = (r.text or "").strip()
+        if not t or len(t) < 12 or "Free limit reached" in t:
+            return None
+        return t
+    except Exception as e:
+        log.warning("pollinations text request failed: %s", e)
+        return None
+
+
 def _strip_reasoning(text: str) -> str:
     """Remove <think>...</think> blocks some reasoning models emit inline."""
     if not text:
@@ -1671,6 +1713,11 @@ def _llm_complete(system, user, temperature=1.0, max_tokens=450):
     text = _gemini_chat(system, user, temperature, max_tokens)
     if text:
         return _strip_reasoning(text), "gemini"
+    # v5.8: keyless third tier - the commentary chain only fully dies if all
+    # three providers are unavailable in the same run
+    text = _pollinations_chat(system, user, temperature, max_tokens)
+    if text:
+        return _strip_reasoning(text), "pollinations"
     return None, ""
 
 
@@ -1788,8 +1835,85 @@ def _reject_reason(text, bengali=False):
     return "unknown"
 
 
+# --------------------------------------------- v5.8 editorial pipeline
+# Two-pass writing: the persona drafts the post, then a second "viral editor"
+# pass tightens the hook and trims filler. The rewrite is kept ONLY when it
+# scores >= the draft on the hook heuristic below - the editor can never
+# make a post worse, and a failed editor call just leaves the draft standing.
+def _hook_score(text):
+    """0-10 scroll-stopping heuristic: short opener, question, concrete
+    number, right length, 1-3 emoji, punchy sentences, reader address."""
+    if not text:
+        return 0
+    s = 0
+    lines = [l for l in text.splitlines() if l.strip()]
+    first = lines[0] if lines else ""
+    fw = len(first.split())
+    if 3 <= fw <= 12:
+        s += 2
+    elif fw <= 20:
+        s += 1
+    if "?" in text:
+        s += 1
+    if re.search(r"\d", text):
+        s += 1
+    words = text.split()
+    if 40 <= len(words) <= 110:
+        s += 1
+    if 1 <= len(_EMOJI_RE.findall(text)) <= 3:
+        s += 1
+    sents = [x for x in re.split(r"[.!\n]+", text) if x.strip()]
+    if sents:
+        avg = sum(len(x.split()) for x in sents) / len(sents)
+        if avg <= 16:
+            s += 1
+    if re.search(r"\b(you|your|we|us|everyone|nobody|tell)\b", text, re.I):
+        s += 1
+    if len(lines) >= 3:
+        s += 1
+    return min(s, 10)
+
+
+def _editor_pass(draft, art, shape, persona):
+    """Second LLM pass: ruthless viral-editor rewrite. Returns (text, provider)
+    or (None, "") - callers always keep the draft as fallback."""
+    system = (
+        _system_prompt(persona)
+        + "\n\nYou are now in EDITOR mode. You receive a draft Facebook post and "
+          "return a tightened final version. Same page, same voice, zero mercy "
+          "for filler."
+    )
+    user = (
+        f"DRAFT POST:\n{draft}\n\n"
+        "EDITORIAL PUNCH LIST - apply every item:\n"
+        "- The first line must be a scroll-stopping hook under 12 words. Rewrite it if it isn't.\n"
+        "- Delete filler words (very, really, actually, just, basically, literally).\n"
+        "- ONE idea should pop. Merge or cut sentences that drift.\n"
+        "- Keep EVERY fact, number and name EXACTLY as in the draft. Add nothing new.\n"
+        "- Keep the casual human voice: contractions, short punchy fragments.\n"
+        "- Keep length 40-110 words. Keep the hashtags if the draft had any.\n"
+        "- No markdown, no links, no new emojis unless the draft had none.\n"
+        "Return ONLY the final post text."
+    )
+    try:
+        text, provider = _llm_complete(system, user, temperature=0.7, max_tokens=450)
+    except Exception as e:
+        log.debug("editor pass LLM call failed: %s", e)
+        return None, ""
+    if not text:
+        return None, ""
+    cleaned = _clean_post_text(text, bengali=False)
+    if not cleaned:
+        log.debug("editor output rejected (%s) - draft stands",
+                  _reject_reason(text, bengali=False))
+        return None, ""
+    return cleaned, provider
+
+
 def generate_commentary(art, shape, persona, grounding="", wiki=""):
-    """3 attempts: new persona + stricter note each time. Returns (text, meta)."""
+    """3 attempts: new persona + stricter note each time. v5.8: each accepted
+    draft then goes through the viral-editor second pass (kept only if it
+    scores >= the draft). Returns (text, meta)."""
     for i in range(3):
         p = persona if i == 0 else random.choice(PERSONAS)
         extra = "" if i == 0 else (
@@ -1803,7 +1927,27 @@ def generate_commentary(art, shape, persona, grounding="", wiki=""):
             continue
         cleaned = _clean_post_text(text, bengali=False)
         if cleaned:
-            return cleaned, {"provider": provider, "persona": p["id"]}
+            meta = {"provider": provider, "persona": p["id"]}
+            if EDITOR_PASS_ENABLED:
+                try:
+                    better, eprovider = _editor_pass(cleaned, art, shape, p)
+                except Exception as e:
+                    log.debug("editor pass crashed (%s) - draft stands", e)
+                    better, eprovider = None, ""
+                if better:
+                    s_draft, s_edit = _hook_score(cleaned), _hook_score(better)
+                    if s_edit >= s_draft:
+                        log.info("Editor pass: hook %d -> %d (provider=%s) - rewrite kept",
+                                 s_draft, s_edit, eprovider)
+                        cleaned = better
+                        meta["editor"] = eprovider
+                        meta["hook"] = [s_draft, s_edit]
+                    else:
+                        log.info("Editor pass scored lower (%d vs %d) - draft kept",
+                                 s_edit, s_draft)
+                else:
+                    log.debug("editor pass produced nothing usable - draft stands")
+            return cleaned, meta
         log.warning("attempt %d/3: LLM output rejected (%s) - retrying with a new persona",
                     i + 1, _reject_reason(text, bengali=False))
     return None, {}
@@ -2912,15 +3056,36 @@ def _smart_crop(img, tw, th):
         return img.crop((0, y0, w, y0 + nh))
 
 
-def _enhance_photo(img):
-    """Tasteful 'pop' so cards stand out in the feed without looking fake."""
+def _enhance_photo(img, cinematic=None):
+    """Tasteful 'pop' so cards stand out in the feed without looking fake.
+    v5.8: a share of photos also get the blockbuster teal-orange grade
+    (cinematic=None -> roll the dice; AI-generated images skip it - they
+    ship cinematic already)."""
     try:
         img = ImageEnhance.Color(img).enhance(1.12)
         img = ImageEnhance.Contrast(img).enhance(1.06)
         img = ImageEnhance.Sharpness(img).enhance(1.12)
+        if cinematic is None:
+            cinematic = (_CURRENT_PHOTO_KIND.get("kind", "stock") != "ai") \
+                and random.random() < CINEMATIC_GRADE_PROBABILITY
+        if cinematic:
+            img = _cinematic_grade(img)
     except Exception:
         pass
     return img
+
+
+def _cinematic_grade(img):
+    """v5.8: Hollywood teal-orange grade - cool shadows, warm highlights.
+    A duotone map blended at low opacity so it reads as a colourist's touch,
+    not a filter."""
+    try:
+        lum = img.convert("L")
+        duo = ImageOps.colorize(lum, black=(12, 34, 48), mid=(118, 104, 96),
+                                white=(255, 214, 158))
+        return Image.blend(img.convert("RGB"), duo, 0.16)
+    except Exception:
+        return img
 
 
 def _vividness(img):
@@ -3027,6 +3192,137 @@ def _download_photo(p):
         return Image.open(io.BytesIO(data)).convert("RGB")
     except Exception:
         return None
+
+
+# ==========================================================================
+# v5.8 AI IMAGE ENGINE - Pollinations / FLUX (free, keyless, open source)
+# ==========================================================================
+# Why: stock photos look great but every page on Facebook can use the same
+# Pexels shot. FLUX-generated art is unique per post, matches the headline
+# concept exactly, and costs nothing (Pollinations' anonymous tier serves the
+# open-source FLUX model - no API key, no signup). ~1 image / 30s per IP on
+# the free tier, so at most one retry after a short wait, and every failure
+# path falls straight back to the stock-photo flow. Zero new failure surface.
+AI_PROMPT_STYLES = {
+    "movies":  "cinematic movie still, dramatic key lighting, moody color grade, "
+              "anamorphic lens flare, film grain, epic atmosphere",
+    "music":   "concert photography, stage lights and haze, lens flares, ecstatic "
+              "crowd energy, editorial magazine cover composition",
+    "sports":  "epic sports photography frozen at peak action, stadium floodlights, "
+              "grass and sweat flying, shallow depth of field, sports-poster energy",
+    "gaming":  "stylized video game key art, neon rim lighting, dramatic sci-fi "
+              "environment, highly detailed digital illustration concept art",
+    "space":   "breathtaking deep-space photography, glowing nebula, star field, "
+              "distant planet on the horizon, telescope imagery, cosmic scale",
+    "tech":    "sleek premium product photography, studio lighting on a dark stage, "
+              "glass and brushed metal reflections, minimalist tech aesthetic",
+    "celebs":  "editorial paparazzi-style photograph, dramatic backlight, "
+              "red-carpet atmosphere, glossy magazine finish",
+    "tv":      "cinematic TV series still, golden-hour interior light, "
+              "prestige-drama color grade, rich production design",
+    "odd":     "hyper-dramatic nature documentary still, golden hour, epic landscape "
+              "scale, David Attenborough energy",
+    "viral":   "vibrant slice-of-life photograph, decisive moment, rich candid "
+              "color, photojournalism composition",
+    "wow":     "hyper-dramatic nature documentary still, golden hour light, epic "
+              "scale, once-in-a-lifetime moment, National Geographic cover energy",
+    "general": "award-winning editorial photograph, dramatic lighting, rich "
+              "cinematic color, dynamic composition",
+}
+# camera/scene flavor rotation - stops consecutive prompts from looking same-y
+_AI_FLAVOR_SHOTS = [
+    "low-angle hero shot",
+    "over-the-shoulder cinematic frame",
+    "dramatic silhouette against strong backlight",
+    "extreme close-up with creamy bokeh background",
+    "sweeping wide establishing shot",
+    "50mm street-photography framing",
+    "slow-shutter light-trail energy",
+]
+_AI_LIGHT_KEYS = [
+    "volumetric god rays",
+    "neon rim lighting",
+    "moody chiaroscuro lighting",
+    "golden hour glow",
+    "dramatic storm lighting",
+    "soft spotlight in the dark",
+]
+_AI_NEGATIVES = "no text, no words, no letters, no numbers, no watermark, no logo, no caption, no border"
+
+
+def _ai_image_prompt(art):
+    """Build the FLUX prompt from the headline. Returns None when the text is
+    unsafe (NSFW firewall) or too thin - the stock flow then handles the card.
+    Both the source headline and the finished prompt pass _is_explicit."""
+    try:
+        base = _card_headline(art.title or "")
+    except Exception:
+        base = (art.title or "").strip()
+    subj = re.sub(r'["\u201c\u201d()\[\]\{}]', " ", base).strip(" .!?:\u2013\u2014-")
+    subj = re.sub(r"\s{2,}", " ", subj).strip()
+    if not subj or len(subj) < 8:
+        return None
+    if _is_explicit(subj):
+        return None                    # firewall gate 1: never send NSFW to the model
+    style = AI_PROMPT_STYLES.get(art.category, AI_PROMPT_STYLES["general"])
+    prompt = (f"{subj}. {random.choice(_AI_FLAVOR_SHOTS)}, {random.choice(_AI_LIGHT_KEYS)}, "
+              f"{style}, vertical 4:5 composition, ultra detailed, vivid cinematic "
+              f"color grade, photorealistic masterpiece. {_AI_NEGATIVES}")
+    if len(prompt) > 480:
+        prompt = prompt[:477].rstrip() + "..."
+    if _is_explicit(prompt):
+        return None                    # firewall gate 2: the assembled prompt too
+    return prompt
+
+
+def _ai_finish(img):
+    """Pollinations' anonymous tier returns ~686x858 - upscale to the card
+    canvas with LANCZOS + a light unsharp so small text overlays stay crisp."""
+    if img.size != (CARD_W, CARD_H):
+        img = img.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+    try:
+        img = img.filter(ImageFilter.UnsharpMask(radius=2.2, percent=65, threshold=2))
+        img = ImageEnhance.Color(img).enhance(1.08)
+    except Exception:
+        pass
+    return img
+
+
+def _pollinations_image(prompt, timeout=None):
+    """One keyless GET -> a FLUX image as PIL.Image, or None. Free tier:
+    ~1 image / 30s per IP, so a single 402/429 gets one patient retry."""
+    if not PIL_OK:
+        return None
+    params = {"width": 1080, "height": 1350, "nologo": "true", "model": "flux",
+              "enhance": "true", "safe": "true", "seed": random.randint(1, 999999)}
+    url = "https://image.pollinations.ai/prompt/" + quote(prompt, safe="")
+    for attempt in range(2):
+        try:
+            r = _SESSION.get(url, params=params, timeout=timeout or AI_IMAGE_TIMEOUT)
+            if r.status_code == 200 and r.content:
+                img = Image.open(io.BytesIO(r.content)).convert("RGB")
+                if img.size[0] >= 400:
+                    return _ai_finish(img)
+                log.debug("pollinations image too small (%s) - stock flow", img.size)
+                return None
+            if r.status_code in (402, 429, 503) and attempt == 0:
+                wait = max(1, int(AI_IMAGE_RETRY_WAIT))
+                log.info("Pollinations free tier busy (HTTP %s) - waiting %ds for one retry",
+                         r.status_code, wait)
+                time.sleep(wait)
+                continue
+            log.debug("pollinations image HTTP %s - falling back to stock photos",
+                      r.status_code)
+            return None
+        except Exception as e:
+            log.debug("pollinations image request failed: %s - stock flow", e)
+            return None
+    return None
+
+
+# set by render_card so _enhance_photo knows whether the current photo is
+# AI-generated (skip the extra grade - FLUX ships cinematic already)
+_CURRENT_PHOTO_KIND = {"kind": "stock"}
 
 
 def _pick_photo_pool(art, avoid_ids=None, want=4):
@@ -3723,13 +4019,41 @@ def render_card(art, state=None, bengali=False, card_headline=None):
 
     photo = None
     pool = []
+    # v5.8 AI IMAGE ENGINE: try a unique keyless FLUX generation first. Any
+    # failure (rate limit, timeout, NSFW filter, Pillow absent) silently
+    # drops to the stock-photo flow below - zero new failure surface.
+    if AI_IMAGE_ENABLED and random.random() < AI_IMAGE_PROBABILITY:
+        ai_prompt = None
+        try:
+            ai_prompt = _ai_image_prompt(art)
+        except Exception as e:
+            log.debug("AI prompt build failed: %s", e)
+        if ai_prompt:
+            log.info("AI image engine: generating a unique FLUX card for this post")
+            try:
+                ai_img = _pollinations_image(ai_prompt)
+            except Exception as e:
+                log.warning("AI image engine failed (%s) - stock photo flow", e)
+                ai_img = None
+            if ai_img is not None:
+                photo = (ai_img, AI_IMAGE_MARK, None)
+                log.info("AI image ready (Pollinations FLUX) - skipping stock photo search")
+        else:
+            log.debug("AI prompt unsafe/thin for this headline - stock flow")
     avoid = set((state or {}).get("recent_photo_ids") or [])
-    try:
-        pool = _pick_photo_pool(art, avoid)
-    except Exception as e:
-        log.debug("photo pick failed: %s", e)
-    if pool:
-        photo = pool[0]
+    if photo is None:
+        try:
+            pool = _pick_photo_pool(art, avoid)
+        except Exception as e:
+            log.debug("photo pick failed: %s", e)
+        if pool:
+            photo = pool[0]
+    # tell _enhance_photo what it is enhancing (AI art skips the extra grade)
+    _CURRENT_PHOTO_KIND["kind"] = "ai" if (photo is not None and photo[2] is None) else "stock"
+    # v5.8 transparency: AI-generated cards carry the label right on the art
+    # (matches Facebook's AI-content labelling best practice)
+    if _CURRENT_PHOTO_KIND["kind"] == "ai" and not bengali:
+        src_line = "AI-GENERATED \u00b7 " + _now_ist().strftime("%d %b")
     # v5.7: stash the extra downloaded photos on the article - the carousel
     # builder turns them into swipeable slides (plain images, no typography)
     try:
@@ -3741,6 +4065,10 @@ def render_card(art, state=None, bengali=False, card_headline=None):
     if photo is not None and state is not None and photo[2]:
         used = list(state.get("recent_photo_ids") or []) + [photo[2]]
         state["recent_photo_ids"] = used[-10:]
+    # v5.8: state counters so the feed mix can be tuned later
+    if state is not None:
+        if photo is not None and photo[2] is None and photo[1] == AI_IMAGE_MARK:
+            state["ai_images"] = int(state.get("ai_images") or 0) + 1
 
     try:
         if photo is not None:

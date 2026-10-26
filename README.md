@@ -1,4 +1,4 @@
-# Trending & Entertainment News Bot v5.7
+# Trending & Entertainment News Bot v5.8
 
 Fully-automated Facebook Page autopilot for **worldwide trending +
 entertainment news**: movies, music, TV & streaming, sports, celebs, gaming,
@@ -33,7 +33,59 @@ machine with Python 3.9+.
 
 ---
 
-## What's new in v5.7 (the engagement engine)
+## What's new in v5.8 (AI image engine + editorial pipeline)
+
+### AI-generated cards - free, keyless, unique (the big one)
+- Integrated **Pollinations.ai serving the open-source FLUX model**: a
+  text-to-image GET endpoint that needs **no API key, no signup, no card**.
+- ~45% of photo cards are now **generated from the headline itself** - a
+  beat-aware cinematic prompt (12 category style banks x rotating camera
+  flavors x lighting keys) produces art no other page can repost.
+- The free tier allows ~1 image / 30s per IP: one patient retry on 402, then
+  a **silent fallback to the stock-photo (Pexels) flow**. The AI engine can
+  never fail a run - it can only improve it.
+- Anonymous output (~686x858) is upscaled with LANCZOS + unsharp to the
+  full 1080x1350 / 1080x1080 canvas.
+- **NSFW firewall extended to the image prompts** (headline + assembled
+  prompt both gated) and the service's own `safe=true` filter is on.
+- **Transparency:** AI cards carry an `AI-GENERATED` source-line label,
+  matching Facebook's AI-content best practice.
+- Tunable: `AI_IMAGE_ENABLED`, `AI_IMAGE_PROBABILITY`, `AI_IMAGE_TIMEOUT`,
+  `AI_IMAGE_RETRY_WAIT`.
+
+### Editorial pipeline (drastically better captions)
+- Every caption is now written **twice**: the persona drafts it, then a
+  second "ruthless viral editor" LLM pass tightens the hook, deletes filler
+  and makes one idea pop - under 12-word openers, no new facts.
+- A 0-10 **hook heuristic** (short opener, question, concrete number, punchy
+  sentence length, reader address) scores draft vs rewrite; the rewrite is
+  kept **only if it scores >= the draft**. The editor can never make a post
+  worse, and an editor crash just leaves the draft standing.
+- Turn it off with `EDITOR_PASS_ENABLED=false`.
+
+### Tier-3 keyless LLM (the chain never dies)
+- Third provider in the chain: **pollinations.ai text** (free, no key).
+  Reached only when Groq AND Gemini are both down - three independent
+  providers must fail in the same run for the page to fall back to
+  template captions.
+
+### Blockbuster colour grade
+- ~35% of stock photos get a subtle **teal-orange cinematic grade**
+  (Hollywood-style: cool shadows, warm highlights). AI-generated art skips
+  it - FLUX ships cinematic already. Tunable: `CINEMATIC_GRADE_PROBABILITY`.
+
+### CI: alerts now actually reach you
+- **Bug fixed:** the workflows' alert steps (`gh issue create`) were silently
+  403-ing because `issues: write` was missing from the job permissions.
+  Added to post-news, engage and insights - the "you get an email" promise
+  now works.
+- engage/insights runs now follow the same **green-but-alerted** pattern as
+  the post job: a crash never reddens the badge, it flags a GitHub issue.
+- New test suite: `tests/test_ai_features.py` - 44 offline cases covering
+  the AI image engine, tier-3 LLM ordering, editorial pass and the
+  AI-card render path end-to-end.
+
+## What was new in v5.7 (the engagement engine)
 
 ### Interactive specials (~1 in 3 posts, never two in a row, max 2/day)
 - **TRIVIA DROP:** clean entertainment trivia from OpenTDB (free, no key)
@@ -246,6 +298,13 @@ normal environment variables everywhere else.
 | `CAROUSEL_PROBABILITY` | `0.20` | v5.7 share of photo posts that become carousels |
 | `CAROUSEL_MAX_PHOTOS` | `3` | v5.7 slides per carousel (card + N photos) |
 | `TEMPLATE_CAPTION_FALLBACK` | `true` | v5.7 keep posting hand-written captions if both LLMs are down |
+| `AI_IMAGE_ENABLED` | `true` | v5.8 master switch for AI-generated (FLUX) cards |
+| `AI_IMAGE_PROBABILITY` | `0.45` | v5.8 share of photo cards that use AI art (rest stay on Pexels) |
+| `AI_IMAGE_TIMEOUT` | `90` | v5.8 seconds to wait for one FLUX generation |
+| `AI_IMAGE_RETRY_WAIT` | `32` | v5.8 free-tier busy wait before the single retry |
+| `EDITOR_PASS_ENABLED` | `true` | v5.8 second-pass viral-editor rewrite of every caption |
+| `POLLINATIONS_TEXT_ENABLED` | `true` | v5.8 keyless tier-3 LLM (only used if Groq AND Gemini fail) |
+| `CINEMATIC_GRADE_PROBABILITY` | `0.35` | v5.8 share of stock photos that get the teal-orange movie grade |
 | `TEXT_POST_PROBABILITY` | `0.15` | v5.5 share of conversational posts with no image |
 | `SQUARE_CARD_PROBABILITY` | `0.35` | v5.5 share of 1080x1080 square cards |
 | `ENGAGE_MAX_REPLIES` | `4` | v5.5 comment replies per `--engage` pass |
