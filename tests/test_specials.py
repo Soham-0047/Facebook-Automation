@@ -259,6 +259,9 @@ base_stubs = dict(
     _wikipedia_context=lambda t: "",
     generate_bengali_post=lambda a, g: (None, None, "none"),
     _pick_photo_pool=lambda a, avoid=None, want=4: [],
+    # v5.9: run() now honours the specials time window - force it open so the
+    # fault-injection scenarios behave identically at any hour of the day
+    _hour_in_windows=lambda h, s: True,
 )
 
 # 6a. total source outage -> exit 0
@@ -285,10 +288,10 @@ def fake_publish_text(message):
 
 patch_all(fetch_all_articles=lambda: [ART],
           select_article=lambda c, s, t: ART,
-          generate_commentary=lambda a, sh, p, g, w: (None, {}),
+          generate_commentary=lambda a, sh, p, g, w, state=None, followup_note="": (None, {}),
           publish_photo_post=fake_publish_photo,
           publish_text_post=fake_publish_text,
-          render_card=lambda a, state=None, bengali=False, card_headline=None: None,
+          render_card=lambda a, state=None, bengali=False, card_headline=None, badge=None: None,
           _pick_special_kind=lambda s: None,   # deterministic: test the NEWS flow
           **base_stubs)
 try:
@@ -312,10 +315,10 @@ def exploding_publish(*a, **k):
 
 patch_all(fetch_all_articles=lambda: [ART],
           select_article=lambda c, s, t: ART,
-          generate_commentary=lambda a, sh, p, g, w: ("LLM caption text here.", {"provider": "groq", "persona": "arjun"}),
+          generate_commentary=lambda a, sh, p, g, w, state=None, followup_note="": ("LLM caption text here.", {"provider": "groq", "persona": "arjun"}),
           publish_photo_post=exploding_publish,
           publish_text_post=exploding_publish,
-          render_card=lambda a, state=None, bengali=False, card_headline=None: None,
+          render_card=lambda a, state=None, bengali=False, card_headline=None, badge=None: None,
           _pick_special_kind=lambda s: None,   # deterministic: test the NEWS flow
           **base_stubs)
 try:

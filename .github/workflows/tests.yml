@@ -48,3 +48,12 @@ jobs:
 
       - name: AI engine + editorial pass mock tests (v5.8)
         run: python tests/test_ai_features.py
+
+      - name: Engagement specials + carousel mock tests (v5.7)
+        run: python tests/test_specials.py
+
+      - name: Genuine voice + retention engine mock tests (v5.9)
+        run: python tests/test_genuine.py
+
+      - name: Topic diversity regression tests
+        run: python tests/test_diversity.py

@@ -129,7 +129,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.8"
+VERSION = "5.9"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -177,7 +177,10 @@ MAX_PER_CATEGORY_PER_DAY = _env_int("MAX_PER_CATEGORY_PER_DAY", 2)
 SMART_TAGS = _env_bool("SMART_TAGS", True)
 # v5.5: interaction hooks - poll-style CTAs appended to most (not all) posts.
 # This is what commercial pages do: every post invites a cheap action.
-ENGAGE_HOOK_PROBABILITY = _env_float("ENGAGE_HOOK_PROBABILITY", 0.75)
+# v5.9: a page that asks for something on EVERY post reads as a bot -
+# genuine pages ask a bit more than half the time
+ENGAGE_HOOK_PROBABILITY = _env_float("ENGAGE_HOOK_PROBABILITY", 0.55)
+SOFT_SIGNOFF_PROBABILITY = _env_float("SOFT_SIGNOFF_PROBABILITY", 0.35)  # of CTA slots
 # v5.5: occasional text-only hot takes (no image card) - the feed stops
 # looking like a wall of identical branded cards; ~1 in 7 posts
 TEXT_POST_PROBABILITY = _env_float("TEXT_POST_PROBABILITY", 0.15)
@@ -221,7 +224,15 @@ POLLINATIONS_TEXT_ENABLED = _env_bool("POLLINATIONS_TEXT_ENABLED", True)
 # accepted when the rewrite scores >= the draft on the hook heuristic.
 EDITOR_PASS_ENABLED = _env_bool("EDITOR_PASS_ENABLED", True)
 # Blockbuster teal-orange colour grade applied to a share of photo cards.
-CINEMATIC_GRADE_PROBABILITY = _env_float("CINEMATIC_GRADE_PROBABILITY", 0.35)
+# v5.9: authentic look - less blockbuster filter, more bright phone-photo
+CINEMATIC_GRADE_PROBABILITY = _env_float("CINEMATIC_GRADE_PROBABILITY", 0.22)
+WARM_GRADE_PROBABILITY = _env_float("WARM_GRADE_PROBABILITY", 0.25)
+# ---- v5.9: GENUINE VOICE + RETENTION ENGINE tunables ----------------------
+GENUINE_VOICE = _env_bool("GENUINE_VOICE", True)         # authenticity gate + prompts
+FOLLOWUP_ENABLED = _env_bool("FOLLOWUP_ENABLED", True)   # Part 2 / UPDATE series
+MAX_FOLLOWUPS_PER_DAY = _env_int("MAX_FOLLOWUPS_PER_DAY", 1)
+FOLLOW_CTA_PROBABILITY = _env_float("FOLLOW_CTA_PROBABILITY", 0.28)
+SPECIALS_WINDOWS = os.getenv("SPECIALS_WINDOWS", "11-16,20-24").strip()  # IST hours
 PAGE_HANDLE = os.getenv("PAGE_HANDLE", "").strip()   # e.g. "@indiatechdaily"
 FB_API_VERSION = os.getenv("FB_API_VERSION", "v21.0")
 HTTP_TIMEOUT = _env_int("HTTP_TIMEOUT", 25)
@@ -807,6 +818,13 @@ def _default_state() -> dict:
         "category_days": {},      # v5.4: {"2026-09-10": {"funding": 2, ...}} daily topic counts
         "bengali_date": "",       # IST date string for the daily Bengali cap
         "bengali_count": 0,
+        # ---- v5.9: genuine voice + retention engine ---------------------
+        "recent_first_words": [],  # openers of the last 3 posts (anti-echo)
+        "watchlist": [],           # developing stories we promised to follow
+        "followups_date": "",      # daily cap for Part 2/UPDATE posts
+        "followups_today": 0,
+        "follow_cta_date": "",     # daily cap for organic follow asks
+        "follow_ctas_today": 0,
     }
 
 
@@ -1558,6 +1576,14 @@ POST_SHAPES = [
                  "Last line: 'Guess who/what in the comments - answer pinned below.'"},
 ]
 
+# v5.9: standalone shape for Part 2/UPDATE posts - picked explicitly by the
+# follow-up flow, never by the random rotation (a regular post must never
+# pretend to continue a story it doesn't).
+FOLLOWUP_SHAPE = {"id": "followup", "name": "FOLLOW-UP",
+     "scaffold": "Open by calling back to the earlier moment naturally - 'Remember X?', 'Okay, update on this:' or your own version. One line, no setup.\n"
+                 "Then 2-3 sentences: what's NEW since we last posted - the latest fact, number or twist, not a re-explanation.\n"
+                 "Last line: what you're watching for next (max 10 words). One hashtag max."}
+
 BANNED_EN_PHRASES = [
     "game changer", "game-changer", "gamechanger", "game-changing", "revolutioniz", "revolutionis",
     "buckle up", "dive in", "dive into", "in a significant development", "testament to",
@@ -1573,6 +1599,10 @@ BANNED_EN_PHRASES = [
     "writing on the wall", "isn't just", "is not just", "it's not just", "more than just",
     "the math is mathing", "we love to see it", "and that's the tea", "no notes",
     "under the radar", "quietly shipped", "quietly launched", "picture this", "imagine this",
+    # v5.9: the manufactured-page tells that kill follower trust
+    "stay tuned", "here's everything", "everything you need to know", "needless to say",
+    "it goes without saying", "safe to say", "one thing's for sure", "the internet can't",
+    "can't stop talking about", "social media is", "what this means for",
 ]
 
 BANNED_BN_PHRASES = [
@@ -1727,15 +1757,23 @@ def _system_prompt(persona):
 
 You are writing as: {persona['desc']}
 
-The #1 rule: sound like a real human posting to friends - never like AI, never like a corporate page, never like a press release.
+The #1 rule: sound like a real human posting to friends - never like AI, never like a corporate page, never like a press release. Follower trust is the product: people come back to pages that feel PERSONAL, not pages that feel like content machines.
 
 Style rules:
 - Contractions everywhere (it's, doesn't, they're).
 - Vary rhythm: mix longer sentences with very short ones (under 5 words).
-- Plain conversational English is welcome ("honestly", "no joke", "big if true", "worth noting").
+- Plain conversational English is welcome ("honestly", "no joke", "wild", "worth noting").
 - Facts over adjectives. If a number exists, use it.
 - Never invent facts. Only use what's in the story you're given.
 - FUN BEATS FORMAL: this is entertainment - energy, reactions, hot takes. Not a news bulletin.
+
+GENUINE VOICE (why followers stay):
+- React first, report second. You're a fan having a feeling, not a newsreader with a quota.
+- Say I or we at least once - real people are present in their own posts.
+- Write like you're telling ONE friend, not addressing a crowd.
+- Opinionated beats balanced: if the persona would love it, say so; would hate it, say that.
+- If it's a rumour or early report, say so plainly ("if this is true", "reports claim"). Honest uncertainty earns more trust than fake confidence.
+- NEVER oversell. Words like amazing/incredible/unbelievable with no fact behind them read as an ad - let the FACT be the drama.
 - FAMILY-FRIENDLY, ALWAYS: no explicit content, no sleaze, no graphic gore. Keep it clean enough for a teenager's feed. If the story is explicit, refuse by writing about a different angle or keep it PG.
 - No markdown, no bold, no links.
 - Emoji: use 0-3, only as visual anchors (fire on a big number, popcorn on a movie line). Never decorate every line. Never use emoji in the first line.
@@ -1761,7 +1799,8 @@ def _user_prompt(art, shape, grounding, wiki, extra=""):
         "\n\nYOUR TASK\n"
         f"Write the Facebook post following this structure EXACTLY:\n"
         f"SHAPE - {shape['name']}:\n{shape['scaffold']}\n\n"
-        "Length: 40-110 words. Plain text only. No markdown, no links. "
+        "Length: 35-110 words - if the story only needs a short post, keep it short. "
+        "Short beats padded, always. Plain text only. No markdown, no links. "
         "Don't repeat the headline verbatim. Use ONLY facts from the story - never invent "
         "numbers or names. End with 0-2 natural hashtags at most. "
         f"Output ONLY the post text - no title, no labels, no explanation.{extra}"
@@ -1874,6 +1913,73 @@ def _hook_score(text):
     return min(s, 10)
 
 
+# --------------------------------------------- v5.9: genuine-voice scoring
+# The hook heuristic above asks "would this stop a thumb?". This one asks a
+# harder question: "does this sound like a PERSON typed it?" Followers don't
+# unfollow pages that hype - they unfollow pages that feel manufactured.
+def _genuine_score(text):
+    """0-10 authenticity heuristic: fan voice beats corporate hype."""
+    if not text:
+        return 0
+    low = text.lower()
+    words = text.split()
+    s = 0
+    # + real human texture
+    contr = len(re.findall(r"\b\w+'(?:s|t|re|ve|ll|d|m)\b", low))
+    s += 1 if contr >= 2 else (2 if contr >= 4 else 0)
+    if re.search(r"\b(i|we|my|our|i'm|i've|i'll|we're|we've)\b", low):
+        s += 1
+    markers = sum(1 for w in ("honestly", "maybe", "i think", "not gonna lie",
+                              "no joke", "genuinely", "personally", "look",
+                              "okay", "wild", "real talk", "unfair", "not for me",
+                              "can't stop", "obsessed") if w in low)
+    s += min(markers, 2)
+    if re.search(r"\d", text):
+        s += 1                        # receipts
+    if len(re.findall(r"\b[A-Z][a-z]+\b", text)) >= 2:
+        s += 1                        # named people/things, not vague haze
+    if re.search(r"\b(reportedly|apparently|seems|seemed|looks like|sources|rumou?r)\b", low):
+        s += 1                        # honest uncertainty, not fake confidence
+    # - manufactured-page tells
+    if len(re.findall(r"\b[A-Z]{2,}\b", text)) > 1:
+        s -= 2                        # SHOUTING reads as ad copy
+    over_emoji = len(_EMOJI_RE.findall(text)) - 3
+    if over_emoji > 0:
+        s -= 1 if over_emoji <= 2 else 2
+    bangs = text.count("!")
+    if bangs > 2:
+        s -= 1 if bangs <= 4 else 2
+    if len(re.findall(r"#[\w]+", text)) > 2:
+        s -= 1
+    hype = sum(1 for w in ("amazing", "incredible", "unbelievable", "insane",
+                          "epic", "mind-blowing", "jaw-dropping", "stunning",
+                          "shocking", "unreal") if w in low)
+    if hype and not re.search(r"\d", text):
+        s -= min(hype, 3)              # hype with zero receipts = ad copy
+    adv = len(re.findall(r"\b\w+ly\b", low))
+    if adv >= 5:
+        s -= 2
+    elif adv >= 3:
+        s -= 1
+    sents = [x.strip() for x in re.split(r"[.!?\n]+", text) if x.strip()]
+    if len(sents) >= 3:
+        starts = [w.split()[0].lower() if w.split() else "" for w in sents]
+        if max(starts.count(x) for x in set(starts)) >= 3:
+            s -= 1                     # "And... And... And..." loop
+    return max(0, min(s, 10))
+
+
+def _quality_score(text):
+    """v5.9 composite: scroll-stopping AND genuine-feeling. Hook counts
+    double (it's the first filter), the genuine layer breaks the tie."""
+    return _hook_score(text) * 2 + (_genuine_score(text) if GENUINE_VOICE else 0)
+
+
+def _first_word(text) -> str:
+    m = re.search(r"[A-Za-z][A-Za-z']*", (text or "").strip())
+    return m.group(0).lower() if m else ""
+
+
 def _editor_pass(draft, art, shape, persona):
     """Second LLM pass: ruthless viral-editor rewrite. Returns (text, provider)
     or (None, "") - callers always keep the draft as fallback."""
@@ -1881,7 +1987,8 @@ def _editor_pass(draft, art, shape, persona):
         _system_prompt(persona)
         + "\n\nYou are now in EDITOR mode. You receive a draft Facebook post and "
           "return a tightened final version. Same page, same voice, zero mercy "
-          "for filler."
+          "for filler. You are not polishing an ad - you are making a friend's "
+          "text message impossible to scroll past."
     )
     user = (
         f"DRAFT POST:\n{draft}\n\n"
@@ -1891,7 +1998,11 @@ def _editor_pass(draft, art, shape, persona):
         "- ONE idea should pop. Merge or cut sentences that drift.\n"
         "- Keep EVERY fact, number and name EXACTLY as in the draft. Add nothing new.\n"
         "- Keep the casual human voice: contractions, short punchy fragments.\n"
-        "- Keep length 40-110 words. Keep the hashtags if the draft had any.\n"
+        "- GENUINE CHECK: if any line sounds like marketing copy, rewrite it the way "
+        "a fan would say it to a friend. Keep at least one I/we moment.\n"
+        "- If the draft asserts something the facts don't prove, soften it honestly "
+        "('reports say', 'if true') - trust reads as confidence.\n"
+        "- Keep length 35-110 words. Keep the hashtags if the draft had any.\n"
         "- No markdown, no links, no new emojis unless the draft had none.\n"
         "Return ONLY the final post text."
     )
@@ -1910,15 +2021,21 @@ def _editor_pass(draft, art, shape, persona):
     return cleaned, provider
 
 
-def generate_commentary(art, shape, persona, grounding="", wiki=""):
+def generate_commentary(art, shape, persona, grounding="", wiki="", state=None,
+                        followup_note=""):
     """3 attempts: new persona + stricter note each time. v5.8: each accepted
-    draft then goes through the viral-editor second pass (kept only if it
-    scores >= the draft). Returns (text, meta)."""
+    draft goes through the viral-editor second pass (kept only if it beats
+    the draft). v5.9: 'beats' means composite quality (hook x2 + genuine),
+    and openers that echo recent posts get one reroll before acceptance.
+    Returns (text, meta)."""
     for i in range(3):
         p = persona if i == 0 else random.choice(PERSONAS)
-        extra = "" if i == 0 else (
-            "\nIMPORTANT: your previous attempt was rejected for banned cliches or bad length. "
-            "Re-read the banned list and be careful.")
+        extra = followup_note if followup_note else ""
+        if i > 0:
+            extra = (followup_note + ("\n\n" if followup_note else "") +
+                     "IMPORTANT: your previous attempt was rejected for banned cliches, "
+                     "bad length or an opener we used recently. Re-read the banned list, "
+                     "open the post with a different word, and be careful.")
         text, provider = _llm_complete(
             _system_prompt(p), _user_prompt(art, shape, grounding, wiki, extra),
             temperature=1.0 + 0.15 * i, max_tokens=450,
@@ -1927,6 +2044,15 @@ def generate_commentary(art, shape, persona, grounding="", wiki=""):
             continue
         cleaned = _clean_post_text(text, bengali=False)
         if cleaned:
+            # v5.9 anti-echo: pages that open 3 posts in a row with the same
+            # word read as a machine. Reroll once or twice; take it on the last
+            # attempt (a repeated opener still beats going quiet).
+            if GENUINE_VOICE and state is not None and i < 2:
+                fw = _first_word(cleaned)
+                if fw and fw in [w for w in (state.get("recent_first_words") or []) if w]:
+                    log.info("attempt %d: opener '%s' echoes a recent post - rerolling",
+                             i + 1, fw)
+                    continue
             meta = {"provider": provider, "persona": p["id"]}
             if EDITOR_PASS_ENABLED:
                 try:
@@ -1935,13 +2061,16 @@ def generate_commentary(art, shape, persona, grounding="", wiki=""):
                     log.debug("editor pass crashed (%s) - draft stands", e)
                     better, eprovider = None, ""
                 if better:
-                    s_draft, s_edit = _hook_score(cleaned), _hook_score(better)
+                    s_draft, s_edit = _quality_score(cleaned), _quality_score(better)
                     if s_edit >= s_draft:
-                        log.info("Editor pass: hook %d -> %d (provider=%s) - rewrite kept",
-                                 s_draft, s_edit, eprovider)
+                        log.info("Editor pass: quality %d -> %d (hook %d->%d, genuine %d->%d, "
+                                 "provider=%s) - rewrite kept",
+                                 s_draft, s_edit, _hook_score(cleaned), _hook_score(better),
+                                 _genuine_score(cleaned), _genuine_score(better), eprovider)
+                        meta["hook"] = [_hook_score(cleaned), _hook_score(better)]
+                        meta["quality"] = [s_draft, s_edit]
                         cleaned = better
                         meta["editor"] = eprovider
-                        meta["hook"] = [s_draft, s_edit]
                     else:
                         log.info("Editor pass scored lower (%d vs %d) - draft kept",
                                  s_edit, s_draft)
@@ -2029,11 +2158,15 @@ _HOOK_CATEGORIES = {
 def _pick_hook(art, state, shape_id=""):
     """Choose one interaction hook, or None. Skips hooks used in the last 4
     posts, honours ENGAGE_HOOK_PROBABILITY, and never doubles up on shapes
-    that already end with a question (question_hook ends with an ask)."""
-    if shape_id in ("question_hook",):
+    that already end with a question (question_hook ends with an ask).
+    v5.9: ~35% of CTA slots become a soft sign-off instead of an action ask -
+    pages that demand something on every post read as bots."""
+    if shape_id in ("question_hook", "followup"):
         return None
     if random.random() > ENGAGE_HOOK_PROBABILITY:
         return None
+    if random.random() < SOFT_SIGNOFF_PROBABILITY:
+        return _pick_soft_signoff(state)
     recent = set((state.get("recent_hooks") or [])[-4:])
     preferred = _HOOK_CATEGORIES.get(art.category) or [
         h["id"] for h in ENGAGEMENT_HOOKS if h["id"] not in recent]
@@ -2049,9 +2182,10 @@ def _pick_hook(art, state, shape_id=""):
     return text
 
 
-def _apply_interaction_layer(text, art, state, shape_id=""):
+def _apply_interaction_layer(text, art, state, shape_id="", follow_cta=""):
     """v5.5: append the engagement hook + reorder hashtags so posts stop
-    ending identically (body -> hook line -> tags). Returns final post text."""
+    ending identically (body -> hook -> tags). v5.9: the follow CTA slots in
+    after the hook, before the tags. Returns final post text."""
     if not text:
         return text
     body = text.rstrip()
@@ -2065,10 +2199,190 @@ def _apply_interaction_layer(text, art, state, shape_id=""):
     parts = [body]
     if hook:
         parts.append(hook)
+    if follow_cta:
+        parts.append(follow_cta)
     if tags:
         parts.append(tags)
     out = "\n\n".join(parts)
     return out.rstrip() + "\n"
+
+
+# ==========================================================================
+# v5.9: RETENTION ENGINE - follow-ups, follow asks, habit windows
+# ==========================================================================
+# Attraction gets the click; retention gets the comeback. Three mechanics:
+#   1. FOLLOW-UPS  - the page remembers what it posted and picks the story
+#      back up when it develops ("Part 2" posts with an UPDATE badge card).
+#   2. FOLLOW CTAs - a tasteful, capped follow ask (never more than ~1/day,
+#      always on follow-ups where it's earned: "follow so you don't miss P3").
+#   3. SPECIALS WINDOWS - trivia at lunch, riddles in the evening: fixed
+#      daily time slots turn casual likers into daily-checkers.
+SOFT_SIGNOFFS = [
+    {"id": "so_anyway", "text": "Anyway. Thoughts?"},
+    {"id": "so_mytake", "text": "That's my take - yours?"},
+    {"id": "so_curious", "text": "Curious what you all think."},
+    {"id": "so_wow", "text": "No hot take on this one. Just... wow."},
+    {"id": "so_stands", "text": "That's where the story stands for now."},
+    {"id": "so_processing", "text": "Still processing this one, honestly."},
+]
+
+
+def _pick_soft_signoff(state):
+    """Soft sign-offs share the hook rotation memory so they never repeat
+    back-to-back (same rule as the action hooks)."""
+    recent = set((state.get("recent_hooks") or [])[-2:])
+    pool = [s for s in SOFT_SIGNOFFS if s["id"] not in recent] or SOFT_SIGNOFFS
+    s = random.choice(pool)
+    state.setdefault("recent_hooks", []).append(s["id"])
+    state["recent_hooks"] = state["recent_hooks"][-8:]
+    return s["text"]
+
+FOLLOW_CTAS = [
+    "We'll keep following this story as it develops - follow the page so you don't miss the next update.",
+    "More like this every day - follow along and catch what's next.",
+    "This story is moving fast. Hit follow and you'll see Part 2 the minute it drops.",
+    "If you're enjoying these, the follow button is right there. No pressure. Some pressure.",
+]
+
+_EVENING_TEASER = (
+    "Back tomorrow with more. Follow the page so tomorrow-you doesn't miss it.")
+
+# developing-saga markers: headlines that imply "this story will move again"
+_FOLLOWUP_MARKERS = re.compile(
+    r"\b(trailer|teaser|confirmed|announced|report(?:s|ed)?|rumou?r|season|premiere|"
+    r"finale|verdict|trial|sentenced|box office|opening weekend|release|delayed|sued|"
+    r"lawsuit|investigation|talks|negotiat\w+|deal|contract|sequel|spin-?off|reboot|"
+    r"returning|renewed|cancelled|canceled|comeback|world record|attempt|qualif\w*|"
+    r"semifinal|final|tournament|album|tour|single|chart|debut|reveal|update|developing|"
+    r"teases|expected|set to|slated)\b", re.I)
+
+_FOL_TOKEN_STOP = {"the", "and", "for", "with", "from", "this", "that", "new",
+                   "after", "before", "amid", "over", "why", "how", "what",
+                   "when", "just", "says", "said", "gets", "set", "will",
+                   "could", "would", "may", "can", "not", "are", "was", "were",
+                   "has", "have", "had", "its", "his", "her", "their", "into",
+                   "about", "amidst", "off", "out", "up", "down", "vs"}
+
+
+def _sig_tokens(title):
+    """Content tokens for follow-up matching (shared subject, different event)."""
+    toks = re.findall(r"[a-z0-9][a-z0-9&'\-]{2,}", (title or "").lower())
+    return {t for t in toks if t not in _FOL_TOKEN_STOP and len(t) >= 3}
+
+
+def _is_followup_worthy(art) -> bool:
+    return bool(_FOLLOWUP_MARKERS.search(art.title or ""))
+
+
+def _remember_watch(art, state):
+    """Track a developing story so the page can pick it back up. Keeps the 8
+    most recent, drops anything a week old."""
+    try:
+        if (art.title or "").startswith("special:"):
+            return
+        now = time.time()
+        wl = [w for w in (state.get("watchlist") or [])
+              if now - float(w.get("ts") or 0) < 7 * 86400]
+        key = _dedup_key(art)
+        wl = [w for w in wl if w.get("key") != key]
+        wl.append({"key": key, "title": art.title, "nt": _normalize_title(art.title),
+                   "category": art.category, "date": _today_ist_str(), "ts": now,
+                   "parts": 1})
+        state["watchlist"] = wl[-8:]
+    except Exception as e:
+        log.debug("watchlist remember failed: %s", e)
+
+
+def _find_followup(clusters, state, threshold):
+    """Scan today's fresh stories for a continuation of something we already
+    posted. Returns (art, watch_entry) or None. Guards: daily cap, 6h-8day
+    gap, the new story must NOT be the one we posted (fresh dedup key) yet
+    share the same subject (>=4 content tokens, different headline)."""
+    today = _today_ist_str()
+    if state.get("followups_date") != today:
+        state["followups_date"] = today
+        state["followups_today"] = 0
+    if int(state.get("followups_today", 0) or 0) >= MAX_FOLLOWUPS_PER_DAY:
+        return None
+    watchlist = [w for w in (state.get("watchlist") or []) if w.get("title")]
+    if not watchlist:
+        return None
+    flat = [c[0] for c in clusters if c]
+    bar = max(6.0, float(threshold) - 2)
+    for art in flat[:30]:
+        try:
+            if (art.score or 0) < bar or _is_duplicate(art, state):
+                continue
+        except Exception:
+            continue
+        toks = _sig_tokens(art.title)
+        if len(toks) < 3:
+            continue
+        for w in watchlist:
+            wtoks = _sig_tokens(w.get("title", ""))
+            if len(toks & wtoks) < 4:
+                continue
+            if difflib.SequenceMatcher(None, _normalize_title(art.title),
+                               w.get("nt", "")).ratio() >= 0.92:
+                continue        # same story still making the rounds - not a P2
+            hrs = (time.time() - float(w.get("ts") or 0)) / 3600.0
+            if not (6.0 <= hrs <= 24 * 8):
+                continue        # too soon = same-day rehash; too late = nobody remembers
+            return (art, w)
+    return None
+
+
+def _followup_note(watch):
+    """LLM context telling the writer this post continues an earlier one."""
+    hrs = (time.time() - float(watch.get("ts") or 0)) / 3600.0
+    ago = f"about {int(hrs)} hours ago" if hrs < 24 else f"about {int(hrs // 24)} days ago"
+    parts = int(watch.get("parts", 1) or 1)
+    return (f"\n\nCONTEXT - THIS IS A FOLLOW-UP (Part {parts + 1}): {ago} our page posted "
+            f"about this same story with the headline: \"{watch.get('title', '')}\". "
+            "Write the post as a natural continuation - pick the conversation back up the "
+            "way a friend would ('Remember...?', 'Okay, update on...'). Do NOT copy the "
+            "old headline and do NOT re-explain it from zero. Lead with what's NEW. "
+            "You may end by saying we're watching this one for the next development.")
+
+
+def _maybe_follow_cta(art, state, force=False):
+    """One tasteful follow ask. Capped at 1 organic ask/day (forced ones -
+    follow-up posts - don't count, the ask is earned there). Evening slots
+    get a 'back tomorrow' teaser instead. Returns '' or the CTA line."""
+    try:
+        today = _today_ist_str()
+        if state.get("follow_cta_date") != today:
+            state["follow_cta_date"] = today
+            state["follow_ctas_today"] = 0
+        if not force:
+            if int(state.get("follow_ctas_today", 0) or 0) >= 1:
+                return ""
+            if random.random() > FOLLOW_CTA_PROBABILITY:
+                return ""
+            # the ask fired -> consume today's organic slot
+            state["follow_ctas_today"] = int(state.get("follow_ctas_today", 0) or 0) + 1
+        if _now_ist().hour >= 20:
+            return _EVENING_TEASER
+        return random.choice(FOLLOW_CTAS)
+    except Exception as e:
+        log.debug("follow cta failed: %s", e)
+        return ""
+
+
+def _hour_in_windows(hour, spec):
+    """'11-16,20-24' -> is this IST hour inside a window? Empty spec = always."""
+    if not spec:
+        return True
+    for part in spec.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        m = re.match(r"^(\d{1,2})\s*-\s*(\d{1,2})$", part)
+        if m and int(m.group(1)) <= hour <= int(m.group(2)):
+            return True
+        if part.isdigit() and int(part) == hour:
+            return True
+    return False
 
 
 # ==========================================================================
@@ -2589,7 +2903,7 @@ def _publish_special(sp, state, args) -> int:
         except Exception as e:
             log.warning("answer comment failed (non-fatal): %s", e)
 
-    _update_state_after_post(state, art, f"special_{kind}", kind)
+    _update_state_after_post(state, art, f"special_{kind}", kind, text=sp.get("message", ""))
     state["last_post_was_special"] = True
     state["specials_today"] = int(state.get("specials_today", 0) or 0) + 1
     state["last_special_kind"] = kind
@@ -3056,18 +3370,34 @@ def _smart_crop(img, tw, th):
         return img.crop((0, y0, w, y0 + nh))
 
 
+def _warm_grade(img):
+    """v5.9: gentle warm-and-bright lift - the 'shot on a phone' look that
+    reads as genuine instead of colour-graded. Subtle on purpose."""
+    try:
+        img = ImageEnhance.Brightness(img).enhance(1.05)
+        img = ImageEnhance.Color(img).enhance(1.06)
+        return ImageOps.autocontrast(img.convert("RGB"), cutoff=1)
+    except Exception:
+        return img
+
+
 def _enhance_photo(img, cinematic=None):
     """Tasteful 'pop' so cards stand out in the feed without looking fake.
-    v5.8: a share of photos also get the blockbuster teal-orange grade
-    (cinematic=None -> roll the dice; AI-generated images skip it - they
-    ship cinematic already)."""
+    v5.8: a share of photos get the blockbuster teal-orange grade.
+    v5.9: a bigger share get the bright warm 'phone photo' grade instead -
+    authenticity beats blockbuster when the goal is follower trust.
+    (cinematic=None -> roll the dice; AI-generated images skip both - they
+    ship their own look)."""
     try:
         img = ImageEnhance.Color(img).enhance(1.12)
         img = ImageEnhance.Contrast(img).enhance(1.06)
         img = ImageEnhance.Sharpness(img).enhance(1.12)
         if cinematic is None:
-            cinematic = (_CURRENT_PHOTO_KIND.get("kind", "stock") != "ai") \
-                and random.random() < CINEMATIC_GRADE_PROBABILITY
+            stock = (_CURRENT_PHOTO_KIND.get("kind", "stock") != "ai")
+            r = random.random()
+            cinematic = stock and r < CINEMATIC_GRADE_PROBABILITY
+            if not cinematic and stock and r < CINEMATIC_GRADE_PROBABILITY + WARM_GRADE_PROBABILITY:
+                return _warm_grade(img)
         if cinematic:
             img = _cinematic_grade(img)
     except Exception:
@@ -3456,7 +3786,7 @@ def _source_date_line(art, bengali=False):
 # ==========================================================================
 # CARD RENDERERS - 6 rotating layouts, 2x supersampled
 # ==========================================================================
-def _render_photo_card(photo, art, variant, headline, source_line, bengali=False, stat=None, variant_idx=0):
+def _render_photo_card(photo, art, variant, headline, source_line, bengali=False, stat=None, variant_idx=0, badge=None):
     """Stock photo + branded overlay. variant in CARD_VARIANTS; stat -> giant number poster."""
     if variant == "stat_hero" and not stat:
         variant = "full_bleed"                      # defensive fallback
@@ -3566,6 +3896,8 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
     label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
     if variant == "ticker":
         chip_h = int(50 * S)      # the accent band IS the slug - no chip pill
+    elif badge:                   # v5.9: UPDATE badges outrank the category chip
+        _, chip_h = _draw_chip(d, M, M, badge, (255, 190, 60), chip_size, bengali)
     else:
         _, chip_h = _draw_chip(d, M, M, label, accent, chip_size, bengali)
     if PAGE_HANDLE and variant not in ("top_banner", "stat_hero", "magazine", "ticker", "quote"):
@@ -3794,7 +4126,7 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
     return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
 
 
-def _render_designer_card(art, headline, source_line, bengali=False, variant_idx=0, stat=None):
+def _render_designer_card(art, headline, source_line, bengali=False, variant_idx=0, stat=None, badge=None):
     """No-photo fallback that still looks designed: duotone gradient + one of
     four rotating background motifs + full typography system; optional giant stat."""
     S = max(1, SUPERSAMPLE)
@@ -3850,7 +4182,8 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
     chip_size = int(25 * S)
     label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
     if variant not in ("ticker",):
-        _draw_chip(d, M, M, label, accent, chip_size, bengali)
+        _draw_chip(d, M, M, badge if badge else label,
+                   (255, 190, 60) if badge else accent, chip_size, bengali)
 
     if stat and variant not in ("quote", "ticker"):
         # ---- giant stat poster
@@ -3979,8 +4312,10 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
     return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
 
 
-def render_card(art, state=None, bengali=False, card_headline=None):
-    """Full pipeline: Pexels photo card or designer fallback -> JPEG path."""
+def render_card(art, state=None, bengali=False, card_headline=None, badge=None):
+    """Full pipeline: Pexels photo card or designer fallback -> JPEG path.
+    v5.9: badge='UPDATE \u00b7 PART 2' swaps the category chip for a series
+    badge on follow-up posts."""
     if not PIL_OK:
         log.warning("Pillow unavailable - skipping image card")
         return None
@@ -4072,16 +4407,16 @@ def render_card(art, state=None, bengali=False, card_headline=None):
 
     try:
         if photo is not None:
-            img = _render_photo_card(photo[0], art, variant, card_headline, src_line, bengali, stat, variant_idx)
+            img = _render_photo_card(photo[0], art, variant, card_headline, src_line, bengali, stat, variant_idx, badge)
             kind = "photo"
         else:
             img = _render_designer_card(art, card_headline, src_line, bengali, variant_idx,
-                                        stat if variant == "stat_hero" else None)
+                                        stat if variant == "stat_hero" else None, badge)
             kind = "designer"
     except Exception as e:
         log.warning("card render failed (%s) - designer fallback", e)
         img = _render_designer_card(art, card_headline, src_line, bengali, variant_idx,
-                                    stat if variant == "stat_hero" else None)
+                                    stat if variant == "stat_hero" else None, badge)
         kind = "designer"
 
     try:
@@ -4343,13 +4678,17 @@ def run_insights(limit=25) -> int:
 def _engage_reply_system():
     return """You reply to comments on a global entertainment & trending-news
 Facebook page. You are the voice of the page: warm, sharp, a little playful -
-the admin who actually reads the comments.
+the admin who actually reads the comments and remembers people. Commenters
+who get a real reply come back tomorrow; that's the whole job.
 
 Hard rules:
 - 40 words MAX. One short paragraph, no line breaks.
 - Reply to WHAT THEY SAID specifically - never a generic "thanks for commenting".
 - Agree, add one small insight or push back gently if they're off the mark.
 - If they state something wrong that the post itself contradicts, correct it kindly.
+- In ROUGHLY HALF your replies, end with a short curious question back to them
+  ("did you catch the first one?", "what's your pick then?") - a conversation,
+  not a customer-support ticket. The other half: no question, just warmth.
 - Contractions everywhere. 0-2 emoji max, only if natural.
 - Keep every reply family-friendly: no explicit content, no sleaze.
 - NEVER invent numbers or facts that aren't in the post. Stay vague if unsure.
@@ -4547,7 +4886,7 @@ def publish_comment(post_id, text):
 # ==========================================================================
 # ORCHESTRATION
 # ==========================================================================
-def _update_state_after_post(state, art, shape_id, persona_id):
+def _update_state_after_post(state, art, shape_id, persona_id, text=""):
     key = _dedup_key(art)
     if key not in (state.get("posted_keys") or []):        # v5.4: idempotent
         state["posted_keys"] = (state.get("posted_keys") or []) + [key]
@@ -4555,6 +4894,12 @@ def _update_state_after_post(state, art, shape_id, persona_id):
     if nt not in (state.get("posted_titles") or []):       # v5.4: idempotent
         state["posted_titles"] = (state.get("posted_titles") or []) + [nt]
     state["last_post_ts"] = time.time()
+    # v5.9: remember the opener so the page never starts two posts in a row
+    # with the same word (a small but loud bot tell)
+    fw = _first_word(text)
+    if fw:
+        fws = list(state.get("recent_first_words") or []) + [fw]
+        state["recent_first_words"] = fws[-3:]
     for key, val, cap in (("recent_categories", art.category, 5),
                           ("recent_domains", art.domain, 3),
                           ("recent_shapes", shape_id, 3),
@@ -4570,6 +4915,10 @@ def _update_state_after_post(state, art, shape_id, persona_id):
     todays[art.category] = todays.get(art.category, 0) + 1
     days[today] = todays
     state["category_days"] = dict(sorted(days.items())[-7:])
+    # v5.9: developing stories go on the watchlist so the page can post the
+    # "Part 2" the moment the story moves (retention: the page remembers)
+    if FOLLOWUP_ENABLED and _is_followup_worthy(art):
+        _remember_watch(art, state)
 
 
 def _mark_in_flight(state, art):
@@ -4677,19 +5026,48 @@ def run(args) -> int:
 
     # ---- 3.5 v5.7 ENGAGEMENT SPECIALS: trivia / this-or-that / riddle.
     # ~1 in 3 posts is a game post; the comment section becomes the show.
-    # Any failure degrades to the regular news flow below.
+    # v5.9: specials now fire only inside fixed daily time slots (IST 11-16 /
+    # 20-24 by default) - trivia at lunch, riddles in the evening - because
+    # habits are what turn casual likers into daily checkers.
     if SPECIAL_POSTS_ENABLED:
-        special = None
         try:
-            special = build_special_post(state)
-        except Exception as e:
-            log.warning("special-post build failed (%s) - continuing with news flow", e)
+            in_window = _hour_in_windows(_now_ist().hour, SPECIALS_WINDOWS)
+        except Exception:
+            in_window = True
+        special = None
+        if in_window:
+            try:
+                special = build_special_post(state)
+            except Exception as e:
+                log.warning("special-post build failed (%s) - continuing with news flow", e)
+        else:
+            log.info("Specials outside their daily window (%s IST) - news flow only",
+                     SPECIALS_WINDOWS or "any")
         if special:
             return _publish_special(special, state, args)
         _save_state(state)      # special roll may have updated counters
 
-    # ---- 4. select
-    art = select_article(clusters, state, threshold)
+    # ---- 3.75 v5.9 FOLLOW-UP SCAN: is one of today's fresh stories a
+    # continuation of something we already posted? A "Part 2" post is the
+    # strongest retention signal a page can send - it proves the page
+    # remembers, and gives yesterday's readers a reason to stick around.
+    follow_watch = None
+    art = None
+    if FOLLOWUP_ENABLED:
+        try:
+            found = _find_followup(clusters, state, threshold)
+            if found:
+                art, follow_watch = found
+                log.info("FOLLOW-UP MATCH: '%s' continues our earlier post '%s'",
+                         (art.title or "")[:70], (follow_watch.get("title") or "")[:50])
+        except Exception as e:
+            log.warning("follow-up scan failed (%s) - regular selection", e)
+            follow_watch = None
+
+    # ---- 4. select (follow-ups deliberately bypass topic diversity -
+    # continuity IS the point of a Part 2)
+    if follow_watch is None:
+        art = select_article(clusters, state, threshold)
     if art is None:
         log.info("No story cleared the bar (threshold %d) - skipping. Quality > filler.", threshold)
         _save_state(state)
@@ -4698,7 +5076,7 @@ def run(args) -> int:
              art.score, art.category, art.title, art.source, art.via, art.corroborations)
 
     # ---- 5. write
-    shape = _pick_shape(state)
+    shape = FOLLOWUP_SHAPE if follow_watch is not None else _pick_shape(state)
     persona = _pick_persona(state)
     grounding = ""
     try:
@@ -4710,7 +5088,14 @@ def run(args) -> int:
         wiki = _wikipedia_context(art.title)
     except Exception as e:
         log.debug("wiki failed: %s", e)
-    commentary, meta = generate_commentary(art, shape, persona, grounding, wiki)
+    fu_note = ""
+    if follow_watch is not None:
+        try:
+            fu_note = _followup_note(follow_watch)
+        except Exception:
+            fu_note = ""
+    commentary, meta = generate_commentary(art, shape, persona, grounding, wiki,
+                                            state=state, followup_note=fu_note)
     if not commentary:
         # v5.7: LLM down is NOT a reason to go quiet. A hand-written template
         # caption keeps the page alive (and the CI green); the alert file tells
@@ -4736,10 +5121,18 @@ def run(args) -> int:
             commentary = commentary.rstrip() + "\n\n" + " ".join(tags)
             log.info("Smart tags appended: %s", " ".join(tags))
     # v5.5: interaction layer - hook CTA + hashtag reordering (user interaction)
+    # v5.9: the follow ask slots in after the hook, capped at ~1/day organic,
+    # always on follow-ups (where it's earned: "follow so you don't miss P3")
     before_len = len(commentary)
-    commentary = _apply_interaction_layer(commentary, art, state, shape["id"])
+    fcta = ""
+    try:
+        fcta = _maybe_follow_cta(art, state, force=(follow_watch is not None))
+    except Exception as e:
+        log.debug("follow cta skipped: %s", e)
+    commentary = _apply_interaction_layer(commentary, art, state, shape["id"],
+                                          follow_cta=fcta)
     if len(commentary) != before_len:
-        log.info("Interaction layer applied (hook + tag reorder)")
+        log.info("Interaction layer applied (hook + follow cta + tag reorder)")
 
     # ---- 6. image
     image_path = None
@@ -4750,8 +5143,11 @@ def run(args) -> int:
     if text_only and not getattr(args, "no_image", False):
         log.info("Text-only hot take (v5.5 feed variety) - no image card this post")
     if not text_only and PIL_OK:
+        badge = None
+        if follow_watch is not None:
+            badge = "UPDATE \u00b7 PART %d" % (int(follow_watch.get("parts", 1) or 1) + 1)
         try:
-            image_path = render_card(art, state=state)
+            image_path = render_card(art, state=state, badge=badge)
         except Exception as e:
             log.warning("image render failed (%s) - continuing without image", e)
         # v5.7: multi-photo carousel - the extra photos from the pool become
@@ -4822,8 +5218,26 @@ def run(args) -> int:
         except Exception as e:
             log.warning("Link comment failed (non-fatal): %s", e)
 
-    _update_state_after_post(state, art, shape["id"], meta.get("persona", ""))
+    _update_state_after_post(state, art, shape["id"], meta.get("persona", ""), commentary)
     state["last_post_was_special"] = False      # v5.7: specials rotation bookkeeping
+    if follow_watch is not None:
+        # v5.9: the series moves forward - parts++ and the watchlist entry
+        # now points at the LATEST development (Part 3 will reference Part 2)
+        try:
+            state["followups_date"] = _today_ist_str()
+            state["followups_today"] = int(state.get("followups_today", 0) or 0) + 1
+            wl = [dict(w) for w in (state.get("watchlist") or [])]
+            for w in wl:
+                if w.get("key") == follow_watch.get("key"):
+                    w["parts"] = int(follow_watch.get("parts", 1) or 1) + 1
+                    w["ts"] = time.time()
+                    w["title"] = art.title
+                    w["nt"] = _normalize_title(art.title)
+            state["watchlist"] = wl[-8:]
+            log.info("Follow-up published as Part %d - watchlist updated",
+                     int(follow_watch.get("parts", 1) or 1) + 1)
+        except Exception as e:
+            log.debug("watchlist advance failed: %s", e)
 
     # ---- 8. Bengali companion track
     if _should_post_bengali(state):
@@ -5183,6 +5597,103 @@ def _self_test() -> int:
         failures.append("template caption malformed (unfilled placeholder)")
     if a1.title.split()[0].lower() not in tcap.lower():
         failures.append("template caption lost the headline")
+
+    # ---- v5.9: genuine voice + retention engine -----------------------------
+    # genuine heuristic: fan post beats corporate hype
+    fan = ("Okay, I've watched the trailer six times now. Honestly, I think "
+           "we're getting the best version of this character yet. The 40-second "
+           "tease doesn't give much away, but that last shot? I'm in.")
+    corp = ("In an era of unprecedented innovation, this incredible and "
+            "stunning development is truly amazing and absolutely unbelievable "
+            "for the industry!!!")
+    if _genuine_score(fan) <= _genuine_score(corp):
+        failures.append(f"genuine score: fan post should beat corporate hype "
+                        f"({_genuine_score(fan)} vs {_genuine_score(corp)})")
+    if _genuine_score("") != 0:
+        failures.append("genuine score of empty text must be 0")
+    if _genuine_score(fan) < 3:
+        failures.append(f"fan post scores too low: {_genuine_score(fan)}")
+    # quality composite is hook*2 + genuine
+    if GENUINE_VOICE and _quality_score(fan) != _hook_score(fan) * 2 + _genuine_score(fan):
+        failures.append("quality score != hook*2 + genuine")
+    # follow-up engine
+    dev_art = Article("Marvel confirms the new Avengers sequel starts filming next month",
+                      "https://x.com/f1", "T", "t.com", now, category="movies")
+    done_art = Article("Actor spotted buying coffee in a small town",
+                      "https://x.com/f2", "T", "t.com", now, category="celebs")
+    if not _is_followup_worthy(dev_art):
+        failures.append("developing story not flagged follow-up worthy")
+    if _is_followup_worthy(done_art):
+        failures.append("one-off story wrongly flagged follow-up worthy")
+    st = _default_state()
+    _remember_watch(dev_art, st)
+    if len(st.get("watchlist") or []) != 1:
+        failures.append("watchlist remember did not store the story")
+    sp_art = Article("special:trivia:Which movie won the Oscar?", "https://opentdb.com",
+                     "OpenTDB", "opentdb.com", now, category="movies")
+    _remember_watch(sp_art, st)
+    if len(st.get("watchlist") or []) != 1:
+        failures.append("specials must never enter the watchlist")
+    p2 = Article("Avengers sequel filming begins next month with three new cast members",
+                 "https://x.com/f3", "T", "t.com", now, category="movies")
+    p2.corroborations = 1
+    p2.score = 12.0
+    st2 = _default_state()
+    _remember_watch(dev_art, st2)
+    st2["watchlist"][0]["ts"] = time.time() - 36 * 3600     # a day-and-a-half ago
+    m = _find_followup([[p2]], st2, 9)
+    if not m or m[1].get("key") != st2["watchlist"][0]["key"]:
+        failures.append(f"follow-up matcher missed an obvious Part 2: {m}")
+    st3 = _default_state()
+    _remember_watch(dev_art, st3)
+    st3["watchlist"][0]["ts"] = time.time() - 3600          # one hour = too soon
+    if _find_followup([[p2]], st3, 9) is not None:
+        failures.append("follow-up fired inside the 6h cooldown (rehash risk)")
+    st4 = _default_state()
+    _remember_watch(dev_art, st4)
+    st4["followups_date"] = _today_ist_str()
+    st4["followups_today"] = MAX_FOLLOWUPS_PER_DAY
+    if _find_followup([[p2]], st4, 9) is not None:
+        failures.append("follow-up daily cap not enforced")
+    # follow CTA: forced on follow-up posts, capped organically
+    st5 = _default_state()
+    if not _maybe_follow_cta(a1, st5, force=True):
+        failures.append("forced follow CTA (follow-up post) came back empty")
+    st5["follow_cta_date"] = _today_ist_str()
+    st5["follow_ctas_today"] = 1
+    if _maybe_follow_cta(a1, st5):
+        failures.append("organic follow CTA ignored the daily cap")
+    # specials windows parse + membership
+    if not _hour_in_windows(13, "11-16,20-24") or _hour_in_windows(9, "11-16,20-24") \
+            or not _hour_in_windows(21, "11-16,20-24") or _hour_in_windows(2, "11-16,20-24"):
+        failures.append("specials window parser wrong")
+    if not _hour_in_windows(3, ""):
+        failures.append("empty specials window must mean 'any time'")
+    # anti-echo + first words
+    if _first_word("  So this happened...") != "so":
+        failures.append("first word extractor broken")
+    st6 = _default_state()
+    _update_state_after_post(st6, a1, "hot_take", "arjun", "So the trailer is here.")
+    if (st6.get("recent_first_words") or [])[-1] != "so":
+        failures.append("state did not remember the post opener")
+    # soft sign-offs never repeat back-to-back
+    st7 = _default_state()
+    prev_so, seen_so = None, True
+    try:
+        random.random = lambda: 0.10          # below ENGAGE_HOOK (0.55) AND below SOFT (0.35)
+        for _ in range(12):
+            h = _pick_hook(a1, st7, "stat_first")
+            if h is None:
+                seen_so = False
+                break
+            if h == prev_so:
+                seen_so = False
+                break
+            prev_so = h
+    finally:
+        random.random = _orig_rand
+    if not seen_so or prev_so not in [s["text"] for s in SOFT_SIGNOFFS]:
+        failures.append("soft sign-off rotation broken or non-signoff returned")
 
     if failures:
         for f in failures:

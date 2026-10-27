@@ -1,4 +1,4 @@
-# Trending & Entertainment News Bot v5.8
+# Trending & Entertainment News Bot v5.9
 
 Fully-automated Facebook Page autopilot for **worldwide trending +
 entertainment news**: movies, music, TV & streaming, sports, celebs, gaming,
@@ -30,6 +30,66 @@ ever.
 Single file. Two dependencies (`requests`, `pillow`; `trafilatura` optional
 but recommended). Runs on GitHub Actions free tier, Google Colab, or any
 machine with Python 3.9+.
+
+---
+
+## What's new in v5.9 (genuine voice + retention engine)
+
+**The mission changed: attraction gets the click, retention gets the
+comeback.** Every change below optimises for two things - does the post feel
+GENUINE, and does it give the follower a reason to return tomorrow?
+
+### Genuine-voice gate (captions sound like a person, not a content mill)
+- New 0-10 **authenticity heuristic** next to the hook heuristic: rewards
+  contractions, first-person presence, honest uncertainty ("reports say",
+  "if true") and receipts (numbers, named people); penalises ALL-CAPS
+  shouting, emoji/exclamation spam, hype adjectives with no facts behind them,
+  adverb stuffing and "And... And... And..." sentence loops.
+- The editorial pass now accepts a rewrite **only if the composite quality
+  (hook x2 + genuine) beats the draft** - posts can only get more human,
+  never less.
+- New GENUINE VOICE block in every prompt: react first, report second; say
+  I/we at least once; write to ONE friend; opinionated beats balanced; never
+  oversell ("let the FACT be the drama").
+- **Anti-echo guard:** the page remembers the openers of its last 3 posts and
+  rerolls any draft that starts with the same word - no three "So..." in a
+  row, ever.
+- **CTA machine calmed down:** hooks now fire on ~55% of posts (was 75%) and
+  ~35% of those CTAs are soft sign-offs ("Anyway. Thoughts?") instead of
+  asks - pages that demand action on every post read as bots. New banned
+  phrases: "stay tuned", "everything you need to know", "needless to say"...
+
+### Follow-up series (the page remembers what it posted)
+- Developing stories (trailers, verdicts, box-office runs, tournaments,
+  breakups...) go on a **watchlist**. When the same story moves again, the
+  bot posts the **Part 2** - a dedicated FOLLOW-UP shape that calls back to
+  the earlier post like a friend picking a conversation back up.
+- Part 2 cards carry an **UPDATE · PART 2 badge** instead of the category
+  chip, and every follow-up ends with an earned follow ask ("follow so you
+  don't miss Part 3").
+- Guard rails: max 1 follow-up/day, 6-hour cooldown (no same-day rehash),
+  8-day memory horizon, must share >=4 subject tokens with a DIFFERENT
+  headline, never reposts an already-posted story.
+
+### Retention habits
+- **Specials now run in fixed daily time slots** (IST 11-16 and 20-24 by
+  default): trivia at lunch, riddles in the evening. Predictable drops turn
+  casual likers into daily checkers. Tunable/off via `SPECIALS_WINDOWS=`.
+- **Tasteful follow asks:** max ~1 organic ask/day (`FOLLOW_CTA_PROBABILITY`),
+  evening posts get a "back tomorrow" teaser instead. Never begging.
+- **Engage replies ask back:** roughly half of all comment replies now end
+  with a short curious question - conversations, not customer support.
+
+### Authentic look
+- Cinematic teal-orange grade dialled back (35% -> 22%) and a new **warm
+  bright "phone photo" grade** (~25%) takes its place - genuine beats
+  blockbuster in the feed.
+
+### Tests
+- New suite: `tests/test_genuine.py` - 60 offline cases (genuine scoring,
+  anti-echo, follow-up matching + an end-to-end run() Part 2 scenario).
+- `tests.yml` now runs ALL seven suites (specials + diversity had been
+  missing from CI; both wired in).
 
 ---
 
@@ -288,7 +348,8 @@ normal environment variables everywhere else.
 | `MIN_ENGAGEMENT_SCORE_TO_POST` | `9` | Quality gate |
 | `MAX_PER_CATEGORY_PER_DAY` | `2` | v5.4 topic diversity cap (`0` = off) |
 | `SMART_TAGS` | `true` | v5.4 hashtag safety net |
-| `ENGAGE_HOOK_PROBABILITY` | `0.75` | v5.5 share of posts ending with a CTA hook |
+| `ENGAGE_HOOK_PROBABILITY` | `0.55` | v5.5/v5.9 share of posts ending with a CTA hook (softened from 0.75) |
+| `SOFT_SIGNOFF_PROBABILITY` | `0.35` | v5.9 share of CTA slots that are soft sign-offs instead of asks |
 | `SPECIAL_POSTS_ENABLED` | `true` | v5.7 master switch for trivia/VS/riddle specials |
 | `TRIVIA_PROBABILITY` | `0.16` | v5.7 share of runs that become a TRIVIA DROP |
 | `VS_PROBABILITY` | `0.12` | v5.7 share of runs that become a THIS OR THAT battle |
@@ -304,7 +365,13 @@ normal environment variables everywhere else.
 | `AI_IMAGE_RETRY_WAIT` | `32` | v5.8 free-tier busy wait before the single retry |
 | `EDITOR_PASS_ENABLED` | `true` | v5.8 second-pass viral-editor rewrite of every caption |
 | `POLLINATIONS_TEXT_ENABLED` | `true` | v5.8 keyless tier-3 LLM (only used if Groq AND Gemini fail) |
-| `CINEMATIC_GRADE_PROBABILITY` | `0.35` | v5.8 share of stock photos that get the teal-orange movie grade |
+| `CINEMATIC_GRADE_PROBABILITY` | `0.22` | v5.8/v5.9 share of stock photos that get the teal-orange movie grade |
+| `WARM_GRADE_PROBABILITY` | `0.25` | v5.9 share of stock photos that get the bright warm phone-photo grade |
+| `GENUINE_VOICE` | `true` | v5.9 authenticity gate + genuine-voice prompts + anti-echo |
+| `FOLLOWUP_ENABLED` | `true` | v5.9 Part 2 / UPDATE follow-up series master switch |
+| `MAX_FOLLOWUPS_PER_DAY` | `1` | v5.9 daily cap on follow-up posts |
+| `FOLLOW_CTA_PROBABILITY` | `0.28` | v5.9 chance of a tasteful follow ask (max 1 organic/day) |
+| `SPECIALS_WINDOWS` | `11-16,20-24` | v5.9 IST hours when trivia/riddles may fire (empty = any time) |
 | `TEXT_POST_PROBABILITY` | `0.15` | v5.5 share of conversational posts with no image |
 | `SQUARE_CARD_PROBABILITY` | `0.35` | v5.5 share of 1080x1080 square cards |
 | `ENGAGE_MAX_REPLIES` | `4` | v5.5 comment replies per `--engage` pass |

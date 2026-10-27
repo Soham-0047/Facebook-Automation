@@ -58,6 +58,12 @@ jobs:
           AI_IMAGE_PROBABILITY: ${{ vars.AI_IMAGE_PROBABILITY }}
           EDITOR_PASS_ENABLED: ${{ vars.EDITOR_PASS_ENABLED }}
           CINEMATIC_GRADE_PROBABILITY: ${{ vars.CINEMATIC_GRADE_PROBABILITY }}
+          # v5.9: genuine voice + retention engine (repo variables, optional)
+          GENUINE_VOICE: ${{ vars.GENUINE_VOICE }}
+          FOLLOWUP_ENABLED: ${{ vars.FOLLOWUP_ENABLED }}
+          FOLLOW_CTA_PROBABILITY: ${{ vars.FOLLOW_CTA_PROBABILITY }}
+          SPECIALS_WINDOWS: ${{ vars.SPECIALS_WINDOWS }}
+          ENGAGE_HOOK_PROBABILITY: ${{ vars.ENGAGE_HOOK_PROBABILITY }}
         run: |
           rm -f .run_ok
           python bot.py
