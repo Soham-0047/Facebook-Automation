@@ -129,7 +129,8 @@
   "2cfe5a748ce6fc79bfd31bdb46346492",
   "53aa6b6197281f6a6c2dc28281d21885",
   "6a2d762237842a34956fbfd696e884ee",
-  "b00a4f12a26d0b802163c19916ea7b0a"
+  "b00a4f12a26d0b802163c19916ea7b0a",
+  "f10106fae99d3f20aa918298285dbb03"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -261,29 +262,28 @@
   "xbox movie and tv exclusivity deal with netflix reportedly off the table after microsoft asked for 800 million ign",
   "f1 grid gigs presented by american express returns in austin with grammy award winning america band train",
   "coven academy renewed for season 2 by disney",
-  "hunger games director hopes you aren t too distracted with gta 6 to see sunrise on the reaping"
+  "hunger games director hopes you aren t too distracted with gta 6 to see sunrise on the reaping",
+  "jay z s super bowl lxi halftime show our dream setlist"
  ],
- "last_post_ts": 1793090358.9175806,
+ "last_post_ts": 1793124508.3236961,
  "recent_categories": [
-  "movies",
   "gaming",
   "music",
   "movies",
-  "gaming"
+  "gaming",
+  "music"
  ],
  "recent_domains": [
-  "formulaoneworldchampionshiplimited",
   "deadline.com",
-  "ign.com"
+  "ign.com",
+  "billboard.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "listicle",
-  "mini_story"
+  "mini_story",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  6789626,
-  6800202,
   4329870,
   3709369,
   7005685,
@@ -291,13 +291,15 @@
   8263314,
   16453343,
   8263357,
-  7991127
+  7991127,
+  35120829,
+  11970466
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "kabir"
  ],
- "post_counter": 130,
+ "post_counter": 131,
  "category_days": {
   "2026-10-21": {
    "gaming": 1,
@@ -324,12 +326,26 @@
   },
   "2026-10-27": {
    "movies": 1,
-   "gaming": 1
+   "gaming": 1,
+   "music": 1
   }
  },
  "bengali_date": "2026-10-27",
- "bengali_count": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793107449
+ "bengali_count": 1,
+ "recent_first_words": [
+  "that's"
+ ],
+ "watchlist": [],
+ "followups_date": "",
+ "followups_today": 0,
+ "follow_cta_date": "2026-10-27",
+ "follow_ctas_today": 0,
+ "recent_hooks": [
+  "so_curious"
+ ],
+ "recent_formats": [
+  "portrait",
+  "square"
+ ],
+ "last_post_was_special": false
 }
