@@ -340,12 +340,7 @@
  "followups_today": 0,
  "follow_cta_date": "2026-10-27",
  "follow_ctas_today": 0,
- "recent_hooks": [
-  "so_curious"
- ],
- "recent_formats": [
-  "portrait",
-  "square"
- ],
- "last_post_was_special": false
+ "replied_comment_ids": [],
+ "liked_comment_ids": [],
+ "engage_last_ts": 1793127011
 }
