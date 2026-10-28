@@ -130,7 +130,8 @@
   "53aa6b6197281f6a6c2dc28281d21885",
   "6a2d762237842a34956fbfd696e884ee",
   "b00a4f12a26d0b802163c19916ea7b0a",
-  "f10106fae99d3f20aa918298285dbb03"
+  "f10106fae99d3f20aa918298285dbb03",
+  "c59ac4a12200f8e5af5c85a4a49f4814"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -263,48 +264,45 @@
   "f1 grid gigs presented by american express returns in austin with grammy award winning america band train",
   "coven academy renewed for season 2 by disney",
   "hunger games director hopes you aren t too distracted with gta 6 to see sunrise on the reaping",
-  "jay z s super bowl lxi halftime show our dream setlist"
+  "jay z s super bowl lxi halftime show our dream setlist",
+  "call of duty lifetime revenue surges past 40 billion microsoft confirms"
  ],
- "last_post_ts": 1793124508.3236961,
+ "last_post_ts": 1793179129.9597745,
  "recent_categories": [
-  "gaming",
   "music",
   "movies",
   "gaming",
-  "music"
+  "music",
+  "gaming"
  ],
  "recent_domains": [
-  "deadline.com",
   "ign.com",
-  "billboard.com"
+  "billboard.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "listicle",
   "mini_story",
-  "stat_first"
+  "stat_first",
+  "receipts"
  ],
  "recent_photo_ids": [
-  4329870,
-  3709369,
-  7005685,
-  35844840,
   8263314,
   16453343,
   8263357,
   7991127,
   35120829,
-  11970466
+  11970466,
+  7562151,
+  12377483,
+  9821830,
+  34625043
  ],
  "recent_personas": [
-  "ananya",
-  "kabir"
+  "kabir",
+  "arjun"
  ],
- "post_counter": 131,
+ "post_counter": 132,
  "category_days": {
-  "2026-10-21": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-10-22": {
    "viral": 1,
    "movies": 1
@@ -328,19 +326,25 @@
    "movies": 1,
    "gaming": 1,
    "music": 1
+  },
+  "2026-10-28": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-27",
+ "bengali_date": "2026-10-28",
  "bengali_count": 1,
  "recent_first_words": [
-  "that's"
+  "that's",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-10-27",
- "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793170587
+ "follow_cta_date": "2026-10-28",
+ "follow_ctas_today": 1,
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
