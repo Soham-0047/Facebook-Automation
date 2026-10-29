@@ -133,7 +133,8 @@
   "f10106fae99d3f20aa918298285dbb03",
   "c59ac4a12200f8e5af5c85a4a49f4814",
   "521b1dd4a528da8dc5cae545ee8f19d8",
-  "c7e61b7004f37fedc051a97ee971c632"
+  "c7e61b7004f37fedc051a97ee971c632",
+  "f3c01d4c9be1acd9a994bbc561dfe331"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -269,48 +270,45 @@
   "jay z s super bowl lxi halftime show our dream setlist",
   "call of duty lifetime revenue surges past 40 billion microsoft confirms",
   "mushroom murders melanie lynskey to star as erin patterson in new limited series",
-  "here s why state of decay 3 has taken 6 years to develop so far"
+  "here s why state of decay 3 has taken 6 years to develop so far",
+  "michael bay benedict cumberbatch left rattled in new netflix mockumentary cunk on cinema trailer"
  ],
- "last_post_ts": 1793265653.9535644,
+ "last_post_ts": 1793298925.498914,
  "recent_categories": [
-  "gaming",
   "music",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "gamespot.com",
   "theguardian.com",
-  "gamespot.com"
+  "gamespot.com",
+  "hollywoodreporter.com"
  ],
  "recent_shapes": [
-  "receipts",
   "guess_what",
-  "hot_take"
+  "hot_take",
+  "react_split"
  ],
  "recent_photo_ids": [
-  8263357,
-  7991127,
-  35120829,
-  11970466,
   7562151,
   12377483,
   9821830,
   34625043,
   8652199,
-  7562389
+  7562389,
+  15610070,
+  4329870,
+  6800202,
+  3709371
  ],
  "recent_personas": [
-  "dev",
-  "arjun"
+  "arjun",
+  "dev"
  ],
- "post_counter": 134,
+ "post_counter": 135,
  "category_days": {
-  "2026-10-23": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-10-24": {
    "gaming": 1,
    "movies": 1
@@ -333,21 +331,26 @@
   },
   "2026-10-29": {
    "gaming": 1
+  },
+  "2026-10-30": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-10-29",
- "bengali_count": 0,
+ "bengali_date": "2026-10-30",
+ "bengali_count": 1,
  "recent_first_words": [
-  "just",
   "a",
-  "state"
+  "state",
+  "drop"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-10-29",
+ "follow_cta_date": "2026-10-30",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793284217
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
