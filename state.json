@@ -132,7 +132,8 @@
   "b00a4f12a26d0b802163c19916ea7b0a",
   "f10106fae99d3f20aa918298285dbb03",
   "c59ac4a12200f8e5af5c85a4a49f4814",
-  "521b1dd4a528da8dc5cae545ee8f19d8"
+  "521b1dd4a528da8dc5cae545ee8f19d8",
+  "c7e61b7004f37fedc051a97ee971c632"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -267,28 +268,28 @@
   "hunger games director hopes you aren t too distracted with gta 6 to see sunrise on the reaping",
   "jay z s super bowl lxi halftime show our dream setlist",
   "call of duty lifetime revenue surges past 40 billion microsoft confirms",
-  "mushroom murders melanie lynskey to star as erin patterson in new limited series"
+  "mushroom murders melanie lynskey to star as erin patterson in new limited series",
+  "here s why state of decay 3 has taken 6 years to develop so far"
  ],
- "last_post_ts": 1793211917.5198162,
+ "last_post_ts": 1793265653.9535644,
  "recent_categories": [
-  "movies",
   "gaming",
   "music",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "billboard.com",
   "gamespot.com",
-  "theguardian.com"
+  "theguardian.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "stat_first",
   "receipts",
-  "guess_what"
+  "guess_what",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  16453343,
   8263357,
   7991127,
   35120829,
@@ -297,18 +298,15 @@
   12377483,
   9821830,
   34625043,
-  8652199
+  8652199,
+  7562389
  ],
  "recent_personas": [
-  "arjun",
-  "dev"
+  "dev",
+  "arjun"
  ],
- "post_counter": 133,
+ "post_counter": 134,
  "category_days": {
-  "2026-10-22": {
-   "viral": 1,
-   "movies": 1
-  },
   "2026-10-23": {
    "gaming": 1,
    "movies": 1
@@ -332,21 +330,28 @@
   "2026-10-28": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-10-29": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-28",
- "bengali_count": 1,
+ "bengali_date": "2026-10-29",
+ "bengali_count": 0,
  "recent_first_words": [
-  "that's",
   "just",
-  "a"
+  "a",
+  "state"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-10-28",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793258158
+ "follow_cta_date": "2026-10-29",
+ "follow_ctas_today": 0,
+ "recent_hooks": [
+  "vote_emoji"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
