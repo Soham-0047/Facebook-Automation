@@ -135,7 +135,8 @@
   "521b1dd4a528da8dc5cae545ee8f19d8",
   "c7e61b7004f37fedc051a97ee971c632",
   "f3c01d4c9be1acd9a994bbc561dfe331",
-  "d7e90751d26099b81439ea8c81821992"
+  "d7e90751d26099b81439ea8c81821992",
+  "f49a7a20a12bd02a0058111671f17407"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -273,28 +274,28 @@
   "mushroom murders melanie lynskey to star as erin patterson in new limited series",
   "here s why state of decay 3 has taken 6 years to develop so far",
   "michael bay benedict cumberbatch left rattled in new netflix mockumentary cunk on cinema trailer",
-  "netflix donald glover set new video game series based on 7x guinness world record setting hit"
+  "netflix donald glover set new video game series based on 7x guinness world record setting hit",
+  "oscar contender to hold a mountain to open in theaters in december ahead of hbo debut"
  ],
- "last_post_ts": 1793353005.263723,
+ "last_post_ts": 1793383661.9478593,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "gamespot.com",
   "hollywoodreporter.com",
-  "comicbookresources"
+  "comicbookresources",
+  "deadline.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "react_split",
-  "cold_open"
+  "cold_open",
+  "guess_what"
  ],
  "recent_photo_ids": [
-  7562151,
   12377483,
   9821830,
   34625043,
@@ -303,13 +304,14 @@
   15610070,
   4329870,
   6800202,
-  3709371
+  3709371,
+  39851565
  ],
  "recent_personas": [
-  "dev",
-  "riya"
+  "riya",
+  "ananya"
  ],
- "post_counter": 136,
+ "post_counter": 137,
  "category_days": {
   "2026-10-24": {
    "gaming": 1,
@@ -335,24 +337,24 @@
    "gaming": 1
   },
   "2026-10-30": {
-   "movies": 1,
+   "movies": 2,
    "gaming": 1
   }
  },
  "bengali_date": "2026-10-30",
  "bengali_count": 1,
  "recent_first_words": [
-  "state",
   "drop",
-  "right"
+  "right",
+  "a"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-10-30",
- "follow_ctas_today": 0,
- "recent_hooks": [
-  "so_curious"
+ "follow_ctas_today": 1,
+ "recent_formats": [
+  "portrait"
  ],
  "last_post_was_special": false
 }
