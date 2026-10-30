@@ -134,7 +134,8 @@
   "c59ac4a12200f8e5af5c85a4a49f4814",
   "521b1dd4a528da8dc5cae545ee8f19d8",
   "c7e61b7004f37fedc051a97ee971c632",
-  "f3c01d4c9be1acd9a994bbc561dfe331"
+  "f3c01d4c9be1acd9a994bbc561dfe331",
+  "d7e90751d26099b81439ea8c81821992"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -271,25 +272,26 @@
   "call of duty lifetime revenue surges past 40 billion microsoft confirms",
   "mushroom murders melanie lynskey to star as erin patterson in new limited series",
   "here s why state of decay 3 has taken 6 years to develop so far",
-  "michael bay benedict cumberbatch left rattled in new netflix mockumentary cunk on cinema trailer"
+  "michael bay benedict cumberbatch left rattled in new netflix mockumentary cunk on cinema trailer",
+  "netflix donald glover set new video game series based on 7x guinness world record setting hit"
  ],
- "last_post_ts": 1793298925.498914,
+ "last_post_ts": 1793353005.263723,
  "recent_categories": [
-  "music",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "theguardian.com",
   "gamespot.com",
-  "hollywoodreporter.com"
+  "hollywoodreporter.com",
+  "comicbookresources"
  ],
  "recent_shapes": [
-  "guess_what",
   "hot_take",
-  "react_split"
+  "react_split",
+  "cold_open"
  ],
  "recent_photo_ids": [
   7562151,
@@ -304,10 +306,10 @@
   3709371
  ],
  "recent_personas": [
-  "arjun",
-  "dev"
+  "dev",
+  "riya"
  ],
- "post_counter": 135,
+ "post_counter": 136,
  "category_days": {
   "2026-10-24": {
    "gaming": 1,
@@ -333,22 +335,24 @@
    "gaming": 1
   },
   "2026-10-30": {
-   "movies": 1
+   "movies": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-10-30",
  "bengali_count": 1,
  "recent_first_words": [
-  "a",
   "state",
-  "drop"
+  "drop",
+  "right"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-10-30",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793344746
+ "recent_hooks": [
+  "so_curious"
+ ],
+ "last_post_was_special": false
 }
