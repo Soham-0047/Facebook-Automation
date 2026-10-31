@@ -357,8 +357,7 @@
  "followups_today": 0,
  "follow_cta_date": "2026-10-31",
  "follow_ctas_today": 1,
- "recent_formats": [
-  "portrait"
- ],
- "last_post_was_special": false
+ "replied_comment_ids": [],
+ "liked_comment_ids": [],
+ "engage_last_ts": 1793469103
 }
