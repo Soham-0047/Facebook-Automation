@@ -136,7 +136,8 @@
   "c7e61b7004f37fedc051a97ee971c632",
   "f3c01d4c9be1acd9a994bbc561dfe331",
   "d7e90751d26099b81439ea8c81821992",
-  "f49a7a20a12bd02a0058111671f17407"
+  "f49a7a20a12bd02a0058111671f17407",
+  "66648062f2c67f606c5ca7243a90b076"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -275,28 +276,28 @@
   "here s why state of decay 3 has taken 6 years to develop so far",
   "michael bay benedict cumberbatch left rattled in new netflix mockumentary cunk on cinema trailer",
   "netflix donald glover set new video game series based on 7x guinness world record setting hit",
-  "oscar contender to hold a mountain to open in theaters in december ahead of hbo debut"
+  "oscar contender to hold a mountain to open in theaters in december ahead of hbo debut",
+  "gta 6 s attention to detail is getting a little ridiculous"
  ],
- "last_post_ts": 1793383661.9478593,
+ "last_post_ts": 1793438227.633615,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "hollywoodreporter.com",
   "comicbookresources",
-  "deadline.com"
+  "deadline.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "react_split",
   "cold_open",
-  "guess_what"
+  "guess_what",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  12377483,
   9821830,
   34625043,
   8652199,
@@ -305,18 +306,15 @@
   4329870,
   6800202,
   3709371,
-  39851565
+  39851565,
+  7562151
  ],
  "recent_personas": [
-  "riya",
-  "ananya"
+  "ananya",
+  "arjun"
  ],
- "post_counter": 137,
+ "post_counter": 138,
  "category_days": {
-  "2026-10-24": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-10-25": {
    "gaming": 2,
    "movies": 1
@@ -339,21 +337,25 @@
   "2026-10-30": {
    "movies": 2,
    "gaming": 1
+  },
+  "2026-10-31": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-30",
- "bengali_count": 1,
+ "bengali_date": "2026-10-31",
+ "bengali_count": 0,
  "recent_first_words": [
-  "drop",
   "right",
-  "a"
+  "a",
+  "weeks"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-10-30",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793430435
+ "follow_cta_date": "2026-10-31",
+ "follow_ctas_today": 0,
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
