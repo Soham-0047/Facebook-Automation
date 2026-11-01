@@ -138,7 +138,8 @@
   "d7e90751d26099b81439ea8c81821992",
   "f49a7a20a12bd02a0058111671f17407",
   "66648062f2c67f606c5ca7243a90b076",
-  "4126ac687a8b705e5de959c5f321c137"
+  "4126ac687a8b705e5de959c5f321c137",
+  "3d8d90e57359f2d7b453858b6b1ed084"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -279,28 +280,28 @@
   "netflix donald glover set new video game series based on 7x guinness world record setting hit",
   "oscar contender to hold a mountain to open in theaters in december ahead of hbo debut",
   "gta 6 s attention to detail is getting a little ridiculous",
-  "box office you can see everything fends off clayface for top spot on friday with 3 56 million"
+  "box office you can see everything fends off clayface for top spot on friday with 3 56 million",
+  "jonas brothers target guinness world record with halloween concert inside roblox game steal an egg"
  ],
- "last_post_ts": 1793467116.5828407,
+ "last_post_ts": 1793527469.9596102,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "deadline.com",
   "gamespot.com",
-  "variety.com"
+  "variety.com",
+  "netinfluencer"
  ],
  "recent_shapes": [
-  "guess_what",
   "stat_first",
-  "hot_take"
+  "hot_take",
+  "receipts"
  ],
  "recent_photo_ids": [
-  34625043,
   8652199,
   7562389,
   15610070,
@@ -309,18 +310,15 @@
   3709371,
   39851565,
   7562151,
-  34084882
+  34084882,
+  40384080
  ],
  "recent_personas": [
-  "arjun",
-  "dev"
+  "dev",
+  "arjun"
  ],
- "post_counter": 139,
+ "post_counter": 140,
  "category_days": {
-  "2026-10-25": {
-   "gaming": 2,
-   "movies": 1
-  },
   "2026-10-26": {
    "music": 1
   },
@@ -343,21 +341,28 @@
   "2026-10-31": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-01": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-10-31",
+ "bengali_date": "2026-11-01",
  "bengali_count": 0,
  "recent_first_words": [
-  "a",
   "weeks",
-  "this"
+  "this",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-10-31",
+ "follow_cta_date": "2026-11-01",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793518865
+ "recent_hooks": [
+  "hot_or_not"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
