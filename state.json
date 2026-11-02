@@ -140,7 +140,8 @@
   "66648062f2c67f606c5ca7243a90b076",
   "4126ac687a8b705e5de959c5f321c137",
   "3d8d90e57359f2d7b453858b6b1ed084",
-  "847c28541a2e6dbcb31d12c93c621e00"
+  "847c28541a2e6dbcb31d12c93c621e00",
+  "2e7ec51cf48a35344f755333216a0c21"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -283,47 +284,45 @@
   "gta 6 s attention to detail is getting a little ridiculous",
   "box office you can see everything fends off clayface for top spot on friday with 3 56 million",
   "jonas brothers target guinness world record with halloween concert inside roblox game steal an egg",
-  "get in the spooky spirit with these horrors from youtube"
+  "get in the spooky spirit with these horrors from youtube",
+  "valve s long lost prototype portal prequel appears online after nearly 20 years"
  ],
- "last_post_ts": 1793556054.0369802,
+ "last_post_ts": 1793615578.6806579,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "variety.com",
   "netinfluencer",
-  "theverge.com"
+  "theverge.com",
+  "pcgamer.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "receipts",
-  "question_hook"
+  "question_hook",
+  "react_split"
  ],
  "recent_photo_ids": [
-  4329870,
-  6800202,
-  3709371,
   39851565,
   7562151,
   34084882,
   40384080,
   17397813,
   8590230,
-  8590227
+  8590227,
+  7848985,
+  19012046,
+  28993079
  ],
  "recent_personas": [
-  "arjun",
-  "riya"
+  "riya",
+  "ananya"
  ],
- "post_counter": 141,
+ "post_counter": 142,
  "category_days": {
-  "2026-10-26": {
-   "music": 1
-  },
   "2026-10-27": {
    "movies": 1,
    "gaming": 1,
@@ -347,21 +346,25 @@
   "2026-11-01": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-02": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-01",
+ "bengali_date": "2026-11-02",
  "bengali_count": 0,
  "recent_first_words": [
-  "this",
   "just",
-  "ever"
+  "ever",
+  "drop"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-01",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793605651
+ "follow_cta_date": "2026-11-02",
+ "follow_ctas_today": 0,
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
