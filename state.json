@@ -367,12 +367,7 @@
  "followups_today": 0,
  "follow_cta_date": "2026-11-04",
  "follow_ctas_today": 0,
- "recent_hooks": [
-  "vote_emoji"
- ],
- "recent_formats": [
-  "square",
-  "portrait"
- ],
- "last_post_was_special": false
+ "replied_comment_ids": [],
+ "liked_comment_ids": [],
+ "engage_last_ts": 1793736775
 }
