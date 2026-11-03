@@ -142,7 +142,8 @@
   "3d8d90e57359f2d7b453858b6b1ed084",
   "847c28541a2e6dbcb31d12c93c621e00",
   "2e7ec51cf48a35344f755333216a0c21",
-  "d8ae1c31f75d713aa652502873eb9ec8"
+  "d8ae1c31f75d713aa652502873eb9ec8",
+  "86473f79ced161830555e2acbb435651"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -287,28 +288,28 @@
   "jonas brothers target guinness world record with halloween concert inside roblox game steal an egg",
   "get in the spooky spirit with these horrors from youtube",
   "valve s long lost prototype portal prequel appears online after nearly 20 years",
-  "oscar predictions documentary feature will the branch embrace you can see everything or snub the frontrunner again"
+  "oscar predictions documentary feature will the branch embrace you can see everything or snub the frontrunner again",
+  "bts katseye drive hybe to record quarterly revenue and profit"
  ],
- "last_post_ts": 1793656249.4538188,
+ "last_post_ts": 1793701689.6360998,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "music"
  ],
  "recent_domains": [
-  "theverge.com",
   "pcgamer.com",
+  "variety.com",
   "variety.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "react_split",
-  "mini_story"
+  "mini_story",
+  "listicle"
  ],
  "recent_photo_ids": [
-  34084882,
   40384080,
   17397813,
   8590230,
@@ -317,13 +318,14 @@
   19012046,
   28993079,
   7005685,
-  35844840
+  35844840,
+  23964432
  ],
  "recent_personas": [
-  "ananya",
-  "arjun"
+  "arjun",
+  "riya"
  ],
- "post_counter": 143,
+ "post_counter": 144,
  "category_days": {
   "2026-10-28": {
    "gaming": 1,
@@ -348,22 +350,27 @@
    "gaming": 1
   },
   "2026-11-03": {
-   "movies": 1
+   "movies": 1,
+   "music": 1
   }
  },
  "bengali_date": "2026-11-03",
  "bengali_count": 1,
  "recent_first_words": [
-  "ever",
   "drop",
-  "a"
+  "a",
+  "bts"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-03",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793692954
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
