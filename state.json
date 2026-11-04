@@ -144,7 +144,8 @@
   "2e7ec51cf48a35344f755333216a0c21",
   "d8ae1c31f75d713aa652502873eb9ec8",
   "86473f79ced161830555e2acbb435651",
-  "32133a44226a2c368f338e9a09f67334"
+  "32133a44226a2c368f338e9a09f67334",
+  "985f160aae4950ec2bb1fc89e7cbbb71"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -291,43 +292,44 @@
   "valve s long lost prototype portal prequel appears online after nearly 20 years",
   "oscar predictions documentary feature will the branch embrace you can see everything or snub the frontrunner again",
   "bts katseye drive hybe to record quarterly revenue and profit",
-  "all s fair season 2 premiere red carpet photos kim kardashian glenn close sarah paulson more"
+  "all s fair season 2 premiere red carpet photos kim kardashian glenn close sarah paulson more",
+  "the talix 20 000mah power bank with 190w of total power output drops to 29 99 ahead of black friday"
  ],
- "last_post_ts": 1793734903.6080978,
+ "last_post_ts": 1793788160.0248356,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "music",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
   "variety.com",
-  "variety.com",
-  "imdb"
+  "imdb",
+  "ign.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "listicle",
-  "guess_what"
+  "guess_what",
+  "react_split"
  ],
  "recent_photo_ids": [
-  8590230,
-  8590227,
-  7848985,
   19012046,
   28993079,
   7005685,
   35844840,
   23964432,
   38507945,
-  38507941
+  38507941,
+  7562151,
+  12377483,
+  9821830
  ],
  "recent_personas": [
-  "riya",
-  "meera"
+  "meera",
+  "ananya"
  ],
- "post_counter": 145,
+ "post_counter": 146,
  "category_days": {
   "2026-10-29": {
    "gaming": 1
@@ -352,22 +354,24 @@
    "music": 1
   },
   "2026-11-04": {
-   "movies": 1
+   "movies": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-11-04",
  "bengali_count": 1,
  "recent_first_words": [
-  "a",
   "bts",
-  "a"
+  "a",
+  "drop"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-04",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793777819
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
