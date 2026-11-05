@@ -146,7 +146,8 @@
   "86473f79ced161830555e2acbb435651",
   "32133a44226a2c368f338e9a09f67334",
   "985f160aae4950ec2bb1fc89e7cbbb71",
-  "b5fe15759939ac26ddf7f27f8f1629b3"
+  "b5fe15759939ac26ddf7f27f8f1629b3",
+  "0db34bcf29843a8f257be7897802ea63"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -295,28 +296,28 @@
   "bts katseye drive hybe to record quarterly revenue and profit",
   "all s fair season 2 premiere red carpet photos kim kardashian glenn close sarah paulson more",
   "the talix 20 000mah power bank with 190w of total power output drops to 29 99 ahead of black friday",
-  "cynthia erivo to play tupac shakur s mother in snoop dogg biopic"
+  "cynthia erivo to play tupac shakur s mother in snoop dogg biopic",
+  "no gta 6 november here s what you can play on pc instead"
  ],
- "last_post_ts": 1793822210.6066222,
+ "last_post_ts": 1793874076.6877704,
  "recent_categories": [
-  "movies",
   "music",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "imdb",
   "ign.com",
-  "variety.com"
+  "variety.com",
+  "pcgamer.com"
  ],
  "recent_shapes": [
-  "guess_what",
   "react_split",
-  "question_hook"
+  "question_hook",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  7005685,
   35844840,
   23964432,
   38507945,
@@ -325,13 +326,14 @@
   12377483,
   9821830,
   6532602,
-  6532593
+  6532593,
+  10539414
  ],
  "recent_personas": [
-  "ananya",
-  "meera"
+  "meera",
+  "kabir"
  ],
- "post_counter": 147,
+ "post_counter": 148,
  "category_days": {
   "2026-10-30": {
    "movies": 2,
@@ -357,22 +359,24 @@
    "gaming": 1
   },
   "2026-11-05": {
-   "movies": 1
+   "movies": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-11-05",
  "bengali_count": 1,
  "recent_first_words": [
-  "a",
   "drop",
-  "who"
+  "who",
+  "waiting"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-05",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793865548
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
