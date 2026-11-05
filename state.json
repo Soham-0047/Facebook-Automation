@@ -147,7 +147,8 @@
   "32133a44226a2c368f338e9a09f67334",
   "985f160aae4950ec2bb1fc89e7cbbb71",
   "b5fe15759939ac26ddf7f27f8f1629b3",
-  "0db34bcf29843a8f257be7897802ea63"
+  "0db34bcf29843a8f257be7897802ea63",
+  "973c92f7eb635d1287f6ef63782ca185"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -297,28 +298,28 @@
   "all s fair season 2 premiere red carpet photos kim kardashian glenn close sarah paulson more",
   "the talix 20 000mah power bank with 190w of total power output drops to 29 99 ahead of black friday",
   "cynthia erivo to play tupac shakur s mother in snoop dogg biopic",
-  "no gta 6 november here s what you can play on pc instead"
+  "no gta 6 november here s what you can play on pc instead",
+  "hbo s the gilded age season 4 ratings most watched premiere yet"
  ],
- "last_post_ts": 1793874076.6877704,
+ "last_post_ts": 1793909428.0401704,
  "recent_categories": [
-  "music",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "viral"
  ],
  "recent_domains": [
-  "ign.com",
   "variety.com",
-  "pcgamer.com"
+  "pcgamer.com",
+  "variety.com"
  ],
  "recent_shapes": [
-  "react_split",
   "question_hook",
-  "hot_take"
+  "hot_take",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  35844840,
   23964432,
   38507945,
   38507941,
@@ -327,18 +328,15 @@
   9821830,
   6532602,
   6532593,
-  10539414
+  10539414,
+  13762170
  ],
  "recent_personas": [
-  "meera",
-  "kabir"
+  "kabir",
+  "riya"
  ],
- "post_counter": 148,
+ "post_counter": 149,
  "category_days": {
-  "2026-10-30": {
-   "movies": 2,
-   "gaming": 1
-  },
   "2026-10-31": {
    "gaming": 1,
    "movies": 1
@@ -361,21 +359,28 @@
   "2026-11-05": {
    "movies": 1,
    "gaming": 1
+  },
+  "2026-11-06": {
+   "viral": 1
   }
  },
- "bengali_date": "2026-11-05",
- "bengali_count": 1,
+ "bengali_date": "2026-11-06",
+ "bengali_count": 0,
  "recent_first_words": [
-  "drop",
   "who",
-  "waiting"
+  "waiting",
+  "okay"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-05",
+ "follow_cta_date": "2026-11-06",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793893113
+ "recent_hooks": [
+  "tag_friend"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
