@@ -148,7 +148,8 @@
   "985f160aae4950ec2bb1fc89e7cbbb71",
   "b5fe15759939ac26ddf7f27f8f1629b3",
   "0db34bcf29843a8f257be7897802ea63",
-  "973c92f7eb635d1287f6ef63782ca185"
+  "973c92f7eb635d1287f6ef63782ca185",
+  "0e3cdc324baa88eaabdb245e7cf97116"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -299,43 +300,44 @@
   "the talix 20 000mah power bank with 190w of total power output drops to 29 99 ahead of black friday",
   "cynthia erivo to play tupac shakur s mother in snoop dogg biopic",
   "no gta 6 november here s what you can play on pc instead",
-  "hbo s the gilded age season 4 ratings most watched premiere yet"
+  "hbo s the gilded age season 4 ratings most watched premiere yet",
+  "take two boss strauss zelnick isn t too concerned about piracy ahead of gta 6 even if he is worried about everything all the time"
  ],
- "last_post_ts": 1793909428.0401704,
+ "last_post_ts": 1793960630.9484265,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "viral"
+  "viral",
+  "gaming"
  ],
  "recent_domains": [
-  "variety.com",
   "pcgamer.com",
-  "variety.com"
+  "variety.com",
+  "pcgamer.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "hot_take",
-  "cold_open"
+  "cold_open",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  23964432,
-  38507945,
-  38507941,
   7562151,
   12377483,
   9821830,
   6532602,
   6532593,
   10539414,
-  13762170
+  13762170,
+  15610070,
+  6800202,
+  6789626
  ],
  "recent_personas": [
-  "kabir",
-  "riya"
+  "riya",
+  "ananya"
  ],
- "post_counter": 149,
+ "post_counter": 150,
  "category_days": {
   "2026-10-31": {
    "gaming": 1,
@@ -361,22 +363,27 @@
    "gaming": 1
   },
   "2026-11-06": {
-   "viral": 1
+   "viral": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-11-06",
  "bengali_count": 0,
  "recent_first_words": [
-  "who",
   "waiting",
-  "okay"
+  "okay",
+  "everyone"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-06",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793952117
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
