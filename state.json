@@ -149,7 +149,8 @@
   "b5fe15759939ac26ddf7f27f8f1629b3",
   "0db34bcf29843a8f257be7897802ea63",
   "973c92f7eb635d1287f6ef63782ca185",
-  "0e3cdc324baa88eaabdb245e7cf97116"
+  "0e3cdc324baa88eaabdb245e7cf97116",
+  "803c212fae840cfa36e1f754d02f739b"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -301,28 +302,28 @@
   "cynthia erivo to play tupac shakur s mother in snoop dogg biopic",
   "no gta 6 november here s what you can play on pc instead",
   "hbo s the gilded age season 4 ratings most watched premiere yet",
-  "take two boss strauss zelnick isn t too concerned about piracy ahead of gta 6 even if he is worried about everything all the time"
+  "take two boss strauss zelnick isn t too concerned about piracy ahead of gta 6 even if he is worried about everything all the time",
+  "godzilla minus zero roars with 6 7m in box office previews ahead of face off with cat in the hat"
  ],
- "last_post_ts": 1793960630.9484265,
+ "last_post_ts": 1793993827.287925,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "viral",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "pcgamer.com",
   "variety.com",
-  "pcgamer.com"
+  "pcgamer.com",
+  "hollywoodreporter.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "cold_open",
-  "contrarian"
+  "contrarian",
+  "guess_what"
  ],
  "recent_photo_ids": [
-  7562151,
   12377483,
   9821830,
   6532602,
@@ -331,18 +332,15 @@
   13762170,
   15610070,
   6800202,
-  6789626
+  6789626,
+  39851565
  ],
  "recent_personas": [
-  "riya",
-  "ananya"
+  "ananya",
+  "kabir"
  ],
- "post_counter": 150,
+ "post_counter": 151,
  "category_days": {
-  "2026-10-31": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-11-01": {
    "gaming": 1,
    "movies": 1
@@ -365,21 +363,25 @@
   "2026-11-06": {
    "viral": 1,
    "gaming": 1
+  },
+  "2026-11-07": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-06",
+ "bengali_date": "2026-11-07",
  "bengali_count": 0,
  "recent_first_words": [
-  "waiting",
   "okay",
-  "everyone"
+  "everyone",
+  "a"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-06",
+ "follow_cta_date": "2026-11-07",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1793977965
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
