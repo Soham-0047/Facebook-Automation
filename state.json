@@ -150,7 +150,8 @@
   "0db34bcf29843a8f257be7897802ea63",
   "973c92f7eb635d1287f6ef63782ca185",
   "0e3cdc324baa88eaabdb245e7cf97116",
-  "803c212fae840cfa36e1f754d02f739b"
+  "803c212fae840cfa36e1f754d02f739b",
+  "fb611b47961dec1d61969538f6f17e65"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -303,43 +304,44 @@
   "no gta 6 november here s what you can play on pc instead",
   "hbo s the gilded age season 4 ratings most watched premiere yet",
   "take two boss strauss zelnick isn t too concerned about piracy ahead of gta 6 even if he is worried about everything all the time",
-  "godzilla minus zero roars with 6 7m in box office previews ahead of face off with cat in the hat"
+  "godzilla minus zero roars with 6 7m in box office previews ahead of face off with cat in the hat",
+  "bad blood knicks defend taylor swift after players accuse her of being fake fan"
  ],
- "last_post_ts": 1793993827.287925,
+ "last_post_ts": 1794044281.852979,
  "recent_categories": [
-  "movies",
   "gaming",
   "viral",
   "gaming",
-  "movies"
+  "movies",
+  "music"
  ],
  "recent_domains": [
-  "variety.com",
   "pcgamer.com",
-  "hollywoodreporter.com"
+  "hollywoodreporter.com",
+  "theguardian.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "contrarian",
-  "guess_what"
+  "guess_what",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  12377483,
-  9821830,
-  6532602,
-  6532593,
   10539414,
   13762170,
   15610070,
   6800202,
   6789626,
-  39851565
+  39851565,
+  26447525,
+  35777518,
+  35777523,
+  26447526
  ],
  "recent_personas": [
-  "ananya",
-  "kabir"
+  "kabir",
+  "ananya"
  ],
- "post_counter": 151,
+ "post_counter": 152,
  "category_days": {
   "2026-11-01": {
    "gaming": 1,
@@ -365,22 +367,28 @@
    "gaming": 1
   },
   "2026-11-07": {
-   "movies": 1
+   "movies": 1,
+   "music": 1
   }
  },
  "bengali_date": "2026-11-07",
- "bengali_count": 0,
+ "bengali_count": 1,
  "recent_first_words": [
-  "okay",
   "everyone",
-  "a"
+  "a",
+  "players"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-07",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794036104
+ "recent_hooks": [
+  "vote_fire"
+ ],
+ "recent_formats": [
+  "square",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
