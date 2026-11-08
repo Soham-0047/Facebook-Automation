@@ -152,7 +152,8 @@
   "0e3cdc324baa88eaabdb245e7cf97116",
   "803c212fae840cfa36e1f754d02f739b",
   "fb611b47961dec1d61969538f6f17e65",
-  "711ea9975c56ce8bf24e26e68b63b294"
+  "711ea9975c56ce8bf24e26e68b63b294",
+  "684459089a10870bba4abbb5fcf071a9"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -307,28 +308,28 @@
   "take two boss strauss zelnick isn t too concerned about piracy ahead of gta 6 even if he is worried about everything all the time",
   "godzilla minus zero roars with 6 7m in box office previews ahead of face off with cat in the hat",
   "bad blood knicks defend taylor swift after players accuse her of being fake fan",
-  "oscar predictions production design could something as innovative and cool as backrooms find love"
+  "oscar predictions production design could something as innovative and cool as backrooms find love",
+  "nasa unveils 10b moon base contract as spacex blue origin join lunar gold rush"
  ],
- "last_post_ts": 1794073716.8572416,
+ "last_post_ts": 1794131526.6929772,
  "recent_categories": [
-  "viral",
   "gaming",
   "movies",
   "music",
-  "movies"
+  "movies",
+  "space"
  ],
  "recent_domains": [
-  "hollywoodreporter.com",
   "theguardian.com",
-  "variety.com"
+  "variety.com",
+  "foxbusiness"
  ],
  "recent_shapes": [
-  "guess_what",
   "stat_first",
-  "question_hook"
+  "question_hook",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  13762170,
   15610070,
   6800202,
   6789626,
@@ -337,18 +338,15 @@
   35777518,
   35777523,
   26447526,
-  7005685
+  7005685,
+  6793260
  ],
  "recent_personas": [
-  "ananya",
-  "meera"
+  "meera",
+  "dev"
  ],
- "post_counter": 153,
+ "post_counter": 154,
  "category_days": {
-  "2026-11-01": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-11-02": {
    "gaming": 1
   },
@@ -371,21 +369,28 @@
   "2026-11-07": {
    "movies": 2,
    "music": 1
+  },
+  "2026-11-08": {
+   "space": 1
   }
  },
- "bengali_date": "2026-11-07",
- "bengali_count": 1,
+ "bengali_date": "2026-11-08",
+ "bengali_count": 0,
  "recent_first_words": [
-  "a",
   "players",
-  "ever"
+  "ever",
+  "spacex"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-07",
+ "follow_cta_date": "2026-11-08",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794123168
+ "recent_hooks": [
+  "so_stands"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
