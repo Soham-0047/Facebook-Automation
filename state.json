@@ -153,7 +153,8 @@
   "803c212fae840cfa36e1f754d02f739b",
   "fb611b47961dec1d61969538f6f17e65",
   "711ea9975c56ce8bf24e26e68b63b294",
-  "684459089a10870bba4abbb5fcf071a9"
+  "684459089a10870bba4abbb5fcf071a9",
+  "7cfd7f8223a773696fbcba0a03645b30"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -309,28 +310,28 @@
   "godzilla minus zero roars with 6 7m in box office previews ahead of face off with cat in the hat",
   "bad blood knicks defend taylor swift after players accuse her of being fake fan",
   "oscar predictions production design could something as innovative and cool as backrooms find love",
-  "nasa unveils 10b moon base contract as spacex blue origin join lunar gold rush"
+  "nasa unveils 10b moon base contract as spacex blue origin join lunar gold rush",
+  "ramayana box office collection day 4 ranbir kapoor yash film sets all time diwali record scores 239 crore weekend to finally overtake adipurush bollywood"
  ],
- "last_post_ts": 1794131526.6929772,
+ "last_post_ts": 1794160818.7524805,
  "recent_categories": [
-  "gaming",
   "movies",
   "music",
   "movies",
-  "space"
+  "space",
+  "movies"
  ],
  "recent_domains": [
-  "theguardian.com",
   "variety.com",
-  "foxbusiness"
+  "foxbusiness",
+  "hindustantimes"
  ],
  "recent_shapes": [
-  "stat_first",
   "question_hook",
-  "hot_take"
+  "hot_take",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  15610070,
   6800202,
   6789626,
   39851565,
@@ -339,13 +340,14 @@
   35777523,
   26447526,
   7005685,
-  6793260
+  6793260,
+  30481580
  ],
  "recent_personas": [
-  "meera",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 154,
+ "post_counter": 155,
  "category_days": {
   "2026-11-02": {
    "gaming": 1
@@ -371,22 +373,24 @@
    "music": 1
   },
   "2026-11-08": {
-   "space": 1
+   "space": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-08",
  "bengali_count": 0,
  "recent_first_words": [
-  "players",
   "ever",
-  "spacex"
+  "spacex",
+  "fans"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-08",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794147819
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
