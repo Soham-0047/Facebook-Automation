@@ -155,7 +155,8 @@
   "711ea9975c56ce8bf24e26e68b63b294",
   "684459089a10870bba4abbb5fcf071a9",
   "7cfd7f8223a773696fbcba0a03645b30",
-  "124ca478cb162e743fd567e3368eeeff"
+  "124ca478cb162e743fd567e3368eeeff",
+  "df0e57ed31bd77db6cf7d0214d86cdba"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -313,28 +314,28 @@
   "oscar predictions production design could something as innovative and cool as backrooms find love",
   "nasa unveils 10b moon base contract as spacex blue origin join lunar gold rush",
   "ramayana box office collection day 4 ranbir kapoor yash film sets all time diwali record scores 239 crore weekend to finally overtake adipurush bollywood",
-  "crime pays how grand theft auto became a cultural colossus"
+  "crime pays how grand theft auto became a cultural colossus",
+  "prime video unveils maxton hall final season trailer"
  ],
- "last_post_ts": 1794221691.453519,
+ "last_post_ts": 1794263752.125842,
  "recent_categories": [
-  "music",
   "movies",
   "space",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "foxbusiness",
   "hindustantimes",
-  "theguardian.com"
+  "theguardian.com",
+  "thehollywoodreporter"
  ],
  "recent_shapes": [
-  "hot_take",
   "mini_story",
-  "guess_what"
+  "guess_what",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  6789626,
   39851565,
   26447525,
   35777518,
@@ -343,18 +344,15 @@
   7005685,
   6793260,
   30481580,
-  10539414
+  10539414,
+  20115760
  ],
  "recent_personas": [
-  "kabir",
-  "ananya"
+  "ananya",
+  "kabir"
  ],
- "post_counter": 156,
+ "post_counter": 157,
  "category_days": {
-  "2026-11-03": {
-   "movies": 1,
-   "music": 1
-  },
   "2026-11-04": {
    "movies": 1,
    "gaming": 1
@@ -377,21 +375,28 @@
   },
   "2026-11-09": {
    "gaming": 1
+  },
+  "2026-11-10": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-09",
+ "bengali_date": "2026-11-10",
  "bengali_count": 0,
  "recent_first_words": [
-  "spacex",
   "fans",
-  "a"
+  "a",
+  "everyone's"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-09",
+ "follow_cta_date": "2026-11-10",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794246078
+ "recent_hooks": [
+  "so_processing"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
