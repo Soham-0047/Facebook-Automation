@@ -154,7 +154,8 @@
   "fb611b47961dec1d61969538f6f17e65",
   "711ea9975c56ce8bf24e26e68b63b294",
   "684459089a10870bba4abbb5fcf071a9",
-  "7cfd7f8223a773696fbcba0a03645b30"
+  "7cfd7f8223a773696fbcba0a03645b30",
+  "124ca478cb162e743fd567e3368eeeff"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -311,28 +312,28 @@
   "bad blood knicks defend taylor swift after players accuse her of being fake fan",
   "oscar predictions production design could something as innovative and cool as backrooms find love",
   "nasa unveils 10b moon base contract as spacex blue origin join lunar gold rush",
-  "ramayana box office collection day 4 ranbir kapoor yash film sets all time diwali record scores 239 crore weekend to finally overtake adipurush bollywood"
+  "ramayana box office collection day 4 ranbir kapoor yash film sets all time diwali record scores 239 crore weekend to finally overtake adipurush bollywood",
+  "crime pays how grand theft auto became a cultural colossus"
  ],
- "last_post_ts": 1794160818.7524805,
+ "last_post_ts": 1794221691.453519,
  "recent_categories": [
-  "movies",
   "music",
   "movies",
   "space",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "variety.com",
   "foxbusiness",
-  "hindustantimes"
+  "hindustantimes",
+  "theguardian.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "hot_take",
-  "mini_story"
+  "mini_story",
+  "guess_what"
  ],
  "recent_photo_ids": [
-  6800202,
   6789626,
   39851565,
   26447525,
@@ -341,17 +342,15 @@
   26447526,
   7005685,
   6793260,
-  30481580
+  30481580,
+  10539414
  ],
  "recent_personas": [
-  "dev",
-  "kabir"
+  "kabir",
+  "ananya"
  ],
- "post_counter": 155,
+ "post_counter": 156,
  "category_days": {
-  "2026-11-02": {
-   "gaming": 1
-  },
   "2026-11-03": {
    "movies": 1,
    "music": 1
@@ -375,21 +374,28 @@
   "2026-11-08": {
    "space": 1,
    "movies": 1
+  },
+  "2026-11-09": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-08",
+ "bengali_date": "2026-11-09",
  "bengali_count": 0,
  "recent_first_words": [
-  "ever",
   "spacex",
-  "fans"
+  "fans",
+  "a"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-08",
+ "follow_cta_date": "2026-11-09",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794211775
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
