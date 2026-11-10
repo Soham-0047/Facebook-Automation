@@ -157,7 +157,8 @@
   "7cfd7f8223a773696fbcba0a03645b30",
   "124ca478cb162e743fd567e3368eeeff",
   "df0e57ed31bd77db6cf7d0214d86cdba",
-  "b24677735ae432915da6c6547a648ffb"
+  "b24677735ae432915da6c6547a648ffb",
+  "2ba976e946c5e7dc894580b715046378"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -317,28 +318,28 @@
   "ramayana box office collection day 4 ranbir kapoor yash film sets all time diwali record scores 239 crore weekend to finally overtake adipurush bollywood",
   "crime pays how grand theft auto became a cultural colossus",
   "prime video unveils maxton hall final season trailer",
-  "dc studios is getting a marvel veteran to replace james gunn and peter safran"
+  "dc studios is getting a marvel veteran to replace james gunn and peter safran",
+  "hbo s it s florida man sets season 3 return unveils trailer"
  ],
- "last_post_ts": 1794307610.8031697,
+ "last_post_ts": 1794340460.8875892,
  "recent_categories": [
-  "space",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "theguardian.com",
   "thehollywoodreporter",
-  "gamespot.com"
+  "gamespot.com",
+  "deadline.com"
  ],
  "recent_shapes": [
-  "guess_what",
   "contrarian",
-  "cold_open"
+  "cold_open",
+  "receipts"
  ],
  "recent_photo_ids": [
-  26447525,
   35777518,
   35777523,
   26447526,
@@ -347,18 +348,15 @@
   30481580,
   10539414,
   20115760,
-  15213183
+  15213183,
+  8652199
  ],
  "recent_personas": [
-  "kabir",
-  "arjun"
+  "arjun",
+  "ananya"
  ],
- "post_counter": 158,
+ "post_counter": 159,
  "category_days": {
-  "2026-11-04": {
-   "movies": 1,
-   "gaming": 1
-  },
   "2026-11-05": {
    "movies": 1,
    "gaming": 1
@@ -381,21 +379,28 @@
   "2026-11-10": {
    "movies": 1,
    "gaming": 1
+  },
+  "2026-11-11": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-10",
+ "bengali_date": "2026-11-11",
  "bengali_count": 0,
  "recent_first_words": [
-  "a",
   "everyone's",
-  "right"
+  "right",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-10",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794325251
+ "follow_cta_date": "2026-11-11",
+ "follow_ctas_today": 0,
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
