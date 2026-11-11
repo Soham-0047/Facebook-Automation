@@ -159,7 +159,8 @@
   "df0e57ed31bd77db6cf7d0214d86cdba",
   "b24677735ae432915da6c6547a648ffb",
   "2ba976e946c5e7dc894580b715046378",
-  "9da9ad5efcca9dfafe921c6573937194"
+  "9da9ad5efcca9dfafe921c6573937194",
+  "5f069509d23a796f2291f57c0ab294ac"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -321,28 +322,28 @@
   "prime video unveils maxton hall final season trailer",
   "dc studios is getting a marvel veteran to replace james gunn and peter safran",
   "hbo s it s florida man sets season 3 return unveils trailer",
-  "gta 6 is the most preordered game of all time for playstation and xbox"
+  "gta 6 is the most preordered game of all time for playstation and xbox",
+  "ramayana box office day 6 worldwide ranbir kapoor sai pallavi yash led epic collects nearly rs 300 cr overseas enters rs 800 cr club"
  ],
- "last_post_ts": 1794392476.864153,
+ "last_post_ts": 1794426391.6409829,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "gamespot.com",
   "deadline.com",
-  "gamespot.com"
+  "gamespot.com",
+  "bollywoodbubble"
  ],
  "recent_shapes": [
-  "cold_open",
   "receipts",
-  "react_split"
+  "react_split",
+  "listicle"
  ],
  "recent_photo_ids": [
-  35777523,
   26447526,
   7005685,
   6793260,
@@ -351,18 +352,15 @@
   20115760,
   15213183,
   8652199,
-  7562151
+  7562151,
+  18086354
  ],
  "recent_personas": [
-  "ananya",
-  "dev"
+  "dev",
+  "meera"
  ],
- "post_counter": 160,
+ "post_counter": 161,
  "category_days": {
-  "2026-11-05": {
-   "movies": 1,
-   "gaming": 1
-  },
   "2026-11-06": {
    "viral": 1,
    "gaming": 1
@@ -385,21 +383,28 @@
   "2026-11-11": {
    "movies": 1,
    "gaming": 1
+  },
+  "2026-11-12": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-11",
+ "bengali_date": "2026-11-12",
  "bengali_count": 0,
  "recent_first_words": [
-  "right",
   "just",
-  "drop"
+  "drop",
+  "ramayana's"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-11",
+ "follow_cta_date": "2026-11-12",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794410886
+ "recent_hooks": [
+  "first_comment"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
