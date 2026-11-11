@@ -158,7 +158,8 @@
   "124ca478cb162e743fd567e3368eeeff",
   "df0e57ed31bd77db6cf7d0214d86cdba",
   "b24677735ae432915da6c6547a648ffb",
-  "2ba976e946c5e7dc894580b715046378"
+  "2ba976e946c5e7dc894580b715046378",
+  "9da9ad5efcca9dfafe921c6573937194"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -319,28 +320,28 @@
   "crime pays how grand theft auto became a cultural colossus",
   "prime video unveils maxton hall final season trailer",
   "dc studios is getting a marvel veteran to replace james gunn and peter safran",
-  "hbo s it s florida man sets season 3 return unveils trailer"
+  "hbo s it s florida man sets season 3 return unveils trailer",
+  "gta 6 is the most preordered game of all time for playstation and xbox"
  ],
- "last_post_ts": 1794340460.8875892,
+ "last_post_ts": 1794392476.864153,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "thehollywoodreporter",
   "gamespot.com",
-  "deadline.com"
+  "deadline.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "cold_open",
-  "receipts"
+  "receipts",
+  "react_split"
  ],
  "recent_photo_ids": [
-  35777518,
   35777523,
   26447526,
   7005685,
@@ -349,13 +350,14 @@
   10539414,
   20115760,
   15213183,
-  8652199
+  8652199,
+  7562151
  ],
  "recent_personas": [
-  "arjun",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 159,
+ "post_counter": 160,
  "category_days": {
   "2026-11-05": {
    "movies": 1,
@@ -381,22 +383,27 @@
    "gaming": 1
   },
   "2026-11-11": {
-   "movies": 1
+   "movies": 1,
+   "gaming": 1
   }
  },
  "bengali_date": "2026-11-11",
  "bengali_count": 0,
  "recent_first_words": [
-  "everyone's",
   "right",
-  "just"
+  "just",
+  "drop"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-11",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794383499
+ "recent_hooks": [
+  "so_anyway"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
