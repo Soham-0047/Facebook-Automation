@@ -161,7 +161,8 @@
   "2ba976e946c5e7dc894580b715046378",
   "9da9ad5efcca9dfafe921c6573937194",
   "5f069509d23a796f2291f57c0ab294ac",
-  "faca8e80eb5022d2f0b2509310b0c351"
+  "faca8e80eb5022d2f0b2509310b0c351",
+  "23ec1c6416cff3bb8feb2810145894bf"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -325,48 +326,45 @@
   "hbo s it s florida man sets season 3 return unveils trailer",
   "gta 6 is the most preordered game of all time for playstation and xbox",
   "ramayana box office day 6 worldwide ranbir kapoor sai pallavi yash led epic collects nearly rs 300 cr overseas enters rs 800 cr club",
-  "rajinikanth s dance at anirudh kavya s wedding celebration goes viral"
+  "rajinikanth s dance at anirudh kavya s wedding celebration goes viral",
+  "the replicants are running the city in thrilling final trailer for blade runner 2099 video"
  ],
- "last_post_ts": 1794479973.7761765,
+ "last_post_ts": 1794514430.4788294,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "viral"
+  "viral",
+  "gaming"
  ],
  "recent_domains": [
-  "gamespot.com",
   "bollywoodbubble",
-  "timesofindia.indiatimes.com"
+  "timesofindia.indiatimes.com",
+  "space.com"
  ],
  "recent_shapes": [
-  "react_split",
   "listicle",
-  "mini_story"
+  "mini_story",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  7005685,
-  6793260,
-  30481580,
   10539414,
   20115760,
   15213183,
   8652199,
   7562151,
   18086354,
-  33568244
+  33568244,
+  7848985,
+  19012046,
+  19012034
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "meera"
  ],
- "post_counter": 162,
+ "post_counter": 163,
  "category_days": {
-  "2026-11-06": {
-   "viral": 1,
-   "gaming": 1
-  },
   "2026-11-07": {
    "movies": 2,
    "music": 1
@@ -389,21 +387,25 @@
   "2026-11-12": {
    "movies": 1,
    "viral": 1
+  },
+  "2026-11-13": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-12",
+ "bengali_date": "2026-11-13",
  "bengali_count": 0,
  "recent_first_words": [
-  "drop",
   "ramayana's",
-  "rajinikanth"
+  "rajinikanth",
+  "everyone's"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-12",
+ "follow_cta_date": "2026-11-13",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794499541
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
