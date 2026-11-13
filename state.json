@@ -162,7 +162,8 @@
   "9da9ad5efcca9dfafe921c6573937194",
   "5f069509d23a796f2291f57c0ab294ac",
   "faca8e80eb5022d2f0b2509310b0c351",
-  "23ec1c6416cff3bb8feb2810145894bf"
+  "23ec1c6416cff3bb8feb2810145894bf",
+  "c2d2348c96706b73a5db6ba5368914da"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -327,25 +328,26 @@
   "gta 6 is the most preordered game of all time for playstation and xbox",
   "ramayana box office day 6 worldwide ranbir kapoor sai pallavi yash led epic collects nearly rs 300 cr overseas enters rs 800 cr club",
   "rajinikanth s dance at anirudh kavya s wedding celebration goes viral",
-  "the replicants are running the city in thrilling final trailer for blade runner 2099 video"
+  "the replicants are running the city in thrilling final trailer for blade runner 2099 video",
+  "ramayana box office ranbir kapoor epic crosses 1 000 crore worldwide on day 8 trails dhurandhar the revenge"
  ],
- "last_post_ts": 1794514430.4788294,
+ "last_post_ts": 1794565908.988296,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "viral",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "bollywoodbubble",
   "timesofindia.indiatimes.com",
-  "space.com"
+  "space.com",
+  "thehollywoodreporterindia"
  ],
  "recent_shapes": [
-  "listicle",
   "mini_story",
-  "contrarian"
+  "contrarian",
+  "cold_open"
  ],
  "recent_photo_ids": [
   10539414,
@@ -360,10 +362,10 @@
   19012034
  ],
  "recent_personas": [
-  "ananya",
-  "meera"
+  "meera",
+  "ananya"
  ],
- "post_counter": 163,
+ "post_counter": 164,
  "category_days": {
   "2026-11-07": {
    "movies": 2,
@@ -389,22 +391,21 @@
    "viral": 1
   },
   "2026-11-13": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-13",
  "bengali_count": 0,
  "recent_first_words": [
-  "ramayana's",
   "rajinikanth",
-  "everyone's"
+  "everyone's",
+  "so"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-13",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794557521
+ "last_post_was_special": false
 }
