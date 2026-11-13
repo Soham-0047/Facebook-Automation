@@ -163,7 +163,8 @@
   "5f069509d23a796f2291f57c0ab294ac",
   "faca8e80eb5022d2f0b2509310b0c351",
   "23ec1c6416cff3bb8feb2810145894bf",
-  "c2d2348c96706b73a5db6ba5368914da"
+  "c2d2348c96706b73a5db6ba5368914da",
+  "abb9acff8f38f68019cba23afecfa6d9"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -329,28 +330,28 @@
   "ramayana box office day 6 worldwide ranbir kapoor sai pallavi yash led epic collects nearly rs 300 cr overseas enters rs 800 cr club",
   "rajinikanth s dance at anirudh kavya s wedding celebration goes viral",
   "the replicants are running the city in thrilling final trailer for blade runner 2099 video",
-  "ramayana box office ranbir kapoor epic crosses 1 000 crore worldwide on day 8 trails dhurandhar the revenge"
+  "ramayana box office ranbir kapoor epic crosses 1 000 crore worldwide on day 8 trails dhurandhar the revenge",
+  "the game awards to reveal 2026 nominees next week ahead of gta 6 debut playstation 5 joins livestreamers for december show exclusive"
  ],
- "last_post_ts": 1794565908.988296,
+ "last_post_ts": 1794599729.6466043,
  "recent_categories": [
-  "gaming",
   "movies",
   "viral",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "timesofindia.indiatimes.com",
   "space.com",
-  "thehollywoodreporterindia"
+  "thehollywoodreporterindia",
+  "variety.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "contrarian",
-  "cold_open"
+  "cold_open",
+  "listicle"
  ],
  "recent_photo_ids": [
-  10539414,
   20115760,
   15213183,
   8652199,
@@ -359,18 +360,15 @@
   33568244,
   7848985,
   19012046,
-  19012034
+  19012034,
+  34625043
  ],
  "recent_personas": [
-  "meera",
-  "ananya"
+  "ananya",
+  "arjun"
  ],
- "post_counter": 164,
+ "post_counter": 165,
  "category_days": {
-  "2026-11-07": {
-   "movies": 2,
-   "music": 1
-  },
   "2026-11-08": {
    "space": 1,
    "movies": 1
@@ -393,21 +391,28 @@
   "2026-11-13": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-14": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-13",
+ "bengali_date": "2026-11-14",
  "bengali_count": 0,
  "recent_first_words": [
-  "rajinikanth",
   "everyone's",
-  "so"
+  "so",
+  "gta"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-13",
- "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794583867
+ "follow_cta_date": "2026-11-14",
+ "follow_ctas_today": 1,
+ "recent_hooks": [
+  "so_mytake"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
