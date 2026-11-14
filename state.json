@@ -164,7 +164,8 @@
   "faca8e80eb5022d2f0b2509310b0c351",
   "23ec1c6416cff3bb8feb2810145894bf",
   "c2d2348c96706b73a5db6ba5368914da",
-  "abb9acff8f38f68019cba23afecfa6d9"
+  "abb9acff8f38f68019cba23afecfa6d9",
+  "c86d4ba63c6334739a401f9405b84f69"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -331,28 +332,28 @@
   "rajinikanth s dance at anirudh kavya s wedding celebration goes viral",
   "the replicants are running the city in thrilling final trailer for blade runner 2099 video",
   "ramayana box office ranbir kapoor epic crosses 1 000 crore worldwide on day 8 trails dhurandhar the revenge",
-  "the game awards to reveal 2026 nominees next week ahead of gta 6 debut playstation 5 joins livestreamers for december show exclusive"
+  "the game awards to reveal 2026 nominees next week ahead of gta 6 debut playstation 5 joins livestreamers for december show exclusive",
+  "grammys to air 2027 premiere ceremony on disney"
  ],
- "last_post_ts": 1794599729.6466043,
+ "last_post_ts": 1794649731.012067,
  "recent_categories": [
-  "movies",
   "viral",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "space.com",
   "thehollywoodreporterindia",
-  "variety.com"
+  "variety.com",
+  "thehollywoodreporter"
  ],
  "recent_shapes": [
-  "contrarian",
   "cold_open",
-  "listicle"
+  "listicle",
+  "stat_first"
  ],
  "recent_photo_ids": [
-  20115760,
   15213183,
   8652199,
   7562151,
@@ -361,13 +362,14 @@
   7848985,
   19012046,
   19012034,
-  34625043
+  34625043,
+  8263314
  ],
  "recent_personas": [
-  "ananya",
-  "arjun"
+  "arjun",
+  "kabir"
  ],
- "post_counter": 165,
+ "post_counter": 166,
  "category_days": {
   "2026-11-08": {
    "space": 1,
@@ -393,22 +395,27 @@
    "movies": 1
   },
   "2026-11-14": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-14",
  "bengali_count": 0,
  "recent_first_words": [
-  "everyone's",
   "so",
-  "gta"
+  "gta",
+  "the"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-14",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794642083
+ "recent_hooks": [
+  "tag_friend"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
