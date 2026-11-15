@@ -166,7 +166,8 @@
   "c2d2348c96706b73a5db6ba5368914da",
   "abb9acff8f38f68019cba23afecfa6d9",
   "c86d4ba63c6334739a401f9405b84f69",
-  "c2b5aa563be66196ad8ef06c49c9d662"
+  "c2b5aa563be66196ad8ef06c49c9d662",
+  "e0baf86b75998792c03543bae81f1efe"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -335,29 +336,28 @@
   "ramayana box office ranbir kapoor epic crosses 1 000 crore worldwide on day 8 trails dhurandhar the revenge",
   "the game awards to reveal 2026 nominees next week ahead of gta 6 debut playstation 5 joins livestreamers for december show exclusive",
   "grammys to air 2027 premiere ceremony on disney",
-  "formula 1 just found a bizarre financial supporter in horse girl gacha umamusume pretty derby"
+  "formula 1 just found a bizarre financial supporter in horse girl gacha umamusume pretty derby",
+  "chris pratt says he would love james gunn to direct a fourth guardians of the galaxy film after dc exit"
  ],
- "last_post_ts": 1794680571.8447692,
+ "last_post_ts": 1794738254.4682927,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "sports"
+  "sports",
+  "movies"
  ],
  "recent_domains": [
-  "variety.com",
   "thehollywoodreporter",
-  "pcgamer.com"
+  "pcgamer.com",
+  "variety.com"
  ],
  "recent_shapes": [
-  "listicle",
   "stat_first",
-  "mini_story"
+  "mini_story",
+  "receipts"
  ],
  "recent_photo_ids": [
-  8652199,
-  7562151,
   18086354,
   33568244,
   7848985,
@@ -365,18 +365,16 @@
   19012034,
   34625043,
   8263314,
-  31204632
+  31204632,
+  15213183,
+  12810653
  ],
  "recent_personas": [
-  "kabir",
-  "ananya"
+  "ananya",
+  "riya"
  ],
- "post_counter": 167,
+ "post_counter": 168,
  "category_days": {
-  "2026-11-08": {
-   "space": 1,
-   "movies": 1
-  },
   "2026-11-09": {
    "gaming": 1
   },
@@ -400,21 +398,26 @@
    "gaming": 1,
    "movies": 1,
    "sports": 1
+  },
+  "2026-11-15": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-14",
- "bengali_count": 0,
+ "bengali_date": "2026-11-15",
+ "bengali_count": 1,
  "recent_first_words": [
-  "gta",
   "the",
-  "i"
+  "i",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-14",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794729441
+ "follow_cta_date": "2026-11-15",
+ "follow_ctas_today": 0,
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
