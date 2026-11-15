@@ -1,13 +1,37 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.7
+TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.10
 =========================================================
 Single-file bot: fetches worldwide trending + entertainment news (movies,
 music, TV, sports, celebs, gaming, viral moments, space, tech launches) from
 many free sources, scores it, writes a human-sounding post (English + optional
 Bengali companion), renders a designed 1080x1350 image card with impressive
 photography, and publishes to a Facebook Page.
+
+WHAT'S NEW IN v5.10 (eye-catching visual overdrive - stop the scroll)
+  AI ART, MORE OFTEN, BETTER BRIEFED
+    * Unique FLUX-generated art now on ~62% of photo cards (was 45%) - art no
+      other page can repost. Prompts upgraded with hyperdetailed / 8k / HDR /
+      vibrant-saturation finishers so every generation lands as a poster.
+  ADAPTIVE AUTO-EDITOR FOR EVERY PHOTO (stock OR AI)
+    * _auto_pop() measures each photo's exposure, saturation and tonal range,
+      then applies exactly what THAT photo needs: dim shots get an exposure
+      lift, grey shots a saturation jump, flat shots a tonal expansion, and a
+      detail micro-boost for everything. Uniform filters are what make pages
+      look fake; per-photo correction reads as a pro editor.
+  POSTER TYPOGRAPHY
+    * Every headline now carries a heavy near-black outline (native stroke)
+      plus its soft shadow - bold, readable on ANY photo, from across the room.
+    * Giant-stat numbers get the same treatment; punchy short headlines start
+      even bigger (stronger poster-mode size bumps).
+  DESIGNED-OBJECT CHROME
+    * Full-bleed-family cards get a thin accent inset frame - the deliberate
+      'one designed object' look in a feed of naked photos.
+    * Dull grey stock candidates are dropped when livelier ones exist.
+  Earlier: v5.9 (genuine voice + retention engine), v5.8 (AI image engine +
+  editorial pipeline), v5.7 (engagement engine), v5.6 (worldwide pivot),
+  v5.5 (human touch), v5.4 (diversity, crash-safe, insights).
 
 WHAT'S NEW IN v5.7 (engagement engine - the page becomes an experience)
   INTERACTIVE SPECIALS (~1 in 3 posts, never two in a row, capped 2/day)
@@ -129,7 +153,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.9"
+VERSION = "5.10"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -209,13 +233,15 @@ CAROUSEL_MAX_PHOTOS = _env_int("CAROUSEL_MAX_PHOTOS", 3)
 TEMPLATE_CAPTION_FALLBACK = _env_bool("TEMPLATE_CAPTION_FALLBACK", True)
 # ---- v5.8: AI IMAGE ENGINE + EDITORIAL PIPELINE tunables -----------------
 # Free, keyless, open-source image generation (Pollinations serving FLUX).
-# ~45% of photo cards get a unique AI-generated illustration that NO other
-# page on Facebook can repost - the rest stay on stock photos. Any AI failure
-# (rate limit, timeout, NSFW filter) silently falls back to the stock flow.
+# v5.10: ~62% of photo cards get a unique AI-generated illustration that NO
+# other page on Facebook can repost - the single biggest eye-catching lever -
+# the rest stay on stock photos. Any AI failure (rate limit, timeout, NSFW
+# filter) silently falls back to the stock flow.
 AI_IMAGE_ENABLED = _env_bool("AI_IMAGE_ENABLED", True)
-AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.45)
+AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.62)
 AI_IMAGE_TIMEOUT = _env_int("AI_IMAGE_TIMEOUT", 90)
 AI_IMAGE_RETRY_WAIT = _env_int("AI_IMAGE_RETRY_WAIT", 32)   # anon tier: 1 img/30s
+AI_IMAGE_MODEL = (os.getenv("AI_IMAGE_MODEL") or "flux").strip() or "flux"
 AI_IMAGE_MARK = "AI \u00b7 FLUX (Pollinations)"
 # Tier-3 LLM: pollinations.ai text endpoint, no API key. Only reached when
 # BOTH Groq and Gemini are down - the page never goes quiet for lack of keys.
@@ -3166,12 +3192,14 @@ def _wrap_text(draw, text, font, max_width):
 def _auto_headline_size(text, start, min_size):
     """v5.4: dynamic typography - short punchy headlines earn bigger type
     (scroll-stopping in the feed), long ones start smaller so they wrap
-    gracefully instead of smashing into max-lines at full size."""
+    gracefully instead of smashing into max-lines at full size.
+    v5.10: stronger poster-mode bumps - the feed's first job is to catch
+    the eye from two thumbnails away."""
     n = len(text or "")
     if n <= 34:
-        return start + 14          # poster mode: "Jio posts record profit"
+        return start + 18          # poster mode: "Jio posts record profit"
     if n <= 46:
-        return start + 8
+        return start + 10
     if n <= 62:
         return start
     if n <= 84:
@@ -3212,9 +3240,24 @@ def _draw_tracked(draw, xy, text, font, fill, tracking=1.15):
 
 
 def _txt(d, xy, text, font, fill=(255, 255, 255, 255), shadow=True):
-    """Text with a soft drop shadow - headline stays readable on ANY photo."""
+    """Headline text with a heavy near-black outline (v5.10) + a soft drop
+    shadow (v5.3) - bold, readable on ANY photo, from across the room.
+    Native stroke keeps the letterforms clean at every supersample scale."""
     if font is None:
         return
+    try:
+        size = getattr(font, "size", 24) or 24
+        sw = max(2, int(size / 22))
+        if shadow:                 # soft depth first, so it never cuts the glyph
+            off = max(2, int(size / 26))
+            d.text((xy[0] + off, xy[1] + off), text, font=font,
+                   fill=(0, 0, 0, 150),
+                   stroke_width=sw, stroke_fill=(0, 0, 0, 110))
+        d.text(xy, text, font=font, fill=fill,
+               stroke_width=sw, stroke_fill=(6, 8, 16, 210))
+        return
+    except TypeError:
+        pass                       # very old Pillow without stroke support
     if shadow:
         off = max(2, int(getattr(font, "size", 24) / 26))
         d.text((xy[0] + off, xy[1] + off), text, font=font, fill=(0, 0, 0, 150))
@@ -3232,6 +3275,23 @@ def _vignette(size, strength=64):
         vig = Image.new("RGBA", (w, h), (0, 0, 0, 255))
         vig.putalpha(mask)
         return vig
+    except Exception:
+        return None
+
+
+def _radial_glow(size, rgb, max_alpha=46):
+    """v5.10: soft accent-coloured radial glow (bright centre, fades out).
+    Gives no-photo designer cards real depth instead of a flat gradient."""
+    try:
+        if not hasattr(Image, "radial_gradient"):
+            return None
+        w, h = size
+        mask = Image.radial_gradient("L").resize((w, h), _RESAMPLE.BILINEAR)
+        mask = mask.point(lambda p: 255 - p)          # invert: bright centre
+        mask = mask.point(lambda p: int(p * max_alpha / 255.0))
+        glow = Image.new("RGBA", (w, h), tuple(rgb) + (255,))
+        glow.putalpha(mask)
+        return glow
     except Exception:
         return None
 
@@ -3381,17 +3441,62 @@ def _warm_grade(img):
         return img
 
 
+def _photo_stats(img):
+    """v5.10: quick vitals of a photo on a thumbnail: (mean luminance 0-255,
+    mean saturation 0-1, tonal spread stddev 0-128). Cheap enough to run
+    per render."""
+    try:
+        small = img.convert("RGB").resize((80, 80))
+        grey = small.convert("L")
+        sat = ImageStat.Stat(small.convert("HSV").split()[1]).mean[0] / 255.0
+        lum = ImageStat.Stat(grey).mean[0]
+        con = ImageStat.Stat(grey).stddev[0]
+        return lum, sat, con
+    except Exception:
+        return 128.0, 0.5, 48.0
+
+
+def _auto_pop(img):
+    """v5.10 ADAPTIVE AUTO-EDITOR - the eye-catching engine for every photo.
+    Measures what the photo actually lacks and corrects THAT, like a pro
+    retoucher (uniform filters are what make pages look fake):
+      dim  -> exposure lift (never past +22%, keeps it genuine)
+      hot  -> gentle recovery
+      grey -> saturation jump scaled to how grey it really is
+      flat -> tonal-range expansion + contrast
+      all  -> detail micro-boost (stock photos are often soft)"""
+    try:
+        lum, sat, con = _photo_stats(img)
+        if lum < 104:
+            img = ImageEnhance.Brightness(img).enhance(min(1.22, 1.04 + (104 - lum) / 420.0))
+        elif lum > 178:
+            img = ImageEnhance.Brightness(img).enhance(0.96)
+        if sat < 0.26:
+            img = ImageEnhance.Color(img).enhance(1.30)
+        elif sat < 0.42:
+            img = ImageEnhance.Color(img).enhance(1.18)
+        else:
+            img = ImageEnhance.Color(img).enhance(1.10)
+        if con < 40:
+            img = ImageOps.autocontrast(img.convert("RGB"), cutoff=1)
+            img = ImageEnhance.Contrast(img).enhance(1.10)
+        img = ImageEnhance.Sharpness(img).enhance(1.20)
+    except Exception:
+        pass
+    return img
+
+
 def _enhance_photo(img, cinematic=None):
     """Tasteful 'pop' so cards stand out in the feed without looking fake.
+    v5.10: every photo (stock AND AI) first passes the adaptive auto-editor
+    (_auto_pop) - per-photo correction instead of one uniform filter.
     v5.8: a share of photos get the blockbuster teal-orange grade.
     v5.9: a bigger share get the bright warm 'phone photo' grade instead -
     authenticity beats blockbuster when the goal is follower trust.
     (cinematic=None -> roll the dice; AI-generated images skip both - they
     ship their own look)."""
     try:
-        img = ImageEnhance.Color(img).enhance(1.12)
-        img = ImageEnhance.Contrast(img).enhance(1.06)
-        img = ImageEnhance.Sharpness(img).enhance(1.12)
+        img = _auto_pop(img)
         if cinematic is None:
             stock = (_CURRENT_PHOTO_KIND.get("kind", "stock") != "ai")
             r = random.random()
@@ -3479,7 +3584,8 @@ _HINT_REGEX_CACHE = None
 # v5.6: cinematic modifiers rotate per run so the same category never pulls
 # identical photos day after day (the "every card looks the same" killer).
 _QUERY_MODIFIERS = ["", " dramatic", " cinematic", " night", " aerial", " neon",
-                    " closeup", " bokeh", " golden hour"]
+                    " closeup", " bokeh", " golden hour", " spotlight",
+                    " silhouette", " storm"]
 
 
 def _image_queries_for(art):
@@ -3583,7 +3689,9 @@ _AI_NEGATIVES = "no text, no words, no letters, no numbers, no watermark, no log
 def _ai_image_prompt(art):
     """Build the FLUX prompt from the headline. Returns None when the text is
     unsafe (NSFW firewall) or too thin - the stock flow then handles the card.
-    Both the source headline and the finished prompt pass _is_explicit."""
+    Both the source headline and the finished prompt pass _is_explicit.
+    v5.10: poster-grade finishers (hyperdetailed, 8k, HDR, vibrant saturated
+    colour) so every generation lands as a scroll-stopper."""
     try:
         base = _card_headline(art.title or "")
     except Exception:
@@ -3596,10 +3704,11 @@ def _ai_image_prompt(art):
         return None                    # firewall gate 1: never send NSFW to the model
     style = AI_PROMPT_STYLES.get(art.category, AI_PROMPT_STYLES["general"])
     prompt = (f"{subj}. {random.choice(_AI_FLAVOR_SHOTS)}, {random.choice(_AI_LIGHT_KEYS)}, "
-              f"{style}, vertical 4:5 composition, ultra detailed, vivid cinematic "
-              f"color grade, photorealistic masterpiece. {_AI_NEGATIVES}")
-    if len(prompt) > 480:
-        prompt = prompt[:477].rstrip() + "..."
+              f"{style}, vertical 4:5 composition, hyperdetailed, 8k UHD, high dynamic "
+              f"range, vibrant saturated colour, award-winning professional photography, "
+              f"dramatic composition, photorealistic masterpiece. {_AI_NEGATIVES}")
+    if len(prompt) > 620:
+        prompt = prompt[:617].rstrip() + "..."
     if _is_explicit(prompt):
         return None                    # firewall gate 2: the assembled prompt too
     return prompt
@@ -3607,12 +3716,14 @@ def _ai_image_prompt(art):
 
 def _ai_finish(img):
     """Pollinations' anonymous tier returns ~686x858 - upscale to the card
-    canvas with LANCZOS + a light unsharp so small text overlays stay crisp."""
+    canvas with LANCZOS + a light unsharp so small text overlays stay crisp.
+    v5.10: stronger pop - generated art must look like a poster, not a sketch."""
     if img.size != (CARD_W, CARD_H):
         img = img.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
     try:
-        img = img.filter(ImageFilter.UnsharpMask(radius=2.2, percent=65, threshold=2))
-        img = ImageEnhance.Color(img).enhance(1.08)
+        img = img.filter(ImageFilter.UnsharpMask(radius=2.6, percent=82, threshold=2))
+        img = ImageEnhance.Color(img).enhance(1.16)
+        img = ImageEnhance.Contrast(img).enhance(1.06)
     except Exception:
         pass
     return img
@@ -3623,7 +3734,7 @@ def _pollinations_image(prompt, timeout=None):
     ~1 image / 30s per IP, so a single 402/429 gets one patient retry."""
     if not PIL_OK:
         return None
-    params = {"width": 1080, "height": 1350, "nologo": "true", "model": "flux",
+    params = {"width": 1080, "height": 1350, "nologo": "true", "model": AI_IMAGE_MODEL,
               "enhance": "true", "safe": "true", "seed": random.randint(1, 999999)}
     url = "https://image.pollinations.ai/prompt/" + quote(prompt, safe="")
     for attempt in range(2):
@@ -3713,6 +3824,12 @@ def _pick_photo_pool(art, avoid_ids=None, want=4):
         if not cand:
             continue
         cand.sort(key=lambda c: _vividness(c[0]), reverse=True)
+        # v5.10: dull grey candidates are dropped when livelier ones exist -
+        # eye-catching starts at photo selection, not at the retoucher
+        if len(cand) > 1:
+            livelier = [c for c in cand if _vividness(c[0]) >= 0.30]
+            if livelier:
+                cand = livelier
         log.info("Photo pool for query '%s' (%d candidates)", query, len(cand))
         return cand[:max(1, int(want))]
     return []
@@ -4102,7 +4219,8 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
         sy = cy - stat_h / 2 - bbox[1]
         d.text((sx + int(5 * S), sy + int(5 * S)), stat,
                font=stat_font, fill=accent + (110,))            # v5.3: accent glow
-        d.text((sx, sy), stat, font=stat_font, fill=(255, 255, 255, 255))
+        d.text((sx, sy), stat, font=stat_font, fill=(255, 255, 255, 255),
+               stroke_width=max(3, int(6 * S)), stroke_fill=(8, 10, 18, 200))  # v5.10 poster outline
         y = cy + stat_h // 2 + int(46 * S)
         bar_w = min(int(tw * 0.7), int(320 * S))
         d.rounded_rectangle([int((W - bar_w) / 2), y, int((W + bar_w) / 2), y + int(8 * S)],
@@ -4120,6 +4238,16 @@ def _render_photo_card(photo, art, variant, headline, source_line, bengali=False
             sw = d.textlength(source_line, font=src_font)
             d.text(((W - sw) / 2, H - M - int(36 * S)), source_line,
                    font=src_font, fill=(255, 255, 255, 200))
+
+    # v5.10: thin accent inset frame on the full-bleed family - the deliberate
+    # 'one designed object' look that stands out in a feed of naked photos
+    if variant in ("bottom_sheet", "top_banner", "full_bleed", "ticker", "stat_hero"):
+        try:
+            fw = int(5 * S)
+            d.rounded_rectangle([fw, fw, W - fw, H - fw], radius=int(26 * S),
+                                 outline=accent + (200,), width=fw)
+        except Exception:
+            pass
 
     out = Image.alpha_composite(base, overlay).convert("RGB")
     out = _apply_grain(out)                    # v5.5: kill the too-clean AI look
@@ -4145,6 +4273,15 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
     overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay)
 
+    # ---- v5.10: soft accent glow behind the text zone - depth, not flatness
+    # (the no-photo card's #1 weakness was 'flat gradient + empty space')
+    if variant not in ("quote", "ticker"):
+        glow = _radial_glow((W, int(H * 0.55)), accent, 52)
+        if glow is not None:
+            try:
+                base.alpha_composite(glow, (0, int(H * 0.16)))
+            except Exception:
+                pass
     # ---- rotating background motif (feed variety even without photos)
     m = variant_idx % 4
     if m == 0:      # dot grid + rings
@@ -4178,9 +4315,31 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
                    int(60 * S) + int(130 * S), int(80 * S) + int(130 * S)],
                   outline=(255, 255, 255, 26), width=int(2 * S))
 
+    # ---- v5.10: giant translucent watermark word - streaming-service key art
+    # fills the empty sky with the beat's own identity (MOVIES / MUSIC / SPORTS)
+    label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
+    if variant not in ("quote", "ticker"):
+        try:
+            wl = label.upper() if (label and not bengali) else ""
+            if wl:
+                target_w = W - int(80 * S)
+                size = int(120 * S)
+                wf = _font(size, "bold", False)
+                if wf is not None and d.textlength(wl, font=wf) > 0:
+                    scale = target_w / d.textlength(wl, font=wf)
+                    size = min(int(360 * S), max(int(90 * S), int(size * min(scale, 2.4))))
+                    wf = _font(size, "bold", False)
+                if wf is not None:
+                    ww = d.textlength(wl, font=wf)
+                    wy = int(H * 0.055)
+                    d.text(((W - ww) / 2 + int(5 * S), wy + int(5 * S)), wl,
+                           font=wf, fill=(0, 0, 0, 30))
+                    d.text(((W - ww) / 2, wy), wl, font=wf, fill=accent + (38,))
+        except Exception:
+            pass
+
     # chip
     chip_size = int(25 * S)
-    label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
     if variant not in ("ticker",):
         _draw_chip(d, M, M, badge if badge else label,
                    (255, 190, 60) if badge else accent, chip_size, bengali)
@@ -4206,7 +4365,8 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
         d.ellipse([W // 2 - int(330 * S), cy - int(200 * S),
                    W // 2 + int(330 * S), cy + int(200 * S)], fill=accent + (20,))
         d.text(((W - tw) / 2 - bbox[0], cy - stat_h / 2 - bbox[1]), stat,
-               font=stat_font, fill=(255, 255, 255, 255))
+               font=stat_font, fill=(255, 255, 255, 255),
+               stroke_width=max(3, int(6 * S)), stroke_fill=(8, 10, 18, 200))  # v5.10
         y = cy + stat_h // 2 + int(44 * S)
         bar_w = min(int(tw * 0.7), int(300 * S))
         d.rounded_rectangle([int((W - bar_w) / 2), y, int((W + bar_w) / 2), y + int(8 * S)],
@@ -4285,11 +4445,11 @@ def _render_designer_card(art, headline, source_line, bengali=False, variant_idx
         # ---- standard headline block
         top = int(H * 0.30)
         lines, font, lh, th, _ = _fit_headline(
-            d, headline, "bold", W - 2 * M, 6, int(84 * S), int(46 * S), bengali)
+            d, headline, "bold", W - 2 * M, 6, int(92 * S), int(46 * S), bengali)
         y = top
         for ln in lines:
             if font is not None:
-                d.text((M, y), ln, font=font, fill=(255, 255, 255, 252))
+                _txt(d, (M, y), ln, font, (255, 255, 255, 252))  # v5.10 poster stroke
             y += lh
         y += int(30 * S)
         d.rounded_rectangle([M, y, M + int(110 * S), y + int(9 * S)],

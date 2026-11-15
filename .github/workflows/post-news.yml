@@ -56,6 +56,9 @@ jobs:
           # leave unset for the built-in defaults)
           AI_IMAGE_ENABLED: ${{ vars.AI_IMAGE_ENABLED }}
           AI_IMAGE_PROBABILITY: ${{ vars.AI_IMAGE_PROBABILITY }}
+          # v5.10: model switch + patience tunable without a code change
+          AI_IMAGE_MODEL: ${{ vars.AI_IMAGE_MODEL }}
+          AI_IMAGE_TIMEOUT: ${{ vars.AI_IMAGE_TIMEOUT }}
           EDITOR_PASS_ENABLED: ${{ vars.EDITOR_PASS_ENABLED }}
           CINEMATIC_GRADE_PROBABILITY: ${{ vars.CINEMATIC_GRADE_PROBABILITY }}
           # v5.9: genuine voice + retention engine (repo variables, optional)
