@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.10
+TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.11
 =========================================================
 Single-file bot: fetches worldwide trending + entertainment news (movies,
 music, TV, sports, celebs, gaming, viral moments, space, tech launches) from
@@ -9,29 +9,29 @@ many free sources, scores it, writes a human-sounding post (English + optional
 Bengali companion), renders a designed 1080x1350 image card with impressive
 photography, and publishes to a Facebook Page.
 
-WHAT'S NEW IN v5.10 (eye-catching visual overdrive - stop the scroll)
-  AI ART, MORE OFTEN, BETTER BRIEFED
-    * Unique FLUX-generated art now on ~62% of photo cards (was 45%) - art no
-      other page can repost. Prompts upgraded with hyperdetailed / 8k / HDR /
-      vibrant-saturation finishers so every generation lands as a poster.
-  ADAPTIVE AUTO-EDITOR FOR EVERY PHOTO (stock OR AI)
-    * _auto_pop() measures each photo's exposure, saturation and tonal range,
-      then applies exactly what THAT photo needs: dim shots get an exposure
-      lift, grey shots a saturation jump, flat shots a tonal expansion, and a
-      detail micro-boost for everything. Uniform filters are what make pages
-      look fake; per-photo correction reads as a pro editor.
-  POSTER TYPOGRAPHY
-    * Every headline now carries a heavy near-black outline (native stroke)
-      plus its soft shadow - bold, readable on ANY photo, from across the room.
-    * Giant-stat numbers get the same treatment; punchy short headlines start
-      even bigger (stronger poster-mode size bumps).
-  DESIGNED-OBJECT CHROME
-    * Full-bleed-family cards get a thin accent inset frame - the deliberate
-      'one designed object' look in a feed of naked photos.
-    * Dull grey stock candidates are dropped when livelier ones exist.
-  Earlier: v5.9 (genuine voice + retention engine), v5.8 (AI image engine +
-  editorial pipeline), v5.7 (engagement engine), v5.6 (worldwide pivot),
-  v5.5 (human touch), v5.4 (diversity, crash-safe, insights).
+WHAT'S NEW IN v5.11 (totally new looks - real, human, zero AI tells)
+  THREE BRAND-NEW CARD FAMILIES (1 in 3.7 posts each, alternating with the
+  classic eight so the feed never repeats itself):
+    * MAGAZINE COVER - the newsstand look: auto-fit serif masthead between
+      double rules, full-bleed photo, cover lines bottom-left, corner
+      EXCLUSIVE stamp, a real barcode. Reads as a designed magazine cover.
+    * POLAROID SCRAPBOOK - the keepsake look: warm paper, taped-in polaroid
+      tilted 2.4 deg with a soft drop shadow, typewriter caption, rubber
+      date stamp. The most human card in the deck.
+    * NEWSPAPER FRONT PAGE - broadsheet credibility: 'THE DAILY TREND'
+      masthead, boxed photo with caption, centered serif headline, an
+      INSIDE teaser line that pulls readers to the next post.
+  REAL PHOTOS FIRST
+    * AI image share cut 62% -> 18% (env-tunable): unique FLUX art is now
+      the occasional spice, real Pexels photography is the default - the
+      user asked for less AI-generated stuff.
+    * Carousel slides alternate a gallery-print white inset matte with the
+      accent-bar style.
+  New font weights (system-only, no new downloads): typewriter mono and
+  serif italic (with graceful fallbacks) power the new looks.
+  Earlier: v5.10 (eye-catching overdrive: auto-editor, poster strokes),
+  v5.9 (genuine voice + retention engine), v5.8 (AI image engine), v5.7
+  (engagement engine), v5.6 (worldwide pivot + NSFW firewall).
 
 WHAT'S NEW IN v5.7 (engagement engine - the page becomes an experience)
   INTERACTIVE SPECIALS (~1 in 3 posts, never two in a row, capped 2/day)
@@ -153,7 +153,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.10"
+VERSION = "5.11"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -233,12 +233,13 @@ CAROUSEL_MAX_PHOTOS = _env_int("CAROUSEL_MAX_PHOTOS", 3)
 TEMPLATE_CAPTION_FALLBACK = _env_bool("TEMPLATE_CAPTION_FALLBACK", True)
 # ---- v5.8: AI IMAGE ENGINE + EDITORIAL PIPELINE tunables -----------------
 # Free, keyless, open-source image generation (Pollinations serving FLUX).
-# v5.10: ~62% of photo cards get a unique AI-generated illustration that NO
-# other page on Facebook can repost - the single biggest eye-catching lever -
-# the rest stay on stock photos. Any AI failure (rate limit, timeout, NSFW
-# filter) silently falls back to the stock flow.
+# v5.11: real Pexels photography is the default; a small share of cards get
+# a unique AI-generated illustration no other page can repost. Any AI failure
+# (rate limit, timeout, NSFW filter) silently falls back to the stock flow.
 AI_IMAGE_ENABLED = _env_bool("AI_IMAGE_ENABLED", True)
-AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.62)
+# v5.11: real photos first - unique AI art is the occasional spice (18%),
+# not the default. Raise via env var if the pendulum should swing back.
+AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.18)
 AI_IMAGE_TIMEOUT = _env_int("AI_IMAGE_TIMEOUT", 90)
 AI_IMAGE_RETRY_WAIT = _env_int("AI_IMAGE_RETRY_WAIT", 32)   # anon tier: 1 img/30s
 AI_IMAGE_MODEL = (os.getenv("AI_IMAGE_MODEL") or "flux").strip() or "flux"
@@ -268,9 +269,13 @@ HTTP_TIMEOUT = _env_int("HTTP_TIMEOUT", 25)
 CARD_W, CARD_H = 1080, 1350
 SQUARE_CARD_PROBABILITY = _env_float("SQUARE_CARD_PROBABILITY", 0.35)
 SUPERSAMPLE = _env_int("SUPERSAMPLE", 2)
-# 8 rotating layouts - structural variety beats colour tweaks in the feed
-CARD_VARIANTS = ["bottom_sheet", "top_banner", "split_card",
-                 "full_bleed", "stat_hero", "magazine", "ticker", "quote"]
+# 11 rotating layouts - structural variety beats colour tweaks in the feed.
+# v5.11: three brand-new editorial families (cover / polaroid / frontpage)
+# lead the rotation, interleaved with the classic eight so consecutive posts
+# always change shape and the feed never looks templated.
+CARD_VARIANTS = ["cover", "bottom_sheet", "polaroid", "top_banner",
+                 "frontpage", "split_card", "full_bleed", "stat_hero",
+                 "magazine", "ticker", "quote"]
 
 
 def _set_card_format(square: bool):
@@ -3137,7 +3142,10 @@ def _font(size, weight="regular", bengali=False):
     else:
         names = {"bold": "Poppins-Bold.ttf", "semibold": "Poppins-SemiBold.ttf",
                  "medium": "Poppins-Medium.ttf", "regular": "Poppins-Regular.ttf",
-                 "serif": "DejaVuSerif.ttf", "serif_bold": "DejaVuSerif-Bold.ttf"}
+                 "serif": "DejaVuSerif.ttf", "serif_bold": "DejaVuSerif-Bold.ttf",
+                 # v5.11 system-font weights (no download, graceful fallback)
+                 "mono": "DejaVuSansMono.ttf", "mono_bold": "DejaVuSansMono-Bold.ttf",
+                 "serif_italic": "DejaVuSerif-Italic.ttf"}
         p = FONT_DIR / names.get(weight, "Poppins-Regular.ttf")
         if p.exists():
             try:
@@ -3156,6 +3164,19 @@ def _font(size, weight="regular", bengali=False):
             "serif": "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf",
             "serif_bold": "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf",
         }.get(weight, "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"))
+        # v5.11: typewriter mono + serif italic fallback chains (system fonts,
+        # then Poppins, then the default - zero new failure surface)
+        if weight in ("mono", "mono_bold"):
+            mono_c = ("/usr/share/fonts/truetype/dejavu/DejaVuSansMono-Bold.ttf"
+                      if weight == "mono_bold"
+                      else "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
+            candidates.insert(0, mono_c)
+            candidates.insert(1, "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf")
+            candidates.append(str(FONT_DIR / ("Poppins-Bold.ttf" if weight == "mono_bold"
+                                              else "Poppins-Regular.ttf")))
+        elif weight == "serif_italic":
+            candidates.insert(0, "/usr/share/fonts/truetype/dejavu/DejaVuSerif-Italic.ttf")
+            candidates.insert(1, "/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf")
         for c in candidates:
             if c and os.path.exists(c):
                 try:
@@ -3903,8 +3924,370 @@ def _source_date_line(art, bengali=False):
 # ==========================================================================
 # CARD RENDERERS - 6 rotating layouts, 2x supersampled
 # ==========================================================================
+# ==========================================================================
+# v5.11: THREE NEW EDITORIAL CARD FAMILIES - real, human, zero AI tells
+# ==========================================================================
+def _render_cover_card(photo, art, headline, source_line, bengali=False,
+                       variant_idx=0, badge=None):
+    """v5.11 MAGAZINE COVER - the newsstand look: auto-fit serif masthead
+    between double rules, full-bleed photo, cover lines bottom-left, a corner
+    stamp and a real barcode. Reads as a designed magazine cover - the most
+    'premium print' card in the deck."""
+    S = max(1, SUPERSAMPLE)
+    W, H = CARD_W * S, CARD_H * S
+    M = int(64 * S)
+    theme = CATEGORY_THEME.get(art.category, CATEGORY_THEME["general"])
+    accent = theme["accent"] if variant_idx % 2 == 0 else theme.get("accent2", theme["accent"])
+    label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
+
+    base = _enhance_photo(_smart_crop(photo, W, H).resize((W, H), _RESAMPLE.LANCZOS)).convert("RGBA")
+    overlay = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay)
+
+    # scrims: top for the masthead, bottom for the cover lines
+    overlay.alpha_composite(
+        _vertical_gradient((W, int(H * 0.34)), (8, 10, 18), 215, 0, curve=1.45), (0, 0))
+    overlay.alpha_composite(
+        _vertical_gradient((W, int(H * 0.46)), (8, 10, 18), 0, 236, curve=2.0),
+        (0, H - int(H * 0.46)))
+
+    # ---- masthead: auto-fit serif, tracked wide, soft shadow for photo safety
+    mh = label.upper() if not bengali else label
+    size = int(96 * S)
+    while size >= int(44 * S):
+        f = _font(size, "serif_bold", bengali)
+        if f is None or _tracked_width(d, mh, f, 1.08) <= W - 2 * M:
+            break
+        size -= int(4 * S)
+    mf = _font(size, "serif_bold", bengali)
+    my = int(38 * S)
+    if mf is not None:
+        tw = _tracked_width(d, mh, mf, 1.08)
+        _draw_tracked(d, ((W - tw) / 2 + int(3 * S), my + int(3 * S)), mh, mf,
+                      (0, 0, 0, 130), 1.08)
+        _draw_tracked(d, ((W - tw) / 2, my), mh, mf, (255, 255, 255, 255), 1.08)
+        ry = my + int(size * 1.26)
+        d.line([M, ry, W - M, ry], fill=(255, 255, 255, 235), width=max(2, int(3 * S)))
+        d.line([M, ry + int(9 * S), W - M, ry + int(9 * S)], fill=accent + (255,),
+               width=max(2, int(3 * S)))
+        tf = _font(int(21 * S), "medium", bengali)
+        if tf is not None:
+            date_str = _now_ist().strftime("%d %b %Y")
+            tag = date_str + (" \u00b7 WORLD EDITION" if not bengali else "")
+            tw2 = d.textlength(tag, font=tf)
+            d.text(((W - tw2) / 2, ry + int(20 * S)), tag, font=tf,
+                   fill=(255, 255, 255, 225))
+
+    # ---- corner stamp: just under the masthead rules, right-aligned (the
+    # classic magazine seal position). Always present, word rotates for feed
+    # variety: EXCLUSIVE REPORT / SPECIAL EDITION.
+    try:
+        stamp = Image.new("RGBA", (int(240 * S), int(240 * S)), (0, 0, 0, 0))
+        sd = ImageDraw.Draw(stamp)
+        sd.ellipse([int(10 * S), int(10 * S), int(230 * S), int(230 * S)],
+                   outline=accent + (255,), width=int(8 * S))
+        word, sub = (("SPECIAL", "EDITION") if variant_idx % 2
+                     else ("EXCLUSIVE" if not bengali else "SPECIAL", "REPORT"))
+        wf = _font(int(33 * S), "bold", bengali)
+        if wf is not None:
+            ww = sd.textlength(word, font=wf)
+            sd.text(((240 * S - ww) / 2, int(92 * S)), word, font=wf, fill=accent + (255,))
+        sf2 = _font(int(22 * S), "semibold", bengali)
+        if sf2 is not None:
+            sw2 = sd.textlength(sub, font=sf2)
+            sd.text(((240 * S - sw2) / 2, int(138 * S)), sub, font=sf2,
+                    fill=(255, 255, 255, 235))
+        stamp = stamp.rotate(-14, resample=_RESAMPLE.BICUBIC)
+        overlay.alpha_composite(stamp, (W - int(310 * S), int(H * 0.158)))
+    except Exception:
+        pass
+
+    # ---- cover lines (kicker + big headline, bottom-left)
+    y = H - int(H * 0.385)
+    kick = badge or ("TOP STORY" if not bengali else "")
+    kf = _font(int(24 * S), "semibold", bengali)
+    if kf is not None and kick:
+        d.rectangle([M, y + int(4 * S), M + int(14 * S), y + int(24 * S)],
+                    fill=accent + (255,))
+        _draw_tracked(d, (M + int(26 * S), y), kick.upper(), kf,
+                      (255, 255, 255, 240), 1.2)
+    y += int(46 * S)
+    # v5.11.1: serif cover lines - editorial typesetting instead of the same
+    # heavy sans every other card uses (VLM QA: 'generic' -> 'magazine')
+    lines, font, lh, th, _ = _fit_headline(
+        d, headline, "serif_bold", W - 2 * M, 4, int(84 * S), int(44 * S), bengali,
+        budget=int(H * 0.26))
+    for ln in lines:
+        _txt(d, (M, y), ln, font)
+        y += lh
+
+    # ---- footer: source + handle (shifted left for the barcode) + barcode
+    sf = _font(int(23 * S), "medium", bengali)
+    if sf is not None:
+        d.text((M, H - M - int(30 * S)), source_line, font=sf, fill=(255, 255, 255, 200))
+    if PAGE_HANDLE:
+        hf = _font(int(23 * S), "semibold", bengali)
+        if hf is not None:
+            hw = d.textlength(PAGE_HANDLE, font=hf)
+            d.text((W - M - int(hw) - int(160 * S), H - M - int(30 * S)), PAGE_HANDLE,
+                   font=hf, fill=(255, 255, 255, 215))
+    try:
+        bx, by = W - M - int(132 * S), H - M - int(88 * S)
+        d.rounded_rectangle([bx - int(10 * S), by - int(10 * S),
+                             bx + int(132 * S), by + int(74 * S)],
+                            radius=int(6 * S), fill=(255, 255, 255, 238))
+        cx = bx + int(4 * S)
+        while cx < bx + int(116 * S):
+            bw = random.randint(2, 7) * S
+            d.rectangle([cx, by, cx + bw, by + int(42 * S)], fill=(14, 14, 18, 255))
+            cx += bw + random.randint(2, 5) * S
+        bf = _font(int(17 * S), "medium", bengali)
+        if bf is not None:
+            d.text((bx + int(4 * S), by + int(48 * S)),
+                   _now_ist().strftime("%d%b%Y").upper(), font=bf, fill=(14, 14, 18, 220))
+    except Exception:
+        pass
+
+    out = Image.alpha_composite(base, overlay).convert("RGB")
+    out = _apply_grain(out)
+    return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+
+
+def _render_polaroid_card(photo, art, headline, source_line, bengali=False,
+                          variant_idx=0, badge=None):
+    """v5.11 POLAROID SCRAPBOOK - the keepsake look: warm paper, a taped-in
+    polaroid tilted ~2.4 deg with a soft drop shadow, a typewriter caption
+    and a rubber date stamp. The most human, least 'template' card we have."""
+    S = max(1, SUPERSAMPLE)
+    W, H = CARD_W * S, CARD_H * S
+    theme = CATEGORY_THEME.get(art.category, CATEGORY_THEME["general"])
+    accent = theme["accent"] if variant_idx % 2 == 0 else theme.get("accent2", theme["accent"])
+
+    paper = Image.new("RGBA", (W, H), (245, 240, 231, 255))
+    try:                                   # faint accent wash so paper isn't flat
+        wash = _radial_glow((W, H), accent, 18)
+        if wash is not None:
+            paper.alpha_composite(wash)
+    except Exception:
+        pass
+
+    # ---- the polaroid frame (built separately, then tilted + shadowed)
+    fw, fh = int(W * 0.84), int(H * 0.70)
+    frame = Image.new("RGBA", (fw, fh), (253, 252, 249, 255))
+    fd = ImageDraw.Draw(frame)
+    pad = int(24 * S)
+    cap_h = int(fh * 0.24)
+    ph_h = fh - pad * 2 - cap_h
+    ph = _enhance_photo(_smart_crop(photo, fw - pad * 2, ph_h)
+                        .resize((fw - pad * 2, ph_h), _RESAMPLE.LANCZOS)).convert("RGB")
+    frame.paste(ph, (pad, pad))
+
+    # rubber date stamp - bottom-right of the WHITE CHIN, exactly where real
+    # Polaroid cameras printed their timestamps (authentic + always legible,
+    # never fights the photo or the frame edge)
+    try:
+        ds = _now_ist().strftime("%d %b %y").upper()
+        df = _font(int(26 * S), "bold", bengali)
+        if df is not None:
+            dw = fd.textlength(ds, font=df)
+            sx = fw - pad - int(24 * S) - dw
+            sy = fh - pad - int(52 * S)
+            fd.rounded_rectangle([sx - int(12 * S), sy - int(8 * S),
+                                  sx + dw + int(12 * S), sy + int(40 * S)],
+                                 radius=int(6 * S), outline=accent + (225,),
+                                 width=max(2, int(3 * S)))
+            fd.text((sx, sy), ds, font=df, fill=accent + (235,))
+    except Exception:
+        pass
+
+    # typed caption on the polaroid's white chin
+    ink = (56, 54, 50, 255)
+    lines, cf, lh, th, _ = _fit_headline(
+        fd, headline, "mono", fw - pad * 2 - int(6 * S), 3, int(34 * S), int(22 * S),
+        bengali, budget=cap_h - int(26 * S))
+    y = pad + ph_h + int(16 * S)
+    for ln in lines:
+        if cf is not None:
+            fd.text((pad + int(2 * S), y), ln, font=cf, fill=ink)
+        y += lh
+
+    # tilt + drop shadow onto the paper (2.0 deg - still reads tilted,
+    # keeps every corner element safely inside the frame)
+    try:
+        frame = frame.rotate(-2.0 if variant_idx % 2 else 2.0,
+                             resample=_RESAMPLE.BICUBIC)
+    except Exception:
+        pass
+    fx, fy = (W - fw) // 2, int(H * 0.085)
+    try:
+        a = frame.split()[3].point(lambda p: int(p * 0.38))
+        shadow = Image.new("RGBA", frame.size, (24, 20, 14, 255))
+        shadow.putalpha(a)
+        shadow = shadow.filter(ImageFilter.GaussianBlur(int(7 * S)))
+        paper.alpha_composite(shadow, (fx + int(9 * S), fy + int(13 * S)))
+    except Exception:
+        pass
+    paper.alpha_composite(frame, (fx, fy))
+
+    # ---- washi tape over the frame's top corners
+    try:
+        for (tx, ty, ang) in ((fx + int(fw * 0.09), fy - int(22 * S), 32),
+                               (fx + int(fw * 0.64), fy - int(16 * S), -28)):
+            tape = Image.new("RGBA", (int(210 * S), int(54 * S)), accent + (95,))
+            tape = tape.rotate(ang, resample=_RESAMPLE.BICUBIC, expand=True)
+            paper.alpha_composite(tape, (tx, ty))
+    except Exception:
+        pass
+
+    # ---- paper margin: kicker/badge + handle + source
+    d = ImageDraw.Draw(paper)
+    my = fy + fh + int(28 * S)
+    kick = badge or ("JUST IN" if not bengali else "")
+    if kick:
+        kf = _font(int(24 * S), "bold", bengali)
+        if kf is not None:
+            d.rectangle([int(72 * S), my + int(4 * S), int(88 * S), my + int(26 * S)],
+                        fill=accent + (255,))
+            _draw_tracked(d, (int(102 * S), my), kick.upper(), kf, (70, 66, 60, 255), 1.18)
+            my += int(46 * S)
+    mf = _font(int(23 * S), "mono", bengali)
+    if mf is not None:
+        if PAGE_HANDLE:
+            d.text((int(72 * S), my), PAGE_HANDLE, font=mf, fill=(122, 116, 106, 255))
+        sf = _font(int(21 * S), "mono", bengali)
+        if sf is not None:
+            sw = d.textlength(source_line, font=sf)
+            d.text((W - int(72 * S) - sw, my), source_line, font=sf,
+                   fill=(122, 116, 106, 255))
+
+    out = paper.convert("RGB")
+    out = _apply_grain(out, 10)
+    return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+
+
+def _render_frontpage_card(photo, art, headline, source_line, bengali=False,
+                           variant_idx=0, badge=None):
+    """v5.11 NEWSPAPER FRONT PAGE - broadsheet credibility: 'THE DAILY TREND'
+    masthead between double rules, boxed photo with an italic caption, a
+    centered serif headline and an INSIDE teaser that pulls readers to the
+    next post. Nothing else on the feed looks like a newspaper."""
+    S = max(1, SUPERSAMPLE)
+    W, H = CARD_W * S, CARD_H * S
+    M = int(70 * S)
+    theme = CATEGORY_THEME.get(art.category, CATEGORY_THEME["general"])
+    accent = theme["accent"] if variant_idx % 2 == 0 else theme.get("accent2", theme["accent"])
+    label = (BN_CATEGORY_LABELS if bengali else {}).get(art.category) or theme["label"]
+    ink = (26, 26, 30, 255)
+
+    paper = Image.new("RGBA", (W, H), (250, 248, 243, 255))
+    d = ImageDraw.Draw(paper)
+
+    # ---- masthead + double rule + dateline
+    mast = "THE DAILY TREND"
+    size = int(84 * S)
+    while size >= int(40 * S):
+        f = _font(size, "serif_bold", False)
+        if f is None or _tracked_width(d, mast, f, 1.04) <= W - 2 * M:
+            break
+        size -= int(4 * S)
+    mf = _font(size, "serif_bold", False)
+    my = int(30 * S)
+    y0 = int(120 * S)
+    if mf is not None:
+        tw = _tracked_width(d, mast, mf, 1.04)
+        _draw_tracked(d, ((W - tw) / 2, my), mast, mf, ink, 1.04)
+        ry = my + int(size * 1.24)
+        d.line([M, ry, W - M, ry], fill=ink[:3] + (255,), width=max(3, int(4 * S)))
+        d.line([M, ry + int(9 * S), W - M, ry + int(9 * S)], fill=ink[:3] + (255,),
+               width=max(2, int(2 * S)))
+        y0 = ry + int(22 * S)
+    dlf = _font(int(22 * S), "mono", bengali)
+    if dlf is not None:
+        dl = _now_ist().strftime("%A, %d %b %Y").upper() + " \u00b7 " + \
+             (f"{label} DESK" if not bengali else label)
+        dw = d.textlength(dl, font=dlf)
+        d.text(((W - dw) / 2, y0), dl, font=dlf, fill=(74, 72, 66, 255))
+        y0 += int(46 * S)
+
+    # ---- boxed photo + italic caption (v5.11.1: taller - kills the dead
+    # space VLM QA flagged in the lower third)
+    ph_h = int(H * 0.37)
+    try:
+        ph = _enhance_photo(_smart_crop(photo, W - 2 * M, ph_h)
+                            .resize((W - 2 * M, ph_h), _RESAMPLE.LANCZOS)).convert("RGB")
+        paper.paste(ph, (M, y0))
+        d.rectangle([M, y0, W - M, y0 + ph_h], outline=ink[:3] + (255,),
+                    width=max(2, int(3 * S)))
+    except Exception:
+        ph_h = 0
+    y = y0 + ph_h + int(14 * S)
+    capf = _font(int(21 * S), "serif_italic", bengali)
+    if capf is not None and ph_h:
+        # flush-left with an em dash - the classic newspaper photo credit
+        d.text((M, y), "\u2014 " + source_line, font=capf, fill=(98, 94, 88, 255))
+        y += int(42 * S)
+
+    # ---- centered serif headline (bigger) + sub-deck
+    lines, font, lh, th, _ = _fit_headline(
+        d, headline, "serif_bold", W - 2 * M, 4, int(72 * S), int(40 * S), bengali)
+    for ln in lines:
+        if font is not None:
+            lw = d.textlength(ln, font=font)
+            d.text(((W - lw) / 2, y), ln, font=font, fill=ink)
+        y += lh
+    y += int(14 * S)
+    deck = (getattr(art, "description", "") or "").strip()
+    if deck:
+        deck = deck[:110].rstrip() + ("\u2026" if len(deck) > 110 else "")
+        dfk = _font(int(24 * S), "serif", bengali)
+        if dfk is not None:
+            for ln in _wrap_text(d, deck, dfk, W - 2 * M - int(60 * S))[:2]:
+                lw = d.textlength(ln, font=dfk)
+                d.text(((W - lw) / 2, y), ln, font=dfk, fill=(92, 88, 82, 255))
+                y += int(34 * S)
+
+    # ---- section index row (fills the lower third like a real front page)
+    try:
+        ix = ["MOVIES", "MUSIC", "SPORTS", "GAMING"]
+        ify = H - M - int(118 * S)
+        d.line([M, ify, W - M, ify], fill=ink[:3] + (170,), width=max(2, int(2 * S)))
+        ixf = _font(int(22 * S), "mono", bengali)
+        if ixf is not None:
+            row = "  \u00b7  ".join(ix)
+            rw = d.textlength(row, font=ixf)
+            d.text(((W - rw) / 2, ify + int(16 * S)), row, font=ixf,
+                   fill=(110, 106, 98, 255))
+    except Exception:
+        pass
+
+    # ---- hairline + INSIDE teaser + handle (classic newspaper red)
+    newsred = (198, 40, 46)
+    d.line([M, H - M - int(66 * S), W - M, H - M - int(66 * S)],
+           fill=ink[:3] + (150,), width=max(2, int(2 * S)))
+    tf = _font(int(23 * S), "mono_bold", bengali)
+    if tf is not None:
+        tease = badge + " \u2192" if badge else \
+            (f"INSIDE: {label} SPECIAL \u2192" if not bengali else f"{label} \u2192")
+        d.text((M, H - M - int(44 * S)), tease, font=tf, fill=newsred + (255,))
+        if PAGE_HANDLE:
+            hw = d.textlength(PAGE_HANDLE, font=tf)
+            d.text((W - M - hw, H - M - int(44 * S)), PAGE_HANDLE, font=tf,
+                   fill=(74, 72, 66, 255))
+
+    out = paper.convert("RGB")
+    out = _apply_grain(out, 9)
+    return out.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
+
+
 def _render_photo_card(photo, art, variant, headline, source_line, bengali=False, stat=None, variant_idx=0, badge=None):
     """Stock photo + branded overlay. variant in CARD_VARIANTS; stat -> giant number poster."""
+    # v5.11: the three new editorial families render in their own functions
+    if variant == "cover":
+        return _render_cover_card(photo, art, headline, source_line, bengali, variant_idx, badge)
+    if variant == "polaroid":
+        return _render_polaroid_card(photo, art, headline, source_line, bengali, variant_idx, badge)
+    if variant == "frontpage":
+        return _render_frontpage_card(photo, art, headline, source_line, bengali, variant_idx, badge)
     if variant == "stat_hero" and not stat:
         variant = "full_bleed"                      # defensive fallback
     S = max(1, SUPERSAMPLE)
@@ -4608,8 +4991,20 @@ def _render_plain_photo(img, art=None):
     ov.alpha_composite(_vertical_gradient((W, int(H * 0.28)), (8, 10, 18), 0, 145, curve=1.6),
                        (0, H - int(H * 0.28)))
     d = ImageDraw.Draw(ov, "RGBA")
-    bar_h = int(12 * S)
-    d.rectangle([0, H - bar_h, W, H], fill=theme["accent"] + (255,))
+    # v5.11: alternate between the accent-bar style and a gallery-print
+    # white inset matte - the swipe deck feels like real photo prints
+    if random.random() < 0.5:
+        try:
+            inset = int(26 * S)
+            d.rounded_rectangle([inset, inset, W - inset, H - inset],
+                                radius=int(14 * S), outline=(255, 255, 255, 205),
+                                width=max(2, int(3 * S)))
+        except Exception:
+            bar_h = int(12 * S)
+            d.rectangle([0, H - bar_h, W, H], fill=theme["accent"] + (255,))
+    else:
+        bar_h = int(12 * S)
+        d.rectangle([0, H - bar_h, W, H], fill=theme["accent"] + (255,))
     if PAGE_HANDLE:
         hf = _font(int(26 * S), "medium")
         if hf is not None:
