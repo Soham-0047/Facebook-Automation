@@ -169,7 +169,8 @@
   "c2b5aa563be66196ad8ef06c49c9d662",
   "e0baf86b75998792c03543bae81f1efe",
   "4e89f7fae01cf8ff10abeeeace6303d9",
-  "661310b3bae258b0978ede33369d06e5"
+  "661310b3bae258b0978ede33369d06e5",
+  "216009ced537d6cfeea3df34b1271e96"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -341,28 +342,28 @@
   "formula 1 just found a bizarre financial supporter in horse girl gacha umamusume pretty derby",
   "chris pratt says he would love james gunn to direct a fourth guardians of the galaxy film after dc exit",
   "zelda ocarina of time remake sells 5 million in four days yet former nintendo leads say the series sold like nothing before breath of the wild",
-  "johnny depp s ebenezer ramayana dominate global box office as godzilla minus zero crosses 100 million"
+  "johnny depp s ebenezer ramayana dominate global box office as godzilla minus zero crosses 100 million",
+  "grammys 2027 raye rosalía and olivia rodrigo lead female heavy nominations"
  ],
- "last_post_ts": 1794825532.520556,
+ "last_post_ts": 1794867869.4092414,
  "recent_categories": [
-  "movies",
   "sports",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "music"
  ],
  "recent_domains": [
-  "variety.com",
   "wccftech",
-  "variety.com"
+  "variety.com",
+  "theguardian.com"
  ],
  "recent_shapes": [
-  "receipts",
   "react_split",
-  "cold_open"
+  "cold_open",
+  "listicle"
  ],
  "recent_photo_ids": [
-  7848985,
   19012046,
   19012034,
   34625043,
@@ -371,18 +372,15 @@
   15213183,
   12810653,
   12718989,
-  8652199
+  8652199,
+  40384080
  ],
  "recent_personas": [
-  "kabir",
-  "riya"
+  "riya",
+  "dev"
  ],
- "post_counter": 170,
+ "post_counter": 171,
  "category_days": {
-  "2026-11-10": {
-   "movies": 1,
-   "gaming": 1
-  },
   "2026-11-11": {
    "movies": 1,
    "gaming": 1
@@ -406,21 +404,28 @@
   "2026-11-16": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-17": {
+   "music": 1
   }
  },
- "bengali_date": "2026-11-16",
+ "bengali_date": "2026-11-17",
  "bengali_count": 0,
  "recent_first_words": [
-  "just",
   "drop",
-  "right"
+  "right",
+  "women"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-16",
+ "follow_cta_date": "2026-11-17",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794849114
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
