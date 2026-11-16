@@ -168,7 +168,8 @@
   "c86d4ba63c6334739a401f9405b84f69",
   "c2b5aa563be66196ad8ef06c49c9d662",
   "e0baf86b75998792c03543bae81f1efe",
-  "4e89f7fae01cf8ff10abeeeace6303d9"
+  "4e89f7fae01cf8ff10abeeeace6303d9",
+  "661310b3bae258b0978ede33369d06e5"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -339,28 +340,28 @@
   "grammys to air 2027 premiere ceremony on disney",
   "formula 1 just found a bizarre financial supporter in horse girl gacha umamusume pretty derby",
   "chris pratt says he would love james gunn to direct a fourth guardians of the galaxy film after dc exit",
-  "zelda ocarina of time remake sells 5 million in four days yet former nintendo leads say the series sold like nothing before breath of the wild"
+  "zelda ocarina of time remake sells 5 million in four days yet former nintendo leads say the series sold like nothing before breath of the wild",
+  "johnny depp s ebenezer ramayana dominate global box office as godzilla minus zero crosses 100 million"
  ],
- "last_post_ts": 1794769217.3931944,
+ "last_post_ts": 1794825532.520556,
  "recent_categories": [
-  "gaming",
   "movies",
   "sports",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "pcgamer.com",
   "variety.com",
-  "wccftech"
+  "wccftech",
+  "variety.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "receipts",
-  "react_split"
+  "react_split",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  33568244,
   7848985,
   19012046,
   19012034,
@@ -369,13 +370,14 @@
   31204632,
   15213183,
   12810653,
-  12718989
+  12718989,
+  8652199
  ],
  "recent_personas": [
-  "riya",
-  "kabir"
+  "kabir",
+  "riya"
  ],
- "post_counter": 169,
+ "post_counter": 170,
  "category_days": {
   "2026-11-10": {
    "movies": 1,
@@ -402,22 +404,27 @@
    "movies": 1
   },
   "2026-11-16": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-16",
  "bengali_count": 0,
  "recent_first_words": [
-  "i",
   "just",
-  "drop"
+  "drop",
+  "right"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-16",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794816361
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
