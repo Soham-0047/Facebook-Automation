@@ -171,7 +171,8 @@
   "4e89f7fae01cf8ff10abeeeace6303d9",
   "661310b3bae258b0978ede33369d06e5",
   "216009ced537d6cfeea3df34b1271e96",
-  "b3d2c6f37c7f7c4e5cd138e35e22e69a"
+  "b3d2c6f37c7f7c4e5cd138e35e22e69a",
+  "5ebcbccdabd9d110ca8884c33942c518"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -345,48 +346,45 @@
   "zelda ocarina of time remake sells 5 million in four days yet former nintendo leads say the series sold like nothing before breath of the wild",
   "johnny depp s ebenezer ramayana dominate global box office as godzilla minus zero crosses 100 million",
   "grammys 2027 raye rosalía and olivia rodrigo lead female heavy nominations",
-  "ranveer singh s dhurandhar misses grammy recognition despite eight entires"
+  "ranveer singh s dhurandhar misses grammy recognition despite eight entires",
+  "neuromancer release date cast everything we know about apple tv s new cyberpunk series"
  ],
- "last_post_ts": 1794914947.0268714,
+ "last_post_ts": 1794949866.2162247,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "music",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "variety.com",
   "theguardian.com",
-  "timesofindia.indiatimes.com"
+  "timesofindia.indiatimes.com",
+  "space.com"
  ],
  "recent_shapes": [
-  "cold_open",
   "listicle",
-  "receipts"
+  "receipts",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  34625043,
-  8263314,
-  31204632,
   15213183,
   12810653,
   12718989,
   8652199,
   40384080,
   7005685,
-  35844840
+  35844840,
+  15610070,
+  6800202,
+  4329870
  ],
  "recent_personas": [
-  "dev",
-  "riya"
+  "riya",
+  "kabir"
  ],
- "post_counter": 172,
+ "post_counter": 173,
  "category_days": {
-  "2026-11-11": {
-   "movies": 1,
-   "gaming": 1
-  },
   "2026-11-12": {
    "movies": 1,
    "viral": 1
@@ -410,21 +408,28 @@
   "2026-11-17": {
    "music": 1,
    "movies": 1
+  },
+  "2026-11-18": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-17",
- "bengali_count": 1,
+ "bengali_date": "2026-11-18",
+ "bengali_count": 0,
  "recent_first_words": [
-  "right",
   "women",
-  "just"
+  "just",
+  "a"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-17",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794934716
+ "follow_cta_date": "2026-11-18",
+ "follow_ctas_today": 0,
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
