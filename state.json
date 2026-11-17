@@ -170,7 +170,8 @@
   "e0baf86b75998792c03543bae81f1efe",
   "4e89f7fae01cf8ff10abeeeace6303d9",
   "661310b3bae258b0978ede33369d06e5",
-  "216009ced537d6cfeea3df34b1271e96"
+  "216009ced537d6cfeea3df34b1271e96",
+  "b3d2c6f37c7f7c4e5cd138e35e22e69a"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -343,29 +344,28 @@
   "chris pratt says he would love james gunn to direct a fourth guardians of the galaxy film after dc exit",
   "zelda ocarina of time remake sells 5 million in four days yet former nintendo leads say the series sold like nothing before breath of the wild",
   "johnny depp s ebenezer ramayana dominate global box office as godzilla minus zero crosses 100 million",
-  "grammys 2027 raye rosalía and olivia rodrigo lead female heavy nominations"
+  "grammys 2027 raye rosalía and olivia rodrigo lead female heavy nominations",
+  "ranveer singh s dhurandhar misses grammy recognition despite eight entires"
  ],
- "last_post_ts": 1794867869.4092414,
+ "last_post_ts": 1794914947.0268714,
  "recent_categories": [
-  "sports",
   "movies",
   "gaming",
   "movies",
-  "music"
+  "music",
+  "movies"
  ],
  "recent_domains": [
-  "wccftech",
   "variety.com",
-  "theguardian.com"
+  "theguardian.com",
+  "timesofindia.indiatimes.com"
  ],
  "recent_shapes": [
-  "react_split",
   "cold_open",
-  "listicle"
+  "listicle",
+  "receipts"
  ],
  "recent_photo_ids": [
-  19012046,
-  19012034,
   34625043,
   8263314,
   31204632,
@@ -373,13 +373,15 @@
   12810653,
   12718989,
   8652199,
-  40384080
+  40384080,
+  7005685,
+  35844840
  ],
  "recent_personas": [
-  "riya",
-  "dev"
+  "dev",
+  "riya"
  ],
- "post_counter": 171,
+ "post_counter": 172,
  "category_days": {
   "2026-11-11": {
    "movies": 1,
@@ -406,22 +408,28 @@
    "movies": 1
   },
   "2026-11-17": {
-   "music": 1
+   "music": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-17",
- "bengali_count": 0,
+ "bengali_count": 1,
  "recent_first_words": [
-  "drop",
   "right",
-  "women"
+  "women",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-17",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1794907240
+ "recent_hooks": [
+  "hot_or_not"
+ ],
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
