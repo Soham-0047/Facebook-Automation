@@ -173,7 +173,8 @@
   "216009ced537d6cfeea3df34b1271e96",
   "b3d2c6f37c7f7c4e5cd138e35e22e69a",
   "5ebcbccdabd9d110ca8884c33942c518",
-  "4584aa69674f0e14fb7fbe837713125e"
+  "4584aa69674f0e14fb7fbe837713125e",
+  "1777aee0946b73e6e5f56483ebc8f7ef"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -349,48 +350,45 @@
   "grammys 2027 raye rosalía and olivia rodrigo lead female heavy nominations",
   "ranveer singh s dhurandhar misses grammy recognition despite eight entires",
   "neuromancer release date cast everything we know about apple tv s new cyberpunk series",
-  "the further mis adventures of cliff booth throws netflix s oscar campaign a curveball"
+  "the further mis adventures of cliff booth throws netflix s oscar campaign a curveball",
+  "bigfoot is back in gta 6 and apparently he smells revolting"
  ],
- "last_post_ts": 1795000124.0727253,
+ "last_post_ts": 1795034811.3135343,
  "recent_categories": [
-  "movies",
   "music",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "timesofindia.indiatimes.com",
   "space.com",
-  "indiewire.com"
+  "indiewire.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "receipts",
   "mini_story",
-  "hot_take"
+  "hot_take",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  8652199,
-  40384080,
-  7005685,
   35844840,
   15610070,
   6800202,
   4329870,
   3709371,
   6789626,
-  8263357
+  8263357,
+  10539414,
+  27109219,
+  15442518
  ],
  "recent_personas": [
-  "kabir",
-  "riya"
+  "riya",
+  "meera"
  ],
- "post_counter": 174,
+ "post_counter": 175,
  "category_days": {
-  "2026-11-12": {
-   "movies": 1,
-   "viral": 1
-  },
   "2026-11-13": {
    "gaming": 1,
    "movies": 1
@@ -414,21 +412,25 @@
   "2026-11-18": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-19": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-18",
+ "bengali_date": "2026-11-19",
  "bengali_count": 0,
  "recent_first_words": [
-  "just",
   "a",
-  "netflix"
+  "netflix",
+  "everyone's"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-18",
+ "follow_cta_date": "2026-11-19",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795019769
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
