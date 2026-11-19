@@ -175,7 +175,8 @@
   "5ebcbccdabd9d110ca8884c33942c518",
   "4584aa69674f0e14fb7fbe837713125e",
   "1777aee0946b73e6e5f56483ebc8f7ef",
-  "e48f7744aec9a69b8a8a656486e8b7d3"
+  "e48f7744aec9a69b8a8a656486e8b7d3",
+  "0c9e7e1f2bc2b81f5bb69aaeff79abc6"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -353,28 +354,28 @@
   "neuromancer release date cast everything we know about apple tv s new cyberpunk series",
   "the further mis adventures of cliff booth throws netflix s oscar campaign a curveball",
   "bigfoot is back in gta 6 and apparently he smells revolting",
-  "netflix unveils penélope cruz juan diego botto s domestic violence drama patricia as production gets underway"
+  "netflix unveils penélope cruz juan diego botto s domestic violence drama patricia as production gets underway",
+  "gta 6 cast list includes potentially huge spoiler so be warned"
  ],
- "last_post_ts": 1795086482.531914,
+ "last_post_ts": 1795121541.034918,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "indiewire.com",
   "gamespot.com",
-  "deadline.com"
+  "deadline.com",
+  "gamespot.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "contrarian",
-  "question_hook"
+  "question_hook",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  15610070,
   6800202,
   4329870,
   3709371,
@@ -383,18 +384,15 @@
   10539414,
   27109219,
   15442518,
-  3709369
+  3709369,
+  6720006
  ],
  "recent_personas": [
-  "meera",
-  "dev"
+  "dev",
+  "meera"
  ],
- "post_counter": 176,
+ "post_counter": 177,
  "category_days": {
-  "2026-11-13": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-11-14": {
    "gaming": 1,
    "movies": 1,
@@ -418,21 +416,28 @@
   "2026-11-19": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-20": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-19",
+ "bengali_date": "2026-11-20",
  "bengali_count": 0,
  "recent_first_words": [
-  "netflix",
   "everyone's",
-  "which"
+  "which",
+  "right"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-19",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795106398
+ "follow_cta_date": "2026-11-20",
+ "follow_ctas_today": 0,
+ "recent_hooks": [
+  "so_mytake"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
