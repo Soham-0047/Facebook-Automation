@@ -174,7 +174,8 @@
   "b3d2c6f37c7f7c4e5cd138e35e22e69a",
   "5ebcbccdabd9d110ca8884c33942c518",
   "4584aa69674f0e14fb7fbe837713125e",
-  "1777aee0946b73e6e5f56483ebc8f7ef"
+  "1777aee0946b73e6e5f56483ebc8f7ef",
+  "e48f7744aec9a69b8a8a656486e8b7d3"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -351,28 +352,28 @@
   "ranveer singh s dhurandhar misses grammy recognition despite eight entires",
   "neuromancer release date cast everything we know about apple tv s new cyberpunk series",
   "the further mis adventures of cliff booth throws netflix s oscar campaign a curveball",
-  "bigfoot is back in gta 6 and apparently he smells revolting"
+  "bigfoot is back in gta 6 and apparently he smells revolting",
+  "netflix unveils penélope cruz juan diego botto s domestic violence drama patricia as production gets underway"
  ],
- "last_post_ts": 1795034811.3135343,
+ "last_post_ts": 1795086482.531914,
  "recent_categories": [
-  "music",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "space.com",
   "indiewire.com",
-  "gamespot.com"
+  "gamespot.com",
+  "deadline.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "hot_take",
-  "contrarian"
+  "contrarian",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  35844840,
   15610070,
   6800202,
   4329870,
@@ -381,13 +382,14 @@
   8263357,
   10539414,
   27109219,
-  15442518
+  15442518,
+  3709369
  ],
  "recent_personas": [
-  "riya",
-  "meera"
+  "meera",
+  "dev"
  ],
- "post_counter": 175,
+ "post_counter": 176,
  "category_days": {
   "2026-11-13": {
    "gaming": 1,
@@ -414,22 +416,24 @@
    "movies": 1
   },
   "2026-11-19": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-19",
  "bengali_count": 0,
  "recent_first_words": [
-  "a",
   "netflix",
-  "everyone's"
+  "everyone's",
+  "which"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-19",
- "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795078518
+ "follow_ctas_today": 1,
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
