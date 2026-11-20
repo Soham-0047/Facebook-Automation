@@ -176,7 +176,8 @@
   "4584aa69674f0e14fb7fbe837713125e",
   "1777aee0946b73e6e5f56483ebc8f7ef",
   "e48f7744aec9a69b8a8a656486e8b7d3",
-  "0c9e7e1f2bc2b81f5bb69aaeff79abc6"
+  "0c9e7e1f2bc2b81f5bb69aaeff79abc6",
+  "d2145e8579eab64d30e348542ec3a96a"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -355,28 +356,28 @@
   "the further mis adventures of cliff booth throws netflix s oscar campaign a curveball",
   "bigfoot is back in gta 6 and apparently he smells revolting",
   "netflix unveils penélope cruz juan diego botto s domestic violence drama patricia as production gets underway",
-  "gta 6 cast list includes potentially huge spoiler so be warned"
+  "gta 6 cast list includes potentially huge spoiler so be warned",
+  "jorrybell agoto star of philippines oscar submission filipinana dies at 32"
  ],
- "last_post_ts": 1795121541.034918,
+ "last_post_ts": 1795172107.5962384,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "gamespot.com",
   "deadline.com",
-  "gamespot.com"
+  "gamespot.com",
+  "variety.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "question_hook",
-  "cold_open"
+  "cold_open",
+  "receipts"
  ],
  "recent_photo_ids": [
-  6800202,
   4329870,
   3709371,
   6789626,
@@ -385,13 +386,14 @@
   27109219,
   15442518,
   3709369,
-  6720006
+  6720006,
+  39851565
  ],
  "recent_personas": [
-  "dev",
-  "meera"
+  "meera",
+  "dev"
  ],
- "post_counter": 177,
+ "post_counter": 178,
  "category_days": {
   "2026-11-14": {
    "gaming": 1,
@@ -418,22 +420,24 @@
    "movies": 1
   },
   "2026-11-20": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-20",
  "bengali_count": 0,
  "recent_first_words": [
-  "everyone's",
   "which",
-  "right"
+  "right",
+  "the"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-20",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795164109
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
