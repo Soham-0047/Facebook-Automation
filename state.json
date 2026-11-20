@@ -177,7 +177,8 @@
   "1777aee0946b73e6e5f56483ebc8f7ef",
   "e48f7744aec9a69b8a8a656486e8b7d3",
   "0c9e7e1f2bc2b81f5bb69aaeff79abc6",
-  "d2145e8579eab64d30e348542ec3a96a"
+  "d2145e8579eab64d30e348542ec3a96a",
+  "7c6d0a39e945a1679f0f84d7b61ffb56"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -357,49 +358,45 @@
   "bigfoot is back in gta 6 and apparently he smells revolting",
   "netflix unveils penélope cruz juan diego botto s domestic violence drama patricia as production gets underway",
   "gta 6 cast list includes potentially huge spoiler so be warned",
-  "jorrybell agoto star of philippines oscar submission filipinana dies at 32"
+  "jorrybell agoto star of philippines oscar submission filipinana dies at 32",
+  "gta 6 release live updates reviews memes and more as gamers explore and react to leonida after 13 long years"
  ],
- "last_post_ts": 1795172107.5962384,
+ "last_post_ts": 1795207017.1120698,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "deadline.com",
   "gamespot.com",
-  "variety.com"
+  "variety.com",
+  "yahootech"
  ],
  "recent_shapes": [
-  "question_hook",
   "cold_open",
-  "receipts"
+  "receipts",
+  "react_split"
  ],
  "recent_photo_ids": [
-  4329870,
-  3709371,
-  6789626,
   8263357,
   10539414,
   27109219,
   15442518,
   3709369,
   6720006,
-  39851565
+  39851565,
+  40084417,
+  40084419,
+  40084421
  ],
  "recent_personas": [
-  "meera",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 178,
+ "post_counter": 179,
  "category_days": {
-  "2026-11-14": {
-   "gaming": 1,
-   "movies": 1,
-   "sports": 1
-  },
   "2026-11-15": {
    "movies": 1
   },
@@ -422,21 +419,28 @@
   "2026-11-20": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-21": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-20",
+ "bengali_date": "2026-11-21",
  "bengali_count": 0,
  "recent_first_words": [
-  "which",
   "right",
-  "the"
+  "the",
+  "drop"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-20",
+ "follow_cta_date": "2026-11-21",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795191356
+ "recent_hooks": [
+  "scale"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
