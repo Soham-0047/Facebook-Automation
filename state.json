@@ -178,7 +178,8 @@
   "e48f7744aec9a69b8a8a656486e8b7d3",
   "0c9e7e1f2bc2b81f5bb69aaeff79abc6",
   "d2145e8579eab64d30e348542ec3a96a",
-  "7c6d0a39e945a1679f0f84d7b61ffb56"
+  "7c6d0a39e945a1679f0f84d7b61ffb56",
+  "122c5b2caa5981c3f4c1fc20bc600870"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -359,28 +360,28 @@
   "netflix unveils penélope cruz juan diego botto s domestic violence drama patricia as production gets underway",
   "gta 6 cast list includes potentially huge spoiler so be warned",
   "jorrybell agoto star of philippines oscar submission filipinana dies at 32",
-  "gta 6 release live updates reviews memes and more as gamers explore and react to leonida after 13 long years"
+  "gta 6 release live updates reviews memes and more as gamers explore and react to leonida after 13 long years",
+  "grammy nominated pop star rei ami to light up las vegas with f1 grid gigs presented by american express"
  ],
- "last_post_ts": 1795207017.1120698,
+ "last_post_ts": 1795257550.477347,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "music"
  ],
  "recent_domains": [
-  "gamespot.com",
   "variety.com",
-  "yahootech"
+  "yahootech",
+  "formulaoneworldchampionshiplimited"
  ],
  "recent_shapes": [
-  "cold_open",
   "receipts",
-  "react_split"
+  "react_split",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  8263357,
   10539414,
   27109219,
   15442518,
@@ -389,13 +390,14 @@
   39851565,
   40084417,
   40084419,
-  40084421
+  40084421,
+  7005685
  ],
  "recent_personas": [
-  "dev",
-  "kabir"
+  "kabir",
+  "riya"
  ],
- "post_counter": 179,
+ "post_counter": 180,
  "category_days": {
   "2026-11-15": {
    "movies": 1
@@ -421,22 +423,24 @@
    "movies": 1
   },
   "2026-11-21": {
-   "gaming": 1
+   "gaming": 1,
+   "music": 1
   }
  },
  "bengali_date": "2026-11-21",
  "bengali_count": 0,
  "recent_first_words": [
-  "right",
   "the",
-  "drop"
+  "drop",
+  "she"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-21",
- "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795249414
+ "follow_ctas_today": 1,
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
