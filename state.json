@@ -179,7 +179,8 @@
   "0c9e7e1f2bc2b81f5bb69aaeff79abc6",
   "d2145e8579eab64d30e348542ec3a96a",
   "7c6d0a39e945a1679f0f84d7b61ffb56",
-  "122c5b2caa5981c3f4c1fc20bc600870"
+  "122c5b2caa5981c3f4c1fc20bc600870",
+  "c60415f4bd219c316ab48db982ed676e"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -361,28 +362,28 @@
   "gta 6 cast list includes potentially huge spoiler so be warned",
   "jorrybell agoto star of philippines oscar submission filipinana dies at 32",
   "gta 6 release live updates reviews memes and more as gamers explore and react to leonida after 13 long years",
-  "grammy nominated pop star rei ami to light up las vegas with f1 grid gigs presented by american express"
+  "grammy nominated pop star rei ami to light up las vegas with f1 grid gigs presented by american express",
+  "actor awards predictions andrew garfield inde navarrette and the odyssey lead an unsettled film race as widow s bay and hbo max could rule tv"
  ],
- "last_post_ts": 1795257550.477347,
+ "last_post_ts": 1795289802.2414913,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "music"
+  "music",
+  "movies"
  ],
  "recent_domains": [
-  "variety.com",
   "yahootech",
-  "formulaoneworldchampionshiplimited"
+  "formulaoneworldchampionshiplimited",
+  "variety.com"
  ],
  "recent_shapes": [
-  "receipts",
   "react_split",
-  "hot_take"
+  "hot_take",
+  "question_hook"
  ],
  "recent_photo_ids": [
-  10539414,
   27109219,
   15442518,
   3709369,
@@ -391,17 +392,15 @@
   40084417,
   40084419,
   40084421,
-  7005685
+  7005685,
+  35844840
  ],
  "recent_personas": [
-  "kabir",
-  "riya"
+  "riya",
+  "dev"
  ],
- "post_counter": 180,
+ "post_counter": 181,
  "category_days": {
-  "2026-11-15": {
-   "movies": 1
-  },
   "2026-11-16": {
    "gaming": 1,
    "movies": 1
@@ -425,21 +424,25 @@
   "2026-11-21": {
    "gaming": 1,
    "music": 1
+  },
+  "2026-11-22": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-21",
+ "bengali_date": "2026-11-22",
  "bengali_count": 0,
  "recent_first_words": [
-  "the",
   "drop",
-  "she"
+  "she",
+  "which"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-21",
+ "follow_cta_date": "2026-11-22",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795274885
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
