@@ -181,7 +181,8 @@
   "7c6d0a39e945a1679f0f84d7b61ffb56",
   "122c5b2caa5981c3f4c1fc20bc600870",
   "c60415f4bd219c316ab48db982ed676e",
-  "536e86896a7712d3f4f75f4bdab41aea"
+  "536e86896a7712d3f4f75f4bdab41aea",
+  "8de8b383f75b68e5d4d7b537e17e57de"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -365,28 +366,28 @@
   "gta 6 release live updates reviews memes and more as gamers explore and react to leonida after 13 long years",
   "grammy nominated pop star rei ami to light up las vegas with f1 grid gigs presented by american express",
   "actor awards predictions andrew garfield inde navarrette and the odyssey lead an unsettled film race as widow s bay and hbo max could rule tv",
-  "a new record for entertainment grand theft auto vi sales hit 3 8bn on first day of release developer says"
+  "a new record for entertainment grand theft auto vi sales hit 3 8bn on first day of release developer says",
+  "noah kahan deserved a lot more grammy love than just one minor nomination here s why he didn t get it"
  ],
- "last_post_ts": 1795344219.9814312,
+ "last_post_ts": 1795377232.851556,
  "recent_categories": [
-  "movies",
   "gaming",
   "music",
   "movies",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "formulaoneworldchampionshiplimited",
   "variety.com",
-  "theguardian.com"
+  "theguardian.com",
+  "variety.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "question_hook",
-  "contrarian"
+  "contrarian",
+  "receipts"
  ],
  "recent_photo_ids": [
-  6720006,
   39851565,
   40084417,
   40084419,
@@ -395,18 +396,15 @@
   35844840,
   10539414,
   31667360,
-  36410693
+  36410693,
+  6532602
  ],
  "recent_personas": [
-  "dev",
-  "ananya"
+  "ananya",
+  "dev"
  ],
- "post_counter": 182,
+ "post_counter": 183,
  "category_days": {
-  "2026-11-16": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-11-17": {
    "music": 1,
    "movies": 1
@@ -430,21 +428,28 @@
   "2026-11-22": {
    "movies": 1,
    "gaming": 1
+  },
+  "2026-11-23": {
+   "movies": 1
   }
  },
- "bengali_date": "2026-11-22",
+ "bengali_date": "2026-11-23",
  "bengali_count": 0,
  "recent_first_words": [
-  "she",
   "which",
-  "everyone's"
+  "everyone's",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-22",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795361330
+ "follow_cta_date": "2026-11-23",
+ "follow_ctas_today": 0,
+ "recent_hooks": [
+  "poll_choice"
+ ],
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
