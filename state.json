@@ -184,7 +184,8 @@
   "536e86896a7712d3f4f75f4bdab41aea",
   "8de8b383f75b68e5d4d7b537e17e57de",
   "fc691d6f80f5540b1b677bb5547fbc28",
-  "a0d9d3fbde1edd45e86214dcf5531987"
+  "a0d9d3fbde1edd45e86214dcf5531987",
+  "77baeb2b626290c150f61c667a799ba1"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -371,28 +372,28 @@
   "a new record for entertainment grand theft auto vi sales hit 3 8bn on first day of release developer says",
   "noah kahan deserved a lot more grammy love than just one minor nomination here s why he didn t get it",
   "grand theft auto vi sets record with 3 79b in first day retail sales rockstar games reports",
-  "ted lasso renewed for season 5"
+  "ted lasso renewed for season 5",
+  "marvel unveils final avengers doomsday trailer steve rogers returns alongside x men"
  ],
- "last_post_ts": 1795478965.9963486,
+ "last_post_ts": 1795526241.8831735,
  "recent_categories": [
-  "movies",
   "gaming",
   "movies",
   "gaming",
-  "viral"
+  "viral",
+  "movies"
  ],
  "recent_domains": [
-  "variety.com",
   "ksl",
-  "timesofindia.indiatimes.com"
+  "timesofindia.indiatimes.com",
+  "connectgujarat-"
  ],
  "recent_shapes": [
-  "receipts",
   "hot_take",
-  "react_split"
+  "react_split",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  40084421,
   7005685,
   35844840,
   10539414,
@@ -401,13 +402,14 @@
   6532602,
   15442518,
   27062308,
-  36448444
+  36448444,
+  15213183
  ],
  "recent_personas": [
-  "meera",
-  "dev"
+  "dev",
+  "ananya"
  ],
- "post_counter": 185,
+ "post_counter": 186,
  "category_days": {
   "2026-11-18": {
    "gaming": 1,
@@ -434,22 +436,24 @@
    "gaming": 1
   },
   "2026-11-24": {
-   "viral": 1
+   "viral": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-24",
  "bengali_count": 1,
  "recent_first_words": [
-  "just",
   "gta",
-  "drop"
+  "drop",
+  "everyone"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-24",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795518573
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
