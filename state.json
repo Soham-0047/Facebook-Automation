@@ -185,7 +185,8 @@
   "8de8b383f75b68e5d4d7b537e17e57de",
   "fc691d6f80f5540b1b677bb5547fbc28",
   "a0d9d3fbde1edd45e86214dcf5531987",
-  "77baeb2b626290c150f61c667a799ba1"
+  "77baeb2b626290c150f61c667a799ba1",
+  "7dec224a6ef195909cd394f01c25ceb6"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -373,28 +374,28 @@
   "noah kahan deserved a lot more grammy love than just one minor nomination here s why he didn t get it",
   "grand theft auto vi sets record with 3 79b in first day retail sales rockstar games reports",
   "ted lasso renewed for season 5",
-  "marvel unveils final avengers doomsday trailer steve rogers returns alongside x men"
+  "marvel unveils final avengers doomsday trailer steve rogers returns alongside x men",
+  "cyberpunk 2 creative director says he s suffering from gta 6 induced open world game dev depression jokes that cyberpunk 2 is cancelled"
  ],
- "last_post_ts": 1795526241.8831735,
+ "last_post_ts": 1795559992.461348,
  "recent_categories": [
-  "gaming",
   "movies",
   "gaming",
   "viral",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "ksl",
   "timesofindia.indiatimes.com",
-  "connectgujarat-"
+  "connectgujarat-",
+  "pcgamer.com"
  ],
  "recent_shapes": [
-  "hot_take",
   "react_split",
-  "contrarian"
+  "contrarian",
+  "receipts"
  ],
  "recent_photo_ids": [
-  7005685,
   35844840,
   10539414,
   31667360,
@@ -403,18 +404,15 @@
   15442518,
   27062308,
   36448444,
-  15213183
+  15213183,
+  6720006
  ],
  "recent_personas": [
-  "dev",
-  "ananya"
+  "ananya",
+  "kabir"
  ],
- "post_counter": 186,
+ "post_counter": 187,
  "category_days": {
-  "2026-11-18": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-11-19": {
    "gaming": 1,
    "movies": 1
@@ -438,21 +436,25 @@
   "2026-11-24": {
    "viral": 1,
    "movies": 1
+  },
+  "2026-11-25": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-24",
- "bengali_count": 1,
+ "bengali_date": "2026-11-25",
+ "bengali_count": 0,
  "recent_first_words": [
-  "gta",
   "drop",
-  "everyone"
+  "everyone",
+  "just"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-24",
+ "follow_cta_date": "2026-11-25",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795546727
+ "recent_formats": [
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
