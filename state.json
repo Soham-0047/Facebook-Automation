@@ -183,7 +183,8 @@
   "c60415f4bd219c316ab48db982ed676e",
   "536e86896a7712d3f4f75f4bdab41aea",
   "8de8b383f75b68e5d4d7b537e17e57de",
-  "fc691d6f80f5540b1b677bb5547fbc28"
+  "fc691d6f80f5540b1b677bb5547fbc28",
+  "a0d9d3fbde1edd45e86214dcf5531987"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -369,29 +370,28 @@
   "actor awards predictions andrew garfield inde navarrette and the odyssey lead an unsettled film race as widow s bay and hbo max could rule tv",
   "a new record for entertainment grand theft auto vi sales hit 3 8bn on first day of release developer says",
   "noah kahan deserved a lot more grammy love than just one minor nomination here s why he didn t get it",
-  "grand theft auto vi sets record with 3 79b in first day retail sales rockstar games reports"
+  "grand theft auto vi sets record with 3 79b in first day retail sales rockstar games reports",
+  "ted lasso renewed for season 5"
  ],
- "last_post_ts": 1795434489.3664699,
+ "last_post_ts": 1795478965.9963486,
  "recent_categories": [
-  "music",
   "movies",
   "gaming",
   "movies",
-  "gaming"
+  "gaming",
+  "viral"
  ],
  "recent_domains": [
-  "theguardian.com",
   "variety.com",
-  "ksl"
+  "ksl",
+  "timesofindia.indiatimes.com"
  ],
  "recent_shapes": [
-  "contrarian",
   "receipts",
-  "hot_take"
+  "hot_take",
+  "react_split"
  ],
  "recent_photo_ids": [
-  40084417,
-  40084419,
   40084421,
   7005685,
   35844840,
@@ -399,18 +399,16 @@
   31667360,
   36410693,
   6532602,
-  15442518
+  15442518,
+  27062308,
+  36448444
  ],
  "recent_personas": [
-  "dev",
-  "meera"
+  "meera",
+  "dev"
  ],
- "post_counter": 184,
+ "post_counter": 185,
  "category_days": {
-  "2026-11-17": {
-   "music": 1,
-   "movies": 1
-  },
   "2026-11-18": {
    "gaming": 1,
    "movies": 1
@@ -434,21 +432,26 @@
   "2026-11-23": {
    "movies": 1,
    "gaming": 1
+  },
+  "2026-11-24": {
+   "viral": 1
   }
  },
- "bengali_date": "2026-11-23",
- "bengali_count": 0,
+ "bengali_date": "2026-11-24",
+ "bengali_count": 1,
  "recent_first_words": [
-  "everyone's",
   "just",
-  "gta"
+  "gta",
+  "drop"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-23",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795461740
+ "follow_cta_date": "2026-11-24",
+ "follow_ctas_today": 0,
+ "recent_formats": [
+  "square",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
