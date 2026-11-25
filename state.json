@@ -186,7 +186,8 @@
   "fc691d6f80f5540b1b677bb5547fbc28",
   "a0d9d3fbde1edd45e86214dcf5531987",
   "77baeb2b626290c150f61c667a799ba1",
-  "7dec224a6ef195909cd394f01c25ceb6"
+  "7dec224a6ef195909cd394f01c25ceb6",
+  "969c100ea6c4fd330946a28e388766fe"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -375,28 +376,28 @@
   "grand theft auto vi sets record with 3 79b in first day retail sales rockstar games reports",
   "ted lasso renewed for season 5",
   "marvel unveils final avengers doomsday trailer steve rogers returns alongside x men",
-  "cyberpunk 2 creative director says he s suffering from gta 6 induced open world game dev depression jokes that cyberpunk 2 is cancelled"
+  "cyberpunk 2 creative director says he s suffering from gta 6 induced open world game dev depression jokes that cyberpunk 2 is cancelled",
+  "avengers doomsday final trailer is disney s most watched ever"
  ],
- "last_post_ts": 1795559992.461348,
+ "last_post_ts": 1795608471.5528119,
  "recent_categories": [
-  "movies",
   "gaming",
   "viral",
   "movies",
-  "gaming"
+  "gaming",
+  "viral"
  ],
  "recent_domains": [
-  "timesofindia.indiatimes.com",
   "connectgujarat-",
-  "pcgamer.com"
+  "pcgamer.com",
+  "tempo.coenglish"
  ],
  "recent_shapes": [
-  "react_split",
   "contrarian",
-  "receipts"
+  "receipts",
+  "mini_story"
  ],
  "recent_photo_ids": [
-  35844840,
   10539414,
   31667360,
   36410693,
@@ -405,13 +406,14 @@
   27062308,
   36448444,
   15213183,
-  6720006
+  6720006,
+  8263314
  ],
  "recent_personas": [
-  "ananya",
-  "kabir"
+  "kabir",
+  "arjun"
  ],
- "post_counter": 187,
+ "post_counter": 188,
  "category_days": {
   "2026-11-19": {
    "gaming": 1,
@@ -438,22 +440,24 @@
    "movies": 1
   },
   "2026-11-25": {
-   "gaming": 1
+   "gaming": 1,
+   "viral": 1
   }
  },
  "bengali_date": "2026-11-25",
  "bengali_count": 0,
  "recent_first_words": [
-  "drop",
   "everyone",
-  "just"
+  "just",
+  "fans"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-25",
- "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795600598
+ "follow_ctas_today": 1,
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
