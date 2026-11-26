@@ -1,13 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.11
+TRENDING & ENTERTAINMENT NEWS - FACEBOOK PAGE BOT  .  v5.12
 =========================================================
 Single-file bot: fetches worldwide trending + entertainment news (movies,
 music, TV, sports, celebs, gaming, viral moments, space, tech launches) from
 many free sources, scores it, writes a human-sounding post (English + optional
 Bengali companion), renders a designed 1080x1350 image card with impressive
 photography, and publishes to a Facebook Page.
+
+WHAT'S NEW IN v5.12 (curated real photos - creative crops, vetted reuse)
+  CREATIVE COMPOSITION CROP (every photo, every card)
+    * _smart_crop now rotates three editor styles instead of one static
+      rule: CLASSIC (energy window, soft center pull), THIRDS (the salient
+      subject lands on a rule-of-thirds line - magazine composition), and
+      PUNCH (an 10-20% zoom INTO the energy peak for drama). The feed stops
+      looking like a center-crop template and starts looking edited.
+  APPEAL-SCORED SELECTION (only photos that earn the scroll)
+    * _photo_appeal() scores every downloaded candidate 0-1: colour
+      vividness + edge energy (is anything HAPPENING in the frame?) +
+      subject concentration (a peaked energy map = one clear hero subject,
+      a flat map = clutter or empty wall), minus exposure extremes.
+      The best-scoring candidate feeds the card; dull ones never do.
+  PHOTO VAULT (search online once, reuse the winners)
+    * Every candidate scoring >= 0.62 (top ~third of real photos) is
+      remembered in state.photo_vault (id, url, appeal; 24 entries, 21-day
+      freshness). When a later search comes back empty or weak, the bot
+      re-downloads a previously vetted winner instead of falling to a
+      text-only designer card.
+  REALISM FIRST (the user asked: less AI feel, more realistic)
+    * AI image share 18% -> 8%: real Pexels photography is the product.
+    * The rare AI card now asks for candid press photography (35mm DSLR,
+      natural light, film grain, unposed) instead of 'hyperdetailed 8k
+      HDR masterpiece' - and gets a gentler finish pass to match.
+    * 8 new creative query modifiers (backlit, reflection, sunburst...)
+      so the photo search itself pulls more striking frames.
+  Earlier: v5.11 (magazine/polaroid/newspaper looks), v5.10 (eye-catching
+  overdrive), v5.9 (genuine voice), v5.8 (AI image engine), v5.7
+  (engagement engine), v5.6 (worldwide pivot + NSFW firewall).
 
 WHAT'S NEW IN v5.11 (totally new looks - real, human, zero AI tells)
   THREE BRAND-NEW CARD FAMILIES (1 in 3.7 posts each, alternating with the
@@ -153,7 +183,7 @@ try:
 except Exception:
     TRAFILATURA_OK = False
 
-VERSION = "5.11"
+VERSION = "5.12"
 
 # ------------------------------------------------------------------ paths & tz
 BASE_DIR = Path(__file__).resolve().parent if "__file__" in globals() else Path.cwd()
@@ -237,9 +267,10 @@ TEMPLATE_CAPTION_FALLBACK = _env_bool("TEMPLATE_CAPTION_FALLBACK", True)
 # a unique AI-generated illustration no other page can repost. Any AI failure
 # (rate limit, timeout, NSFW filter) silently falls back to the stock flow.
 AI_IMAGE_ENABLED = _env_bool("AI_IMAGE_ENABLED", True)
-# v5.11: real photos first - unique AI art is the occasional spice (18%),
-# not the default. Raise via env var if the pendulum should swing back.
-AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.18)
+# v5.12: realism first - AI art is down to a rare accent (~1 card in 12,
+# about one every 3 days). Real Pexels photography is the product; the
+# vault covers search failures. Raise via env if ever needed again.
+AI_IMAGE_PROBABILITY = _env_float("AI_IMAGE_PROBABILITY", 0.08)
 AI_IMAGE_TIMEOUT = _env_int("AI_IMAGE_TIMEOUT", 90)
 AI_IMAGE_RETRY_WAIT = _env_int("AI_IMAGE_RETRY_WAIT", 32)   # anon tier: 1 img/30s
 AI_IMAGE_MODEL = (os.getenv("AI_IMAGE_MODEL") or "flux").strip() or "flux"
@@ -844,6 +875,8 @@ def _default_state() -> dict:
         "recent_domains": [],     # last 3 posted domains
         "recent_shapes": [],      # last 3 post shapes used
         "recent_photo_ids": [],   # last 10 Pexels photo ids (feed never repeats a photo)
+        "photo_vault": [],         # v5.12: hand-vetted winning photos (id/url/appeal)
+                                    # reused when a fresh search comes back weak
         "recent_personas": [],    # last persona id
         "post_counter": 0,        # drives shape / card-variant rotation
         "category_days": {},      # v5.4: {"2026-09-10": {"funding": 2, ...}} daily topic counts
@@ -3411,10 +3444,39 @@ def _best_window(energy, win, center_bias=0.15, center=0.5):
     return best
 
 
+def _energy_centroid(profile):
+    """Weighted mean index of a 1-D energy profile (0..len-1) - the 'where is
+    the subject' estimate that powers the v5.12 creative crops."""
+    total = sum(profile)
+    if total <= 0:
+        return len(profile) / 2.0
+    return sum(i * e for i, e in enumerate(profile)) / total
+
+
+# v5.12 creative crop styles, weighted: classic 50% / thirds 25% / punch 25%.
+# Overridable for tests and QA renders (_CROP_STYLE_OVERRIDE).
+_CROP_STYLES = ("classic", "classic", "thirds", "punch")
+_CROP_STYLE_OVERRIDE = None
+
+
+def _pick_crop_style():
+    return _CROP_STYLE_OVERRIDE or random.choice(_CROP_STYLES)
+
+
+def _px_centroid(profile, work_n, src_n):
+    """Map the energy centroid from the downscaled profile to source pixels."""
+    c = _energy_centroid(profile)
+    return max(0.0, min(float(src_n - 1), c * src_n / max(1.0, work_n)))
+
+
 def _smart_crop(img, tw, th):
-    """v5.4: entropy-aware crop. Instead of blind center + top-bias, we measure
-    edge energy on a downscaled grayscale and keep the busiest region, with a
-    soft center pull for stability. Falls back to the v5.3 crop on any error."""
+    """v5.12 CREATIVE COMPOSITION CROP. One static rule made every feed photo
+    read like a template; three rotating editor styles fix that:
+      classic - v5.4 energy window with the soft center pull (the safe look)
+      thirds  - the salient subject lands on a rule-of-thirds line, the way a
+                magazine photo editor frames a hero shot
+      punch   - an 10-20% zoom INTO the energy peak for a dramatic close-up
+    Falls back to the v5.3 crop on any error."""
     w, h = img.size
     target = tw / th
     try:
@@ -3422,22 +3484,53 @@ def _smart_crop(img, tw, th):
         work_h = max(8, int(round(h * work_w / w)))
         small = img.convert("L").resize((work_w, work_h))
         col, row = _entropy_profile(small)
-        if w / h > target:          # too wide -> best x window
+        style = _pick_crop_style()
+        if w / h > target:          # too wide -> choose the x window
             nw = int(round(h * target))
             if nw >= w:
                 return img
-            win = max(1, int(round(work_h * target)))
-            s = _best_window(col, win, center_bias=0.15, center=0.5)
-            x0 = int(round(s * w / work_w))
+            if style == "thirds":
+                cx = _px_centroid(col, work_w, w)
+                slot = (1.0 / 3.0) if cx <= w / 2.0 else (2.0 / 3.0)
+                x0 = int(round(cx - slot * nw))
+            elif style == "punch":
+                nh = max(1, int(round(h * random.uniform(0.80, 0.90))))
+                nz = max(1, int(round(nh * target)))
+                cx = _px_centroid(col, work_w, w)
+                cy = _px_centroid(row, work_h, h)
+                x0 = int(round(cx - nz / 2.0))
+                y0 = int(round(cy - nh * 0.42))      # slight upper bias
+                x0 = max(0, min(w - nz, x0))
+                y0 = max(0, min(h - nh, y0))
+                return img.crop((x0, y0, x0 + nz, y0 + nh))
+            else:
+                win = max(1, int(round(work_h * target)))
+                s = _best_window(col, win, center_bias=0.15, center=0.5)
+                x0 = int(round(s * w / work_w))
             x0 = max(0, min(w - nw, x0))
             return img.crop((x0, 0, x0 + nw, h))
-        if w / h < target:          # too tall -> best y window, upper-middle lean
+        if w / h < target:          # too tall -> choose the y window
             nh = int(round(w / target))
             if nh >= h:
                 return img
-            win = max(1, int(round(work_w / target)))
-            s = _best_window(row, win, center_bias=0.25, center=0.38)
-            y0 = int(round(s * h / work_h))
+            if style == "thirds":
+                cy = _px_centroid(row, work_h, h)
+                slot = random.choice((0.34, 0.42))   # subject above the text
+                y0 = int(round(cy - slot * nh))
+            elif style == "punch":
+                nz = max(1, int(round(w * random.uniform(0.80, 0.90))))
+                nhz = max(1, int(round(nz / target)))
+                cx = _px_centroid(col, work_w, w)
+                cy = _px_centroid(row, work_h, h)
+                x0 = int(round(cx - nz * ((1.0 / 3.0) if cx <= w / 2.0 else (2.0 / 3.0))))
+                y0 = int(round(cy - nhz / 2.0))
+                x0 = max(0, min(w - nz, x0))
+                y0 = max(0, min(h - nhz, y0))
+                return img.crop((x0, y0, x0 + nz, y0 + nhz))
+            else:
+                win = max(1, int(round(work_w / target)))
+                s = _best_window(row, win, center_bias=0.25, center=0.38)
+                y0 = int(round(s * h / work_h))
             y0 = max(0, min(h - nh, y0))
             return img.crop((0, y0, w, y0 + nh))
         return img
@@ -3556,6 +3649,45 @@ def _vividness(img):
         return 0.5
 
 
+def _photo_appeal(img):
+    """v5.12 SCROLL-STOPPER SCORE (0..1) - the 'would a human photo editor pick
+    this frame?' gate. Blends three signals off one 96x96 thumbnail:
+      * colour vividness  - dull grey frames never stop a thumb
+      * edge energy       - is anything HAPPENING in the frame (detail, texture,
+                            action) or is it an empty wall / smooth sky
+      * subject clarity   - a peaked 6x6 energy map means one clear hero
+                            subject; a flat map means clutter or nothing at all
+    Exposure extremes (mud-black / blown-white) are penalised. Every
+    downloaded Pexels candidate is scored; only the best feeds the card, and
+    0.62+ winners are remembered in the photo vault for reuse."""
+    try:
+        small = img.convert("RGB").resize((96, 96))
+        grey = small.convert("L")
+        sat = ImageStat.Stat(small.convert("HSV").split()[1]).mean[0] / 255.0
+        con = ImageStat.Stat(grey).stddev[0] / 128.0
+        lum = ImageStat.Stat(grey).mean[0]
+        vivid = min(1.0, (sat * 1.4 + min(con, 0.5)) / 0.9)
+        edges = grey.filter(ImageFilter.FIND_EDGES)
+        px = list(edges.getdata())
+        energy = sum(px) / max(1, len(px)) / 255.0
+        # subject clarity: coefficient of variation across 6x6 edge-energy
+        # tiles (16px tiles on the 96px thumb)
+        tiles = [0.0] * 36
+        for i, v in enumerate(px):
+            tiles[(i // 96 // 16) * 6 + (i % 96) // 16] += v
+        tmean = sum(tiles) / 36.0
+        tstd = (sum((t - tmean) ** 2 for t in tiles) / 36.0) ** 0.5
+        clarity = min(1.0, (tstd / tmean) / 1.1) if tmean > 1.0 else 0.0
+        score = 0.40 * vivid + 0.33 * min(1.0, energy * 2.6) + 0.27 * clarity
+        if lum < 46:
+            score -= 0.16          # murky - reads as a dark blob in the feed
+        elif lum > 216:
+            score -= 0.08          # blown out - flat and lifeless
+        return max(0.0, min(1.0, score))
+    except Exception:
+        return 0.5
+
+
 def _zone_luma(img, y0f=0.55, y1f=0.95) -> float:
     """v5.4: mean luminance (0-255) of a horizontal band of the photo.
     Used to strengthen the scrim when the text zone is bright and soften it
@@ -3606,7 +3738,11 @@ _HINT_REGEX_CACHE = None
 # identical photos day after day (the "every card looks the same" killer).
 _QUERY_MODIFIERS = ["", " dramatic", " cinematic", " night", " aerial", " neon",
                     " closeup", " bokeh", " golden hour", " spotlight",
-                    " silhouette", " storm"]
+                    " silhouette", " storm",
+                    # v5.12: fresh creative angles so the search itself pulls
+                    # more striking, editor-pick frames
+                    " backlit", " moody", " reflection", " sunburst",
+                    " macro", " long exposure", " high contrast", " wide angle"]
 
 
 def _image_queries_for(art):
@@ -3637,9 +3773,14 @@ def _image_queries_for(art):
     return dedup[:7]
 
 
-def _download_photo(p):
+def _photo_src_url(p):
+    """Best download URL of a Pexels search result (also stored in the vault)."""
     src = p.get("src") or {}
-    url = src.get("large2x") or src.get("large") or src.get("original")
+    return src.get("large2x") or src.get("large") or src.get("original")
+
+
+def _download_photo(p):
+    url = _photo_src_url(p)
     if not url:
         return None
     try:
@@ -3652,6 +3793,82 @@ def _download_photo(p):
 
 
 # ==========================================================================
+# v5.12 PHOTO VAULT - search online once, crop and reuse the winners
+# ==========================================================================
+# Appeal-scored candidates >= VAULT_MIN_APPEAL are remembered here (url +
+# score). When a later Pexels search comes back empty or weak, the bot
+# re-downloads a previously vetted winner instead of degrading to a text-only
+# designer card - the feed keeps its photography even on bad search days.
+# Freshness matters in news, so entries expire after 21 days.
+VAULT_MAX = 24
+VAULT_MIN_APPEAL = 0.62      # top ~third of real photos - 'really creative only'
+VAULT_MAX_AGE_DAYS = 21
+
+
+def _vault_remember(state, metas):
+    """Store vault-worthy photo metadata on the state dict (never raises)."""
+    if not state:
+        return
+    try:
+        vault = {}
+        for e in (state.get("photo_vault") or []):
+            if e and e.get("id") is not None and e.get("url"):
+                vault[int(e["id"])] = e
+        now = time.time()
+        for m in metas or []:
+            if not m or not m.get("url") or m.get("id") is None:
+                continue
+            if (m.get("appeal") or 0.0) < VAULT_MIN_APPEAL:
+                continue
+            vault[int(m["id"])] = {"id": m.get("id"), "url": m.get("url"),
+                                   "w": m.get("w"), "h": m.get("h"),
+                                   "photographer": m.get("photographer") or "Pexels",
+                                   "appeal": round(float(m.get("appeal") or 0.0), 3),
+                                   "ts": int(now)}
+        fresh = [e for e in vault.values()
+                 if now - float(e.get("ts") or 0) < VAULT_MAX_AGE_DAYS * 86400]
+        fresh.sort(key=lambda e: e.get("appeal") or 0.0, reverse=True)
+        state["photo_vault"] = fresh[:VAULT_MAX]
+    except Exception as e:
+        log.debug("vault remember failed: %s", e)
+
+
+def _download_url_photo(url):
+    """Re-download a vaulted photo straight from its stored URL."""
+    if not url:
+        return None
+    try:
+        data = _http_get_bytes(url, timeout=25)
+        if not data:
+            return None
+        return Image.open(io.BytesIO(data)).convert("RGB")
+    except Exception:
+        return None
+
+
+def _vault_recall(state, avoid_ids=None):
+    """Best vaulted winner not used recently -> (img, photographer, id) or
+    None. Tried only after a fresh search fails - 'reuse the really good
+    ones' instead of shipping a text-only card."""
+    if not state:
+        return None
+    avoid = set(avoid_ids or ())
+    try:
+        for e in (state.get("photo_vault") or []):
+            pid = e.get("id")
+            if pid is None or pid in avoid:
+                continue
+            img = _download_url_photo(e.get("url"))
+            if img is not None:
+                log.info("Photo vault: reusing vetted winner (id=%s, appeal=%.2f)",
+                         pid, float(e.get("appeal") or 0.0))
+                return (img, e.get("photographer") or "Pexels", pid)
+    except Exception as e:
+        log.debug("vault recall failed: %s", e)
+    return None
+
+
+# ==========================================================================
 # v5.8 AI IMAGE ENGINE - Pollinations / FLUX (free, keyless, open source)
 # ==========================================================================
 # Why: stock photos look great but every page on Facebook can use the same
@@ -3661,28 +3878,30 @@ def _download_photo(p):
 # the free tier, so at most one retry after a short wait, and every failure
 # path falls straight back to the stock-photo flow. Zero new failure surface.
 AI_PROMPT_STYLES = {
+    # v5.12: every bank now asks for PHOTOGRAPHY, not concept art - the rare
+    # AI card must sit next to real Pexels shots without an AI tell.
     "movies":  "cinematic movie still, dramatic key lighting, moody color grade, "
-              "anamorphic lens flare, film grain, epic atmosphere",
-    "music":   "concert photography, stage lights and haze, lens flares, ecstatic "
-              "crowd energy, editorial magazine cover composition",
-    "sports":  "epic sports photography frozen at peak action, stadium floodlights, "
-              "grass and sweat flying, shallow depth of field, sports-poster energy",
-    "gaming":  "stylized video game key art, neon rim lighting, dramatic sci-fi "
-              "environment, highly detailed digital illustration concept art",
+              "anamorphic lens flare, 35mm film grain",
+    "music":   "live concert photography, stage lights and haze, ecstatic crowd "
+              "energy, telephoto compression, press-shoot vantage point",
+    "sports":  "sports photojournalism frozen at peak action, stadium floodlights, "
+              "grass flying, shallow depth of field, long-lens compression",
+    "gaming":  "esports arena photography, pro player at the rig, LED wall glow, "
+              "real venue atmosphere, telephoto crowd compression",
     "space":   "breathtaking deep-space photography, glowing nebula, star field, "
               "distant planet on the horizon, telescope imagery, cosmic scale",
-    "tech":    "sleek premium product photography, studio lighting on a dark stage, "
-              "glass and brushed metal reflections, minimalist tech aesthetic",
-    "celebs":  "editorial paparazzi-style photograph, dramatic backlight, "
-              "red-carpet atmosphere, glossy magazine finish",
+    "tech":    "premium product photography, studio lighting on a dark stage, "
+              "glass and brushed metal reflections, macro detail",
+    "celebs":  "editorial paparazzi-style photograph, dramatic backlight, candid "
+              "red-carpet moment, telephoto compression",
     "tv":      "cinematic TV series still, golden-hour interior light, "
               "prestige-drama color grade, rich production design",
-    "odd":     "hyper-dramatic nature documentary still, golden hour, epic landscape "
-              "scale, David Attenborough energy",
+    "odd":     "nature documentary photography, golden hour, epic landscape "
+              "scale, deep depth of field",
     "viral":   "vibrant slice-of-life photograph, decisive moment, rich candid "
               "color, photojournalism composition",
-    "wow":     "hyper-dramatic nature documentary still, golden hour light, epic "
-              "scale, once-in-a-lifetime moment, National Geographic cover energy",
+    "wow":     "dramatic nature photography, golden hour light, epic scale, "
+              "once-in-a-lifetime frame, telephoto reach",
     "general": "award-winning editorial photograph, dramatic lighting, rich "
               "cinematic color, dynamic composition",
 }
@@ -3704,15 +3923,18 @@ _AI_LIGHT_KEYS = [
     "dramatic storm lighting",
     "soft spotlight in the dark",
 ]
-_AI_NEGATIVES = "no text, no words, no letters, no numbers, no watermark, no logo, no caption, no border"
+_AI_NEGATIVES = ("no text, no words, no letters, no numbers, no watermark, no logo, "
+                 "no caption, no border, no illustration, no CGI, no 3d render, "
+                 "no painting, no oversaturation, no plastic skin")
 
 
 def _ai_image_prompt(art):
     """Build the FLUX prompt from the headline. Returns None when the text is
     unsafe (NSFW firewall) or too thin - the stock flow then handles the card.
     Both the source headline and the finished prompt pass _is_explicit.
-    v5.10: poster-grade finishers (hyperdetailed, 8k, HDR, vibrant saturated
-    colour) so every generation lands as a scroll-stopper."""
+    v5.12 REALISM FIRST: finishers ask for candid press photography (35mm
+    DSLR, natural light, film grain, unposed) - the rare AI card must sit
+    beside real Pexels photos without an AI tell."""
     try:
         base = _card_headline(art.title or "")
     except Exception:
@@ -3725,9 +3947,9 @@ def _ai_image_prompt(art):
         return None                    # firewall gate 1: never send NSFW to the model
     style = AI_PROMPT_STYLES.get(art.category, AI_PROMPT_STYLES["general"])
     prompt = (f"{subj}. {random.choice(_AI_FLAVOR_SHOTS)}, {random.choice(_AI_LIGHT_KEYS)}, "
-              f"{style}, vertical 4:5 composition, hyperdetailed, 8k UHD, high dynamic "
-              f"range, vibrant saturated colour, award-winning professional photography, "
-              f"dramatic composition, photorealistic masterpiece. {_AI_NEGATIVES}")
+              f"{style}, vertical 4:5 composition, candid press photograph, natural "
+              f"light, realistic true-to-life colour, shot on a 35mm DSLR, f/2.8, "
+              f"subtle film grain, unposed documentary feel. {_AI_NEGATIVES}")
     if len(prompt) > 620:
         prompt = prompt[:617].rstrip() + "..."
     if _is_explicit(prompt):
@@ -3738,13 +3960,14 @@ def _ai_image_prompt(art):
 def _ai_finish(img):
     """Pollinations' anonymous tier returns ~686x858 - upscale to the card
     canvas with LANCZOS + a light unsharp so small text overlays stay crisp.
-    v5.10: stronger pop - generated art must look like a poster, not a sketch."""
+    v5.12 REALISM PASS: gentle values that match the real-photo pipeline -
+    heavy unsharp/color-pop is exactly what stamps 'AI' on a card."""
     if img.size != (CARD_W, CARD_H):
         img = img.resize((CARD_W, CARD_H), _RESAMPLE.LANCZOS)
     try:
-        img = img.filter(ImageFilter.UnsharpMask(radius=2.6, percent=82, threshold=2))
-        img = ImageEnhance.Color(img).enhance(1.16)
-        img = ImageEnhance.Contrast(img).enhance(1.06)
+        img = img.filter(ImageFilter.UnsharpMask(radius=1.6, percent=55, threshold=2))
+        img = ImageEnhance.Color(img).enhance(1.06)
+        img = ImageEnhance.Contrast(img).enhance(1.02)
     except Exception:
         pass
     return img
@@ -3844,15 +4067,29 @@ def _pick_photo_pool(art, avoid_ids=None, want=4):
                                  futs[f].get("id")))
         if not cand:
             continue
-        cand.sort(key=lambda c: _vividness(c[0]), reverse=True)
-        # v5.10: dull grey candidates are dropped when livelier ones exist -
-        # eye-catching starts at photo selection, not at the retoucher
-        if len(cand) > 1:
-            livelier = [c for c in cand if _vividness(c[0]) >= 0.30]
+        # v5.12 APPEAL-SCORED SELECTION: every candidate gets the 0-1
+        # scroll-stopper score; the winner feeds the card, dull frames are
+        # dropped when livelier ones exist, and 0.58+ winners become
+        # vault-eligible (meta rides on the image object - tuples stay 3-wide)
+        by_id = {p.get("id"): p for p in futs.values()}
+        scored = []
+        for img, credit, pid in cand:
+            appeal = _photo_appeal(img)
+            try:
+                img._pexels_meta = {"id": pid, "url": _photo_src_url(by_id.get(pid) or {}),
+                                    "w": img.width, "h": img.height,
+                                    "photographer": credit, "appeal": round(appeal, 3)}
+            except Exception:
+                pass
+            scored.append((appeal, img, credit, pid))
+        scored.sort(key=lambda s: s[0], reverse=True)
+        if len(scored) > 1:
+            livelier = [s for s in scored if s[0] >= 0.34]
             if livelier:
-                cand = livelier
-        log.info("Photo pool for query '%s' (%d candidates)", query, len(cand))
-        return cand[:max(1, int(want))]
+                scored = livelier
+        log.info("Photo pool for query '%s': %d candidates, best appeal %.2f",
+                 query, len(scored), scored[0][0] if scored else 0.0)
+        return [(img, credit, pid) for _a, img, credit, pid in scored[:max(1, int(want))]]
     return []
 
 
@@ -4926,6 +5163,17 @@ def render_card(art, state=None, bengali=False, card_headline=None, badge=None):
             log.debug("photo pick failed: %s", e)
         if pool:
             photo = pool[0]
+            # v5.12: remember the appeal-scored winners - a weak search day
+            # later reuses a vetted photo instead of shipping a text-only card
+            if state is not None:
+                _vault_remember(state, [getattr(c[0], "_pexels_meta", None) for c in pool])
+        elif state is not None:
+            # v5.12 PHOTO VAULT: fresh search came back empty - re-download a
+            # previously vetted winner (cropped fresh, so it never repeats)
+            try:
+                photo = _vault_recall(state, avoid)
+            except Exception as e:
+                log.debug("vault recall failed: %s", e)
     # tell _enhance_photo what it is enhancing (AI art skips the extra grade)
     _CURRENT_PHOTO_KIND["kind"] = "ai" if (photo is not None and photo[2] is None) else "stock"
     # v5.8 transparency: AI-generated cards carry the label right on the art

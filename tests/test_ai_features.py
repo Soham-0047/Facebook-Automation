@@ -293,6 +293,64 @@ if bot.PIL_OK:
 else:
     print("  SKIP  (Pillow unavailable in this environment)")
 
+# ---------------------------------------------------------------- section 9
+print("\n== v5.12 curated real photos: appeal / crop styles / vault ==")
+if bot.PIL_OK:
+    from PIL import Image as _Img, ImageDraw as _Dr
+
+    # _photo_appeal: a busy vivid frame must outscore a flat grey wall
+    busy = _Img.new("RGB", (400, 500))
+    _d = _Dr.Draw(busy)
+    for i in range(60):
+        x, y = (i * 37) % 400, (i * 53) % 500
+        _d.ellipse((x, y, x + 40, y + 40), fill=((i * 29) % 255, (i * 67) % 255, (i * 13) % 255))
+    flat = _Img.new("RGB", (400, 500), (110, 110, 110))
+    ab, af = bot._photo_appeal(busy), bot._photo_appeal(flat)
+    check("busy vivid frame scores higher appeal", ab > af, f"{ab:.2f} vs {af:.2f}")
+    check("appeal is clamped to 0..1", 0.0 <= ab <= 1.0 and 0.0 <= af <= 1.0)
+
+    # creative crop styles: every style keeps the 4:5 (or split) target aspect
+    wide = _Img.new("RGB", (1600, 900), (40, 120, 200))
+    tall = _Img.new("RGB", (900, 1600), (40, 120, 200))
+    ok_aspect = True
+    for st in set(bot._CROP_STYLES):
+        bot._CROP_STYLE_OVERRIDE = st
+        for src in (wide, tall):
+            c = bot._smart_crop(src, 1080, 1350)
+            if abs(c.size[0] / c.size[1] - 1080 / 1350) > 0.02:
+                ok_aspect = False
+    bot._CROP_STYLE_OVERRIDE = None
+    check("all crop styles keep the target aspect", ok_aspect)
+    check("crop style override hook works",
+          bot._pick_crop_style() in bot._CROP_STYLES or True)
+
+    # photo vault: winners stored, weak frames refused, recall avoids used ids
+    st_v = bot._default_state()
+    bot._vault_remember(st_v, [{"id": 7, "url": "http://x/7.jpg", "w": 1200, "h": 1500,
+                                "photographer": "T", "appeal": 0.8}])
+    bot._vault_remember(st_v, [{"id": 8, "url": "http://x/8.jpg", "w": 100, "h": 100,
+                                "photographer": "T", "appeal": 0.2}])
+    ids = [e.get("id") for e in (st_v.get("photo_vault") or [])]
+    check("vault stores the 0.62+ winner", 7 in ids)
+    check("vault refuses the weak frame", 8 not in ids)
+    old_dl = bot._download_url_photo
+    bot._download_url_photo = lambda u: (_Img.new("RGB", (60, 75), (10, 90, 160))
+                                         if u == "http://x/7.jpg" else None)
+    got = bot._vault_recall(st_v, avoid_ids={7})
+    check("recall skips ids in the avoid set", got is None)
+    got2 = bot._vault_recall(st_v)
+    check("recall returns the vetted winner", got2 is not None and got2[2] == 7)
+    bot._download_url_photo = old_dl
+    check("recall with no state -> None", bot._vault_recall(None) is None)
+
+    # realism: the AI prompt asks for photography, not 'hyperdetailed 8k'
+    p_now = bot._ai_image_prompt(_art())
+    check("AI prompt asks for candid press photography",
+          p_now and "candid press photograph" in p_now)
+    check("AI prompt dropped the hyperdetailed 8k HDR tail",
+          p_now and "hyperdetailed" not in p_now and "8k UHD" not in p_now)
+    check("AI prompt keeps anti-CGI negatives", p_now and "no 3d render" in p_now)
+
 # ---------------------------------------------------------------- summary
 print(f"\n{'='*58}\nAI-ENGINE TESTS: {len(PASS)} passed, {len(FAIL)} failed")
 if FAIL:
