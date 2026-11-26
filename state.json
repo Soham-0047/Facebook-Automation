@@ -188,7 +188,8 @@
   "77baeb2b626290c150f61c667a799ba1",
   "7dec224a6ef195909cd394f01c25ceb6",
   "969c100ea6c4fd330946a28e388766fe",
-  "7a57b26f2c71d7f9a3d0d2b8e918530c"
+  "7a57b26f2c71d7f9a3d0d2b8e918530c",
+  "338e88eb1a0b123c1521dc0e722f314a"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -379,28 +380,28 @@
   "marvel unveils final avengers doomsday trailer steve rogers returns alongside x men",
   "cyberpunk 2 creative director says he s suffering from gta 6 induced open world game dev depression jokes that cyberpunk 2 is cancelled",
   "avengers doomsday final trailer is disney s most watched ever",
-  "nba 2k27 x gta 6 grand theft auto 6 official season 3 trailer"
+  "nba 2k27 x gta 6 grand theft auto 6 official season 3 trailer",
+  "steps director alyce tzue on punk rock inspirations for cinderella reimagining"
  ],
- "last_post_ts": 1795643563.5726104,
+ "last_post_ts": 1795694042.0620866,
  "recent_categories": [
-  "viral",
   "movies",
   "gaming",
   "viral",
-  "gaming"
+  "gaming",
+  "movies"
  ],
  "recent_domains": [
-  "pcgamer.com",
   "tempo.coenglish",
-  "ignindia"
+  "ignindia",
+  "deadline.com"
  ],
  "recent_shapes": [
-  "receipts",
   "mini_story",
-  "question_hook"
+  "question_hook",
+  "guess_what"
  ],
  "recent_photo_ids": [
-  31667360,
   36410693,
   6532602,
   15442518,
@@ -409,13 +410,14 @@
   15213183,
   6720006,
   8263314,
-  40084417
+  40084417,
+  15610070
  ],
  "recent_personas": [
-  "arjun",
-  "dev"
+  "dev",
+  "arjun"
  ],
- "post_counter": 189,
+ "post_counter": 190,
  "category_days": {
   "2026-11-20": {
    "gaming": 1,
@@ -442,22 +444,24 @@
    "viral": 1
   },
   "2026-11-26": {
-   "gaming": 1
+   "gaming": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-26",
  "bengali_count": 0,
  "recent_first_words": [
-  "just",
   "fans",
-  "which"
+  "which",
+  "a"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-26",
  "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795686056
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
