@@ -189,7 +189,8 @@
   "7dec224a6ef195909cd394f01c25ceb6",
   "969c100ea6c4fd330946a28e388766fe",
   "7a57b26f2c71d7f9a3d0d2b8e918530c",
-  "338e88eb1a0b123c1521dc0e722f314a"
+  "338e88eb1a0b123c1521dc0e722f314a",
+  "9788ccfbaf0b1aa7c0289f34bae7b1e9"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -381,48 +382,65 @@
   "cyberpunk 2 creative director says he s suffering from gta 6 induced open world game dev depression jokes that cyberpunk 2 is cancelled",
   "avengers doomsday final trailer is disney s most watched ever",
   "nba 2k27 x gta 6 grand theft auto 6 official season 3 trailer",
-  "steps director alyce tzue on punk rock inspirations for cinderella reimagining"
+  "steps director alyce tzue on punk rock inspirations for cinderella reimagining",
+  "viral king set video shows shah rukh khan shooting with daughter suhana fans react"
  ],
- "last_post_ts": 1795694042.0620866,
+ "last_post_ts": 1795729666.7796519,
  "recent_categories": [
-  "movies",
   "gaming",
   "viral",
   "gaming",
-  "movies"
+  "movies",
+  "viral"
  ],
  "recent_domains": [
-  "tempo.coenglish",
   "ignindia",
-  "deadline.com"
+  "deadline.com",
+  "timesofindia.indiatimes.com"
  ],
  "recent_shapes": [
-  "mini_story",
   "question_hook",
-  "guess_what"
+  "guess_what",
+  "contrarian"
  ],
  "recent_photo_ids": [
-  36410693,
-  6532602,
-  15442518,
   27062308,
   36448444,
   15213183,
   6720006,
   8263314,
   40084417,
-  15610070
+  15610070,
+  33568244,
+  18660132,
+  13762170
+ ],
+ "photo_vault": [
+  {
+   "id": 33568244,
+   "url": "https://images.pexels.com/photos/33568244/pexels-photo-33568244.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+   "w": 867,
+   "h": 1300,
+   "photographer": "Sami TÜRK",
+   "appeal": 0.686,
+   "ts": 1795729656
+  },
+  {
+   "id": 18660132,
+   "url": "https://images.pexels.com/photos/18660132/pexels-photo-18660132.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+   "w": 867,
+   "h": 1300,
+   "photographer": "逸群 陈",
+   "appeal": 0.638,
+   "ts": 1795729656
+  }
  ],
  "recent_personas": [
-  "dev",
-  "arjun"
+  "arjun",
+  "kabir"
  ],
- "post_counter": 190,
+ "post_counter": 191,
  "category_days": {
-  "2026-11-20": {
-   "gaming": 1,
-   "movies": 1
-  },
   "2026-11-21": {
    "gaming": 1,
    "music": 1
@@ -446,21 +464,28 @@
   "2026-11-26": {
    "gaming": 1,
    "movies": 1
+  },
+  "2026-11-27": {
+   "viral": 1
   }
  },
- "bengali_date": "2026-11-26",
+ "bengali_date": "2026-11-27",
  "bengali_count": 0,
  "recent_first_words": [
-  "fans",
   "which",
-  "a"
+  "a",
+  "everyone's"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-26",
- "follow_ctas_today": 0,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795715337
+ "follow_cta_date": "2026-11-27",
+ "follow_ctas_today": 1,
+ "recent_hooks": [
+  "tag_friend"
+ ],
+ "recent_formats": [
+  "square"
+ ],
+ "last_post_was_special": false
 }
