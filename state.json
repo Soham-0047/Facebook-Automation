@@ -190,7 +190,8 @@
   "969c100ea6c4fd330946a28e388766fe",
   "7a57b26f2c71d7f9a3d0d2b8e918530c",
   "338e88eb1a0b123c1521dc0e722f314a",
-  "9788ccfbaf0b1aa7c0289f34bae7b1e9"
+  "9788ccfbaf0b1aa7c0289f34bae7b1e9",
+  "876808755a0a5bebdfe369bdd3a9fe06"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -383,29 +384,28 @@
   "avengers doomsday final trailer is disney s most watched ever",
   "nba 2k27 x gta 6 grand theft auto 6 official season 3 trailer",
   "steps director alyce tzue on punk rock inspirations for cinderella reimagining",
-  "viral king set video shows shah rukh khan shooting with daughter suhana fans react"
+  "viral king set video shows shah rukh khan shooting with daughter suhana fans react",
+  "justin timberlake was really reluctant to make tell all documentary i ve gone through a lot in the last five years"
  ],
- "last_post_ts": 1795729666.7796519,
+ "last_post_ts": 1795779996.5876672,
  "recent_categories": [
-  "gaming",
   "viral",
   "gaming",
   "movies",
-  "viral"
+  "viral",
+  "movies"
  ],
  "recent_domains": [
-  "ignindia",
   "deadline.com",
-  "timesofindia.indiatimes.com"
+  "timesofindia.indiatimes.com",
+  "variety.com"
  ],
  "recent_shapes": [
-  "question_hook",
   "guess_what",
-  "contrarian"
+  "contrarian",
+  "cold_open"
  ],
  "recent_photo_ids": [
-  27062308,
-  36448444,
   15213183,
   6720006,
   8263314,
@@ -413,7 +413,9 @@
   15610070,
   33568244,
   18660132,
-  13762170
+  13762170,
+  11216318,
+  27062308
  ],
  "photo_vault": [
   {
@@ -436,10 +438,10 @@
   }
  ],
  "recent_personas": [
-  "arjun",
-  "kabir"
+  "kabir",
+  "dev"
  ],
- "post_counter": 191,
+ "post_counter": 192,
  "category_days": {
   "2026-11-21": {
    "gaming": 1,
@@ -466,22 +468,25 @@
    "movies": 1
   },
   "2026-11-27": {
-   "viral": 1
+   "viral": 1,
+   "movies": 1
   }
  },
  "bengali_date": "2026-11-27",
- "bengali_count": 0,
+ "bengali_count": 1,
  "recent_first_words": [
-  "which",
   "a",
-  "everyone's"
+  "everyone's",
+  "right"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
  "follow_cta_date": "2026-11-27",
  "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795772790
+ "recent_formats": [
+  "portrait",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
