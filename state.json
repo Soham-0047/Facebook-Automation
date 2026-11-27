@@ -191,7 +191,8 @@
   "7a57b26f2c71d7f9a3d0d2b8e918530c",
   "338e88eb1a0b123c1521dc0e722f314a",
   "9788ccfbaf0b1aa7c0289f34bae7b1e9",
-  "876808755a0a5bebdfe369bdd3a9fe06"
+  "876808755a0a5bebdfe369bdd3a9fe06",
+  "f9ee603e33ffc1aa5f4b56eed20f8a86"
  ],
  "posted_titles": [
   "sarvam becomes india s newest ai unicorn with 234 million funding round led by hcltech",
@@ -385,29 +386,28 @@
   "nba 2k27 x gta 6 grand theft auto 6 official season 3 trailer",
   "steps director alyce tzue on punk rock inspirations for cinderella reimagining",
   "viral king set video shows shah rukh khan shooting with daughter suhana fans react",
-  "justin timberlake was really reluctant to make tell all documentary i ve gone through a lot in the last five years"
+  "justin timberlake was really reluctant to make tell all documentary i ve gone through a lot in the last five years",
+  "hollow knight silksong unveils first sea of sorrow dlc trailer release date announced"
  ],
- "last_post_ts": 1795779996.5876672,
+ "last_post_ts": 1795815034.9934828,
  "recent_categories": [
-  "viral",
   "gaming",
   "movies",
   "viral",
-  "movies"
+  "movies",
+  "gaming"
  ],
  "recent_domains": [
-  "deadline.com",
   "timesofindia.indiatimes.com",
-  "variety.com"
+  "variety.com",
+  "nintendoeverything"
  ],
  "recent_shapes": [
-  "guess_what",
   "contrarian",
-  "cold_open"
+  "cold_open",
+  "hot_take"
  ],
  "recent_photo_ids": [
-  15213183,
-  6720006,
   8263314,
   40084417,
   15610070,
@@ -415,7 +415,9 @@
   18660132,
   13762170,
   11216318,
-  27062308
+  27062308,
+  12718976,
+  12719126
  ],
  "photo_vault": [
   {
@@ -428,6 +430,33 @@
    "ts": 1795729656
   },
   {
+   "id": 12719126,
+   "url": "https://images.pexels.com/photos/12719126/pexels-photo-12719126.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+   "w": 867,
+   "h": 1300,
+   "photographer": "ROMAN ODINTSOV",
+   "appeal": 0.666,
+   "ts": 1795815037
+  },
+  {
+   "id": 12718976,
+   "url": "https://images.pexels.com/photos/12718976/pexels-photo-12718976.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+   "w": 867,
+   "h": 1300,
+   "photographer": "ROMAN ODINTSOV",
+   "appeal": 0.651,
+   "ts": 1795815031
+  },
+  {
+   "id": 12718989,
+   "url": "https://images.pexels.com/photos/12718989/pexels-photo-12718989.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+   "w": 867,
+   "h": 1300,
+   "photographer": "ROMAN ODINTSOV",
+   "appeal": 0.648,
+   "ts": 1795815037
+  },
+  {
    "id": 18660132,
    "url": "https://images.pexels.com/photos/18660132/pexels-photo-18660132.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
    "w": 867,
@@ -435,18 +464,23 @@
    "photographer": "逸群 陈",
    "appeal": 0.638,
    "ts": 1795729656
+  },
+  {
+   "id": 12718977,
+   "url": "https://images.pexels.com/photos/12718977/pexels-photo-12718977.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+   "w": 867,
+   "h": 1300,
+   "photographer": "ROMAN ODINTSOV",
+   "appeal": 0.624,
+   "ts": 1795815037
   }
  ],
  "recent_personas": [
-  "kabir",
-  "dev"
+  "dev",
+  "kabir"
  ],
- "post_counter": 192,
+ "post_counter": 193,
  "category_days": {
-  "2026-11-21": {
-   "gaming": 1,
-   "music": 1
-  },
   "2026-11-22": {
    "movies": 1,
    "gaming": 1
@@ -470,21 +504,26 @@
   "2026-11-27": {
    "viral": 1,
    "movies": 1
+  },
+  "2026-11-28": {
+   "gaming": 1
   }
  },
- "bengali_date": "2026-11-27",
+ "bengali_date": "2026-11-28",
  "bengali_count": 1,
  "recent_first_words": [
-  "a",
   "everyone's",
-  "right"
+  "right",
+  "holy"
  ],
  "watchlist": [],
  "followups_date": "",
  "followups_today": 0,
- "follow_cta_date": "2026-11-27",
- "follow_ctas_today": 1,
- "replied_comment_ids": [],
- "liked_comment_ids": [],
- "engage_last_ts": 1795800795
+ "follow_cta_date": "2026-11-28",
+ "follow_ctas_today": 0,
+ "recent_formats": [
+  "square",
+  "portrait"
+ ],
+ "last_post_was_special": false
 }
